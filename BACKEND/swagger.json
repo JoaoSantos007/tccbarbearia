@@ -1,0 +1,146 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "API de Usuários",
+      "description": "Documentação da API para gerenciamento de usuários",
+      "version": "1.0.0"
+    },
+    "servers": [
+      {
+        "url": "http://localhost:3000",
+        "description": "Servidor local"
+      }
+    ],
+    "paths": {
+      "/cadastrar": {
+        "post": {
+          "summary": "Cadastrar usuário",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Usuario"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Usuário cadastrado com sucesso"
+            }
+          }
+        }
+      },
+      "/buscar": {
+        "get": {
+          "summary": "Buscar todos os usuários",
+          "responses": {
+            "200": {
+              "description": "Lista de usuários",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "#/components/schemas/Usuario"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/atualizar": {
+        "put": {
+          "summary": "Atualizar usuário",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UsuarioComId"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Usuário atualizado com sucesso"
+            }
+          }
+        }
+      },
+      "/deletar": {
+        "delete": {
+          "summary": "Deletar usuário",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    }
+                  },
+                  "required": ["id"]
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Usuário deletado com sucesso"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "Usuario": {
+          "type": "object",
+          "properties": {
+            "nome_completo": {
+              "type": "string",
+              "example": "João da Silva"
+            },
+            "cep": {
+              "type": "string",
+              "example": "19000-000"
+            },
+            "email": {
+              "type": "string",
+              "example": "joao@email.com"
+            },
+            "senha": {
+              "type": "string",
+              "example": "123456"
+            }
+          },
+          "required": ["nome_completo", "cep", "email", "senha"]
+        },
+        "UsuarioComId": {
+          "allOf": [
+            {
+              "$ref": "#/components/schemas/Usuario"
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "example": 1
+                }
+              },
+              "required": ["id"]
+            }
+          ]
+        }
+      }
+    }
+  }

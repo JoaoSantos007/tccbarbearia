@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barbershop System - Barbearia de Elite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* Cores do tema - padronizadas com o dashboard */
+        :root {
+            --azul-escuro: #0a1a2f;
+            --azul-medio: #1a2a4f;
+            --azul-accent: #2563eb;
+            --azul-light: #dbeafe;
+            --cinza-escuro: #2c2c2c;
+            --cinza-medio: #64748b;
+            --cinza-claro: #e2e8f0;
+            --branco: #ffffff;
+            --cinza-fundo: #f1f5f9;
+            --verde: #10b981;
+            --vermelho: #ef4444;
+        }
+
+        /* Landing Page */
+        .landing-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--cinza-fundo) 0%, var(--branco) 100%);
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            background: var(--branco);
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            border-bottom: 3px solid var(--azul-escuro);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .logo-img {
+            height: 100px;
+            width: auto;
+            max-width: 250px;
+            object-fit: contain;
+            transition: transform 0.3s;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+        }
+
+        .logo-text {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--azul-escuro);
+        }
+
+        .logo-text span {
+            color: var(--cinza-medio);
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--cinza-escuro);
+            text-decoration: none;
+            transition: color 0.3s;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--azul-accent);
+        }
+
+        .btn-acessar-nav, .btn-cadastrar-nav {
+            padding: 10px 30px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-acessar-nav {
+            background-color: #e2e8f0;
+            color: var(--branco);
+        }
+
+        .btn-acessar-nav:hover {
+            background-color: #00367c;
+            transform: translateY(-2px);
+            color: var(--branco);
+        }
+
+        .btn-cadastrar-nav {
+            background: transparent;
+            color: var(--azul-escuro);
+            border: 2px solid var(--azul-escuro);
+        }
+
+        .btn-cadastrar-nav:hover {
+            background: var(--azul-escuro);
+            color: var(--branco);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--cinza-escuro) 100%);
+            margin-top: 0;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><text x="50%" y="50%" font-size="200" text-anchor="middle" dominant-baseline="middle" fill="rgba(255,255,255,0.03)">✂️</text></svg>') repeat;
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            z-index: 1;
+            padding: 20px;
+        }
+
+        .hero-icon {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+        }
+
+        .hero h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: var(--branco);
+        }
+
+        .hero h1 span {
+            color: var(--azul-light);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--cinza-claro);
+            margin-bottom: 30px;
+        }
+
+        .btn-acessar, .btn-cadastrar {
+            border: none;
+            padding: 15px 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            margin: 0 10px;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .btn-acessar {
+            background: var(--branco);
+            color: var(--azul-escuro);
+        }
+
+        .btn-acessar:hover {
+            background: var(--azul-light);
+            transform: translateY(-3px);
+        }
+
+        .btn-cadastrar {
+            background: transparent;
+            color: var(--branco);
+            border: 2px solid var(--branco);
+        }
+
+        .btn-cadastrar:hover {
+            background: var(--branco);
+            color: var(--azul-escuro);
+            transform: translateY(-3px);
+        }
+
+        /* Status Banner */
+        .status-banner {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--branco);
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.85rem;
+            z-index: 1000;
+            border-left: 4px solid;
+        }
+
+        .status-banner.online {
+            border-left-color: var(--verde);
+            color: var(--verde);
+        }
+
+        .status-banner.offline {
+            border-left-color: var(--vermelho);
+            color: var(--vermelho);
+        }
+
+        /* Sections */
+        .section {
+            padding: 80px 50px;
+        }
+
+        .section-light {
+            background: var(--branco);
+        }
+
+        .section-gray {
+            background: var(--cinza-fundo);
+        }
+
+        .section-dark {
+            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--cinza-escuro) 100%);
+            color: var(--branco);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Syne', sans-serif;
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: var(--azul-escuro);
+        }
+
+        .section-dark .section-title {
+            color: var(--branco);
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--cinza-medio);
+            margin-bottom: 50px;
+            font-size: 1.1rem;
+        }
+
+        .section-dark .section-subtitle {
+            color: var(--cinza-claro);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .about-text p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            color: var(--cinza-medio);
+        }
+
+        .about-text h3 {
+            color: var(--azul-escuro);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .about-image {
+            text-align: center;
+        }
+
+        .about-image .icon {
+            font-size: 10rem;
+            opacity: 0.8;
+        }
+
+        /* Galeria */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+            height: 300px;
+            background: var(--cinza-claro);
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover .gallery-img {
+            transform: scale(1.1);
+        }
+
+        .gallery-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 20px;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .gallery-item:hover .gallery-overlay {
+            transform: translateY(0);
+        }
+
+        .gallery-overlay h4 {
+            margin-bottom: 5px;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .gallery-overlay p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        /* Team Grid */
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 40px;
+            margin-top: 40px;
+        }
+
+        .team-card {
+            background: var(--branco);
+            border-radius: 20px;
+            overflow: hidden;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .team-icon {
+            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--cinza-escuro) 100%);
+            padding: 40px;
+            font-size: 4rem;
+        }
+
+        .team-card h3 {
+            margin: 20px 0 10px;
+            color: var(--azul-escuro);
+            font-size: 1.5rem;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .team-card p {
+            color: var(--cinza-medio);
+            padding: 0 20px 20px;
+        }
+
+        .team-funcao {
+            color: var(--azul-accent);
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .footer {
+            background: var(--cinza-escuro);
+            color: var(--cinza-claro);
+            text-align: center;
+            padding: 40px;
+        }
+
+        .login-page,
+        .register-page,
+        .system-page {
+            display: none;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--cinza-fundo) 0%, var(--branco) 100%);
+            padding: 50px 20px;
+        }
+
+        .login-container,
+        .register-container,
+        .system-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--branco);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-header,
+        .register-header,
+        .system-header {
+            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--cinza-escuro) 100%);
+            color: var(--branco);
+            padding: 40px;
+            text-align: center;
+        }
+
+        .login-header h2,
+        .register-header h2,
+        .system-header h2 {
+            color: var(--branco);
+            margin-bottom: 10px;
+            font-family: 'Syne', sans-serif;
+        }
+
+        .login-form,
+        .register-form,
+        .system-content {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--cinza-escuro);
+            font-weight: 600;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--cinza-claro);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--azul-accent);
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--azul-escuro);
+            color: var(--branco);
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        button:hover {
+            background: var(--azul-accent);
+            transform: translateY(-2px);
+        }
+
+        .link-button {
+            background: none;
+            color: var(--azul-accent);
+            margin-top: 15px;
+        }
+
+        .link-button:hover {
+            background: none;
+            transform: none;
+            text-decoration: underline;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .forgot-password {
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .forgot-password a {
+            color: var(--azul-accent);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .nav-links {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .section {
+                padding: 50px 20px;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .logo-img {
+                height: 70px;
+            }
+
+            .logo-text {
+                font-size: 1.5rem;
+            }
+
+            .gallery-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-acessar, .btn-cadastrar {
+                padding: 12px 30px;
+                font-size: 1rem;
+                margin: 5px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Status Banner -->
+    <div class="status-banner offline" id="statusBanner">
+        🔌 Verificando conexão...
+    </div>
+
+    <!-- Landing Page -->
+    <div class="landing-page" id="landingPage">
+        <div class="header">
+            <div class="logo-container" onclick="scrollToSection('home')">
+                <img src="logo.png" alt="Logo Barbershop" class="logo-img" id="logoImg">
+                <div class="logo-text" id="logoText" style="display: none;">BARBERSHOP<span>SYSTEM</span></div>
+            </div>
+            <div class="nav-links">
+                <a onclick="scrollToSection('home')">Home</a>
+                <a onclick="scrollToSection('about')">Quem Somos</a>
+                <a onclick="scrollToSection('gallery')">Galeria</a>
+                <a onclick="scrollToSection('team')">Nossa Equipe</a>
+                <a class="btn-acessar-nav" onclick="showLogin()">Acessar</a>
+                <a class="btn-cadastrar-nav" onclick="showRegister()">Cadastrar</a>
+            </div>
+        </div>
+
+        <div id="home" class="hero">
+            <div class="hero-content">
+                <div class="hero-icon">✂️</div>
+                <h1>BARBERSHOP <span>SYSTEM</span></h1>
+                <p>Sua experiência premium em cuidados masculinos</p>
+                <button class="btn-acessar" onclick="showLogin()">Acessar Sistema</button>
+                <button class="btn-cadastrar" onclick="showRegister()">Cadastrar-se</button>
+            </div>
+        </div>
+
+        <div id="about" class="section section-light">
+            <div class="container">
+                <h2 class="section-title">Quem Somos</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>A <strong>Barbershop System</strong> nasceu da paixão por oferecer o melhor em cuidados
+                            masculinos, combinando tradição e modernidade em um só lugar.</p>
+                        <p>Desde nossa fundação, buscamos proporcionar uma experiência única, onde cada cliente é
+                            tratado com exclusividade e atenção aos detalhes. Nossa missão é realçar a autoestima dos
+                            homens através de serviços de alta qualidade em um ambiente sofisticado e acolhedor.</p>
+                        <h3>Nossa Filosofia</h3>
+                        <p>Acreditamos que cuidar da aparência vai além da estética - é sobre bem-estar, confiança e
+                            estilo. Por isso, investimos constantemente em produtos premium, técnicas atualizadas e no
+                            desenvolvimento da nossa equipe.</p>
+                    </div>
+                    <div class="about-image">
+                        <div class="icon">🏪</div>
+                        <p style="margin-top: 20px; color: var(--cinza-medio);">Ambiente premium e acolhedor</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Galeria -->
+        <div id="gallery" class="section section-gray">
+            <div class="container">
+                <h2 class="section-title">Nossa Galeria</h2>
+                <p class="section-subtitle">Conheça nosso espaço e serviços</p>
+                <div class="gallery-grid" id="galleryGrid">
+                    <div class="gallery-item">
+                        <div class="gallery-img" style="background: linear-gradient(135deg, var(--azul-escuro), var(--cinza-escuro)); display: flex; align-items: center; justify-content: center; font-size: 4rem;">✂️</div>
+                        <div class="gallery-overlay">
+                            <h4>Corte Estiloso</h4>
+                            <p>Tendências modernas para todos os estilos</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="gallery-img" style="background: linear-gradient(135deg, var(--cinza-escuro), var(--azul-escuro)); display: flex; align-items: center; justify-content: center; font-size: 4rem;">🧔</div>
+                        <div class="gallery-overlay">
+                            <h4>Barba Perfeita</h4>
+                            <p>Modelagem e cuidados especiais</p>
+                        </div>
+                    </div>
+                    <div class="gallery-item">
+                        <div class="gallery-img" style="background: linear-gradient(135deg, var(--azul-medio), var(--azul-escuro)); display: flex; align-items: center; justify-content: center; font-size: 4rem;">💈</div>
+                        <div class="gallery-overlay">
+                            <h4>Espaço Premium</h4>
+                            <p>Ambiente aconchegante e moderno</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="team" class="section section-dark">
+            <div class="container">
+                <h2 class="section-title">Nossa Equipe</h2>
+                <p class="section-subtitle">Profissionais dedicados ao seu bem-estar</p>
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-icon">👨‍🦰</div>
+                        <h3>Joao Marafon</h3>
+                        <p class="team-funcao">Desenvolvedor</p>
+                        <p>Especialista em criar soluções inovadoras</p>
+                    </div>
+                    <div class="team-card">
+                        <div class="team-icon">👨‍🦱</div>
+                        <h3>Gustavo Alves</h3>
+                        <p class="team-funcao">Desenvolvedor</p>
+                        <p>Focado em experiência do usuário</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 Barbershop System - Todos os direitos reservados</p>
+            <p style="margin-top: 10px;">📍 Rua da Barbearia, 123 | 📞 (11) 99999-9999 | ✉️ contato@barbershop.com</p>
+        </div>
+    </div>
+
+    <!-- Login Page -->
+    <div class="login-page" id="loginPage">
+        <div class="login-container">
+            <div class="login-header">
+                <h2>Bem-vindo de volta</h2>
+                <p>Faça login para continuar</p>
+            </div>
+            <div class="login-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="loginEmail" placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Senha</label>
+                    <input type="password" id="loginSenha" placeholder="********">
+                </div>
+                <button onclick="fazerLogin()">Entrar</button>
+                <div class="forgot-password">
+                    <a href="#" onclick="showEsqueciSenha()">Esqueci minha senha?</a>
+                </div>
+                <div id="loginMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Page -->
+    <div class="register-page" id="registerPage">
+        <div class="register-container">
+            <div class="register-header">
+                <h2>Criar Conta</h2>
+                <p>Cadastre-se gratuitamente</p>
+            </div>
+            <div class="register-form">
+                <div class="form-group">
+                    <label>Nome Completo *</label>
+                    <input type="text" id="regNome" placeholder="Digite seu nome completo">
+                </div>
+                <div class="form-group">
+                    <label>CEP *</label>
+                    <input type="text" id="regCep" placeholder="Digite seu CEP">
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="regEmail" placeholder="seu@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Senha *</label>
+                    <input type="password" id="regSenha" placeholder="Mínimo 6 caracteres">
+                </div>
+                <div class="form-group">
+                    <label>Confirmar Senha *</label>
+                    <input type="password" id="regSenhaConfirm" placeholder="Repita sua senha">
+                </div>
+                <button onclick="cadastrarNovoUsuario()">Cadastrar</button>
+                <div class="forgot-password">
+                    <a href="#" onclick="showLogin()">Já tem conta? Faça login</a>
+                </div>
+                <div id="regMessage"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000';
+
+        // Testar conexão com o backend
+        async function testarConexao() {
+            const statusBanner = document.getElementById('statusBanner');
+            try {
+                const response = await fetch(`${API_URL}/buscar`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                if (response.ok) {
+                    statusBanner.className = 'status-banner online';
+                    statusBanner.innerHTML = '✅ Conectado ao servidor';
+                    console.log('✅ Conexão com backend estabelecida!');
+                    return true;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                statusBanner.className = 'status-banner offline';
+                statusBanner.innerHTML = '❌ Sem conexão. Verifique se o backend está rodando em ' + API_URL;
+                console.error('❌ Erro de conexão:', error);
+                return false;
+            }
+        }
+
+        function carregarLogo() {
+            const logoImg = document.getElementById('logoImg');
+            const logoText = document.getElementById('logoText');
+
+            logoImg.onload = function () {
+                logoImg.style.display = 'block';
+                logoText.style.display = 'none';
+            };
+
+            logoImg.onerror = function () {
+                logoImg.style.display = 'none';
+                logoText.style.display = 'block';
+            };
+
+            if (logoImg.complete) {
+                if (logoImg.naturalWidth === 0) {
+                    logoImg.style.display = 'none';
+                    logoText.style.display = 'block';
+                } else {
+                    logoImg.style.display = 'block';
+                    logoText.style.display = 'none';
+                }
+            }
+        }
+
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function showLogin() {
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('registerPage').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'block';
+            document.getElementById('loginEmail').value = '';
+            document.getElementById('loginSenha').value = '';
+            document.getElementById('loginMessage').innerHTML = '';
+        }
+
+        function showRegister() {
+            document.getElementById('landingPage').style.display = 'none';
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('registerPage').style.display = 'block';
+            document.getElementById('regNome').value = '';
+            document.getElementById('regCep').value = '';
+            document.getElementById('regEmail').value = '';
+            document.getElementById('regSenha').value = '';
+            document.getElementById('regSenhaConfirm').value = '';
+            document.getElementById('regMessage').innerHTML = '';
+        }
+
+        // Cadastrar novo usuário
+        async function cadastrarNovoUsuario() {
+            const nome_completo = document.getElementById('regNome').value;
+            const cep = document.getElementById('regCep').value;
+            const email = document.getElementById('regEmail').value;
+            const senha = document.getElementById('regSenha').value;
+            const senhaConfirm = document.getElementById('regSenhaConfirm').value;
+
+            const messageDiv = document.getElementById('regMessage');
+
+            if (!nome_completo || !cep || !email || !senha) {
+                messageDiv.className = 'message error';
+                messageDiv.innerText = 'Preencha todos os campos obrigatórios! (*)';
+                return;
+            }
+
+            if (senha.length < 6) {
+                messageDiv.className = 'message error';
+                messageDiv.innerText = 'A senha deve ter no mínimo 6 caracteres!';
+                return;
+            }
+
+            if (senha !== senhaConfirm) {
+                messageDiv.className = 'message error';
+                messageDiv.innerText = 'As senhas não coincidem!';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/cadastrar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nome_completo,
+                        cep,
+                        email,
+                        senha
+                    })
+                });
+                const data = await response.json();
+
+                const messageDiv = document.getElementById('regMessage');
+                if (response.ok) {
+                    messageDiv.className = 'message success';
+                    messageDiv.innerText = data.mensagem + ' Faça login para continuar.';
+                    setTimeout(() => {
+                        showLogin();
+                    }, 3000);
+                } else {
+                    messageDiv.className = 'message error';
+                    messageDiv.innerText = data.error || 'Erro ao cadastrar';
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                const messageDiv = document.getElementById('regMessage');
+                messageDiv.className = 'message error';
+                messageDiv.innerText = '❌ Erro de conexão com o servidor';
+            }
+        }
+
+        // Primeiro acesso
+        async function primeiroAcesso(id_usuario, nova_senha) {
+            try {
+                const response = await fetch(`${API_URL}/primeiro-acesso`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_usuario, nova_senha })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.mensagem);
+                    return true;
+                } else {
+                    alert(data.error || 'Erro ao cadastrar senha');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro de conexão com o servidor');
+                return false;
+            }
+        }
+
+        // Fazer login
+        async function fazerLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const senha = document.getElementById('loginSenha').value;
+
+            if (!email || !senha) {
+                alert('Preencha email e senha');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('usuario', JSON.stringify(data.usuario));
+                    window.location.href = 'dashboard.html';
+                } else if (response.status === 403 && data.primeiro_acesso) {
+                    const novaSenha = prompt('Primeiro acesso! Cadastre sua nova senha (mínimo 6 caracteres):');
+                    if (novaSenha && novaSenha.length >= 6) {
+                        const cadastrou = await primeiroAcesso(data.usuario_id, novaSenha);
+                        if (cadastrou) {
+                            fazerLogin();
+                        }
+                    } else if (novaSenha && novaSenha.length < 6) {
+                        alert('A senha deve ter no mínimo 6 caracteres!');
+                    }
+                } else {
+                    const messageDiv = document.getElementById('loginMessage');
+                    messageDiv.className = 'message error';
+                    messageDiv.innerText = data.mensagem || 'Erro ao fazer login';
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                const messageDiv = document.getElementById('loginMessage');
+                messageDiv.className = 'message error';
+                messageDiv.innerText = 'Erro de conexão com o servidor';
+            }
+        }
+
+        // Esqueci minha senha
+        function showEsqueciSenha() {
+            const email = prompt('Digite seu email cadastrado para recuperar a senha:');
+            if (email) {
+                solicitarResetSenha(email);
+            }
+        }
+
+        async function solicitarResetSenha(email) {
+            try {
+                const response = await fetch(`${API_URL}/esqueci-senha`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(`${data.mensagem}\n\nToken: ${data.token}\n\nUse este token para redefinir sua senha.`);
+                    const novaSenha = prompt('Digite sua nova senha (mínimo 6 caracteres):');
+                    if (novaSenha && novaSenha.length >= 6) {
+                        await resetarSenha(data.token, novaSenha);
+                    }
+                } else {
+                    alert(data.mensagem || 'Erro ao solicitar recuperação');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro de conexão com o servidor');
+            }
+        }
+
+        async function resetarSenha(token, nova_senha) {
+            try {
+                const response = await fetch(`${API_URL}/resetar-senha`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token, nova_senha })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('✅ ' + data.mensagem);
+                } else {
+                    alert('❌ ' + (data.error || 'Erro ao resetar senha'));
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('❌ Erro de conexão com o servidor');
+            }
+        }
+
+        // Inicializar
+        carregarLogo();
+        testarConexao();
+        setInterval(testarConexao, 30000);
+    </script>
+</body>
+
+</html>

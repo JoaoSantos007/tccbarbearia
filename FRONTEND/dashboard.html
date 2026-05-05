@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarbershopSystem — Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --azul-escuro: #0a1a2f;
+            --azul-medio: #1a2a4f;
+            --azul-accent: #2563eb;
+            --azul-light: #dbeafe;
+            --cinza-escuro: #1e293b;
+            --cinza-medio: #64748b;
+            --cinza-claro: #e2e8f0;
+            --branco: #ffffff;
+            --fundo: #f1f5f9;
+            --sidebar-w: 264px;
+            --verde: #10b981;
+            --amarelo: #f59e0b;
+            --vermelho: #ef4444;
+            --roxo: #8b5cf6;
+            --topbar-h: 68px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--fundo);
+            color: var(--cinza-escuro);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* =========== SIDEBAR =========== */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--azul-escuro);
+            min-height: 100vh;
+            position: fixed;
+            left: 0; top: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .sidebar-logo {
+            padding: 24px 20px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            display: flex;
+            align-items: center;
+            gap: 11px;
+        }
+
+        .logo-icon {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, var(--azul-accent), #7c3aed);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .logo-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--branco);
+            line-height: 1.1;
+        }
+        .logo-name span {
+            display: block;
+            font-size: 0.62rem;
+            font-weight: 400;
+            color: rgba(255,255,255,0.38);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .sidebar-user {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            display: flex; align-items: center; gap: 11px;
+        }
+        .user-avatar {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.8rem; color: white;
+            flex-shrink: 0;
+        }
+        .user-meta strong { display: block; color: white; font-size: 0.82rem; }
+        .user-meta small { color: rgba(255,255,255,0.38); font-size: 0.7rem; }
+
+        .sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+        .nav-section-label {
+            font-size: 0.6rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.12em;
+            color: rgba(255,255,255,0.25);
+            padding: 10px 12px 6px; margin-top: 4px;
+        }
+        .nav-item {
+            display: flex; align-items: center; gap: 11px;
+            padding: 9px 12px; border-radius: 9px;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.86rem; font-weight: 500;
+            cursor: pointer; transition: all 0.16s;
+            width: 100%; background: none; border: none;
+            font-family: 'DM Sans', sans-serif; text-align: left;
+        }
+        .nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.82); }
+        .nav-item.active { background: var(--azul-accent); color: white; box-shadow: 0 4px 14px rgba(37,99,235,0.35); }
+        .nav-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+        .sidebar-footer { padding: 12px 10px; border-top: 1px solid rgba(255,255,255,0.07); }
+        .btn-logout {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: 9px;
+            color: rgba(255,255,255,0.4);
+            cursor: pointer; width: 100%; background: none; border: none;
+            font-family: 'DM Sans', sans-serif; font-size: 0.86rem; font-weight: 500;
+            transition: all 0.16s;
+        }
+        .btn-logout:hover { background: rgba(239,68,68,0.12); color: #fca5a5; }
+
+        /* =========== MAIN =========== */
+        .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+        .topbar {
+            background: white; padding: 0 32px; height: var(--topbar-h);
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--cinza-claro);
+            position: sticky; top: 0; z-index: 50;
+        }
+        .topbar-left h1 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; color: var(--azul-escuro); }
+        .topbar-left p { font-size: 0.77rem; color: var(--cinza-medio); margin-top: 1px; }
+        .topbar-right { display: flex; gap: 12px; align-items: center; }
+        .topbar-date {
+            font-size: 0.78rem; color: var(--cinza-medio);
+            background: var(--fundo); padding: 6px 13px;
+            border-radius: 20px; border: 1px solid var(--cinza-claro);
+        }
+        .btn-novo {
+            background: var(--azul-accent); color: white; border: none;
+            padding: 9px 18px; border-radius: 9px;
+            font-size: 0.84rem; font-weight: 600;
+            cursor: pointer; display: flex; align-items: center; gap: 7px;
+            transition: background 0.15s, transform 0.1s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-novo:hover { background: #1d4ed8; }
+        .btn-novo:active { transform: scale(0.97); }
+
+        .content { padding: 28px 32px; flex: 1; }
+
+        /* =========== KPI CARDS =========== */
+        .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .kpi-card {
+            background: white; border-radius: 14px; padding: 20px 22px;
+            border: 1px solid var(--cinza-claro); position: relative; overflow: hidden;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .kpi-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+        .kpi-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 14px 14px 0 0;
+        }
+        .kpi-card.azul::before { background: var(--azul-accent); }
+        .kpi-card.verde::before { background: var(--verde); }
+        .kpi-card.amarelo::before { background: var(--amarelo); }
+        .kpi-card.roxo::before { background: var(--roxo); }
+        .kpi-card-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; margin-bottom: 12px;
+        }
+        .kpi-card.azul .kpi-card-icon { background: #eff6ff; }
+        .kpi-card.verde .kpi-card-icon { background: #f0fdf4; }
+        .kpi-card.amarelo .kpi-card-icon { background: #fffbeb; }
+        .kpi-card.roxo .kpi-card-icon { background: #f5f3ff; }
+        .kpi-value { font-family: 'Syne', sans-serif; font-size: 1.85rem; font-weight: 800; color: var(--azul-escuro); line-height: 1; }
+        .kpi-label { font-size: 0.78rem; color: var(--cinza-medio); margin-top: 5px; font-weight: 500; }
+        .kpi-sub { font-size: 0.72rem; color: var(--verde); margin-top: 3px; font-weight: 600; }
+
+        /* =========== CARDS =========== */
+        .card { background: white; border-radius: 14px; border: 1px solid var(--cinza-claro); overflow: hidden; margin-bottom: 18px; }
+        .card-header {
+            padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid var(--cinza-claro);
+        }
+        .card-title { font-family: 'Syne', sans-serif; font-size: 0.92rem; font-weight: 700; color: var(--azul-escuro); }
+        .card-body { padding: 18px 20px; }
+
+        /* =========== TABLE =========== */
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 11px 12px; text-align: left; border-bottom: 1px solid var(--cinza-claro); font-size: 0.84rem; }
+        .data-table th { background: var(--fundo); font-weight: 600; color: var(--azul-escuro); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        .data-table tr:last-child td { border-bottom: none; }
+        .data-table tbody tr:hover { background: #fafbfc; }
+        .data-table td { color: var(--cinza-escuro); }
+
+        /* =========== BADGES =========== */
+        .status-badge {
+            font-size: 0.68rem; font-weight: 600; padding: 3px 10px;
+            border-radius: 20px; display: inline-block; letter-spacing: 0.02em;
+        }
+        .status-ativo { background: #ecfdf5; color: #059669; }
+        .status-inativo { background: #fef2f2; color: #dc2626; }
+        .status-agendado { background: #eff6ff; color: #2563eb; }
+        .status-confirmado { background: #ecfdf5; color: #059669; }
+        .status-concluido { background: #f5f3ff; color: #7c3aed; }
+        .status-cancelado { background: #fef2f2; color: #dc2626; }
+        .status-pendente { background: #fffbeb; color: #d97706; }
+
+        /* =========== FILTER BAR =========== */
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; align-items: center; }
+        .filter-bar input, .filter-bar select {
+            padding: 8px 12px; border: 1px solid var(--cinza-claro);
+            border-radius: 8px; font-size: 0.84rem; font-family: 'DM Sans', sans-serif;
+            background: white; color: var(--cinza-escuro); outline: none;
+            transition: border-color 0.15s;
+        }
+        .filter-bar input:focus, .filter-bar select:focus { border-color: var(--azul-accent); }
+
+        /* =========== ACTION BUTTONS =========== */
+        .btn-editar, .btn-deletar, .btn-save, .btn-cancel {
+            padding: 5px 12px; margin: 0 2px;
+            font-size: 0.75rem; border-radius: 6px; border: none;
+            cursor: pointer; font-weight: 600; font-family: 'DM Sans', sans-serif;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .btn-editar:active, .btn-deletar:active { transform: scale(0.96); }
+        .btn-editar { background: #eff6ff; color: #2563eb; }
+        .btn-editar:hover { background: #dbeafe; }
+        .btn-deletar { background: #fef2f2; color: #dc2626; }
+        .btn-deletar:hover { background: #fee2e2; }
+        .btn-save { background: var(--azul-accent); color: white; padding: 10px 22px; font-size: 0.88rem; border-radius: 9px; width: 100%; margin-top: 6px; }
+        .btn-save:hover { background: #1d4ed8; }
+        .btn-cancel { background: var(--fundo); color: var(--cinza-medio); padding: 10px 22px; font-size: 0.88rem; border-radius: 9px; width: 100%; margin-top: 6px; border: 1px solid var(--cinza-claro); }
+        .btn-cancel:hover { background: var(--cinza-claro); }
+
+        /* =========== MODAL =========== */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10,20,40,0.55); backdrop-filter: blur(3px);
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .modal-content {
+            background: white; padding: 28px; border-radius: 18px;
+            max-width: 500px; width: 92%; max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+            animation: modalIn 0.2s ease;
+        }
+        @keyframes modalIn { from { transform: scale(0.95) translateY(8px); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; }
+        .modal-header h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; color: var(--azul-escuro); }
+        .modal-close { background: none; border: none; cursor: pointer; color: var(--cinza-medio); font-size: 1.3rem; padding: 2px 6px; border-radius: 6px; }
+        .modal-close:hover { background: var(--fundo); color: var(--cinza-escuro); }
+        .modal-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+
+        /* =========== FORM =========== */
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.82rem; color: var(--cinza-escuro); }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 9px 12px; border: 1px solid var(--cinza-claro);
+            border-radius: 9px; font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+            color: var(--cinza-escuro); outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+            background: white;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            border-color: var(--azul-accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+
+        /* =========== TOAST =========== */
+        #toastContainer {
+            position: fixed; bottom: 28px; right: 28px;
+            display: flex; flex-direction: column; gap: 10px; z-index: 9999; pointer-events: none;
+        }
+        .toast {
+            display: flex; align-items: center; gap: 10px;
+            padding: 13px 18px; border-radius: 12px;
+            font-size: 0.86rem; font-weight: 500;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            pointer-events: all; max-width: 340px;
+            animation: toastIn 0.25s ease;
+        }
+        @keyframes toastIn { from { transform: translateY(16px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes toastOut { to { transform: translateY(8px); opacity: 0; } }
+        .toast.success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+        .toast.error { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .toast.info { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+        .toast-icon { font-size: 1rem; flex-shrink: 0; }
+
+        /* =========== LOADING SKELETON =========== */
+        .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .skeleton-row td { padding: 14px 12px !important; }
+
+        /* =========== DASHBOARD EXTRAS =========== */
+        .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        .user-row { padding: 11px 0; border-bottom: 1px solid var(--cinza-claro); display: flex; align-items: center; gap: 12px; }
+        .user-row:last-child { border-bottom: none; }
+        .user-row-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #2563eb, #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 700; color: white; flex-shrink: 0; }
+        .user-row-info { flex: 1; min-width: 0; }
+        .user-row-info strong { display: block; font-size: 0.84rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .user-row-info small { color: var(--cinza-medio); font-size: 0.72rem; }
+
+        .servico-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--cinza-claro); }
+        .servico-row:last-child { border-bottom: none; }
+        .servico-row-nome { font-size: 0.84rem; font-weight: 500; }
+        .servico-row-preco { font-size: 0.84rem; font-weight: 700; color: var(--azul-accent); }
+
+        /* =========== EMPTY STATE =========== */
+        .empty-state { text-align: center; padding: 48px 20px; color: var(--cinza-medio); }
+        .empty-state .empty-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.5; }
+        .empty-state p { font-size: 0.88rem; }
+
+        /* =========== CONFIG SECTION =========== */
+        .config-section { margin-bottom: 24px; }
+        .config-section h4 { font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700; margin-bottom: 14px; color: var(--azul-escuro); }
+        .info-row { display: flex; align-items: center; justify-content: space-between; padding: 11px 0; border-bottom: 1px solid var(--cinza-claro); font-size: 0.86rem; }
+        .info-row:last-child { border-bottom: none; }
+        .info-row span:first-child { color: var(--cinza-medio); }
+        .info-row span:last-child { font-weight: 600; }
+
+        /* =========== FIDELIDADE =========== */
+        .fid-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .fid-stat-card {
+            background: white;
+            border-radius: 14px;
+            padding: 20px 22px;
+            border: 1px solid var(--cinza-claro);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: box-shadow 0.2s, transform 0.2s;
+        }
+        .fid-stat-card:hover { box-shadow: 0 6px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+        .fid-stat-icon {
+            width: 46px; height: 46px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; flex-shrink: 0;
+        }
+        .fid-stat-icon.roxo { background: #f5f3ff; }
+        .fid-stat-icon.verde { background: #f0fdf4; }
+        .fid-stat-icon.amarelo { background: #fffbeb; }
+        .fid-stat-value {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.6rem; font-weight: 800;
+            color: var(--azul-escuro); line-height: 1;
+        }
+        .fid-stat-label { font-size: 0.78rem; color: var(--cinza-medio); margin-top: 3px; font-weight: 500; }
+
+        /* Ranking */
+        .ranking-row {
+            display: flex; align-items: center; gap: 13px;
+            padding: 11px 0; border-bottom: 1px solid var(--cinza-claro);
+        }
+        .ranking-row:last-child { border-bottom: none; }
+        .ranking-pos {
+            width: 26px; height: 26px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.72rem; font-weight: 800; flex-shrink: 0;
+        }
+        .ranking-pos.gold   { background: #fef3c7; color: #d97706; }
+        .ranking-pos.silver { background: #f1f5f9; color: #64748b; }
+        .ranking-pos.bronze { background: #fef9ec; color: #b45309; }
+        .ranking-pos.default{ background: #f8fafc; color: #94a3b8; }
+        .ranking-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: linear-gradient(135deg, #8b5cf6, #2563eb);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.72rem; font-weight: 700; color: white; flex-shrink: 0;
+        }
+        .ranking-info { flex: 1; min-width: 0; }
+        .ranking-info strong { display: block; font-size: 0.84rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ranking-info small  { color: var(--cinza-medio); font-size: 0.72rem; }
+        .ranking-pts {
+            font-family: 'Syne', sans-serif; font-size: 0.92rem; font-weight: 800;
+            color: #7c3aed; white-space: nowrap;
+        }
+        .pts-bar-wrap { flex: 1; height: 5px; background: #ede9fe; border-radius: 99px; overflow: hidden; margin: 0 8px; }
+        .pts-bar-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #2563eb); border-radius: 99px; transition: width 0.6s ease; }
+
+        /* Histórico por usuário */
+        .hist-tipo-ganho   { background: #ecfdf5; color: #059669; }
+        .hist-tipo-resgate { background: #fef2f2; color: #dc2626; }
+        .hist-tipo-ajuste  { background: #fffbeb; color: #d97706; }
+
+        /* Busca de cliente fidelidade */
+        .fid-search-wrap { position: relative; }
+        .fid-client-dropdown {
+            display: none; position: absolute; top: calc(100% + 2px); left: 0; right: 0;
+            background: white; border: 1px solid #e2e8f0; border-radius: 9px;
+            max-height: 180px; overflow-y: auto; z-index: 9999;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+        .fid-client-opt {
+            padding: 9px 13px; cursor: pointer; font-size: 0.86rem;
+            border-bottom: 1px solid #f1f5f9; transition: background 0.1s;
+        }
+        .fid-client-opt:hover { background: #f5f3ff; }
+
+        /* Resgate de serviço */
+        .servico-resgate-card {
+            border: 1px solid var(--cinza-claro); border-radius: 12px; padding: 14px 16px;
+            display: flex; align-items: center; gap: 13px; margin-bottom: 10px;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .servico-resgate-card:hover { border-color: #8b5cf6; background: #faf5ff; }
+        .servico-resgate-card.selecionado { border-color: #8b5cf6; background: #f5f3ff; }
+        .servico-resgate-pts {
+            font-family: 'Syne', sans-serif; font-size: 0.85rem; font-weight: 800;
+            color: #7c3aed; white-space: nowrap;
+            background: #ede9fe; padding: 3px 10px; border-radius: 20px;
+        }
+        .saldo-display {
+            background: linear-gradient(135deg, #7c3aed, #2563eb);
+            border-radius: 14px; padding: 18px 20px; color: white; margin-bottom: 16px;
+        }
+        .saldo-display .sd-label { font-size: 0.72rem; opacity: 0.75; text-transform: uppercase; letter-spacing: 0.08em; }
+        .saldo-display .sd-value { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1.1; }
+        .saldo-display .sd-sub   { font-size: 0.75rem; opacity: 0.65; margin-top: 3px; }
+
+        /* =========== RESPONSIVE =========== */
+        @media (max-width: 1100px) {
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .dash-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 900px) {
+            .sidebar { width: 68px; }
+            .logo-name, .user-meta, .nav-item > span:last-child, .nav-section-label, .btn-logout > span:last-child { display: none !important; }
+            .main { margin-left: 68px; }
+            .nav-item { justify-content: center; padding: 10px; }
+            .content { padding: 20px 18px; }
+            .topbar { padding: 0 18px; }
+        }
+        @media (max-width: 600px) {
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-icon">✂️</div>
+        <div class="logo-name">Barbershop<span>System v2</span></div>
+    </div>
+    <div class="sidebar-user">
+        <div class="user-avatar" id="sidebarAvatar">--</div>
+        <div class="user-meta">
+            <strong id="sidebarNome">Carregando...</strong>
+            <small>Administrador</small>
+        </div>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-label">Principal</div>
+        <button class="nav-item active" data-page="dashboard" onclick="showPage('dashboard', this)">
+            <span class="nav-icon">🏠</span> <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="usuarios" onclick="showPage('usuarios', this)">
+            <span class="nav-icon">👤</span> <span>Usuários</span>
+        </button>
+        <button class="nav-item" data-page="servicos" onclick="showPage('servicos', this)">
+            <span class="nav-icon">✂️</span> <span>Serviços</span>
+        </button>
+        <button class="nav-item" data-page="funcionarios" onclick="showPage('funcionarios', this)">
+            <span class="nav-icon">💈</span> <span>Funcionários</span>
+        </button>
+        <button class="nav-item" data-page="agendamentos" onclick="showPage('agendamentos', this)">
+            <span class="nav-icon">📅</span> <span>Agendamentos</span>
+        </button>
+        <button class="nav-item" data-page="fidelidade" onclick="showPage('fidelidade', this)">
+            <span class="nav-icon">⭐</span> <span>Fidelidade</span>
+        </button>
+        <div class="nav-section-label">Sistema</div>
+        <button class="nav-item" data-page="configuracoes" onclick="showPage('configuracoes', this)">
+            <span class="nav-icon">⚙️</span> <span>Configurações</span>
+        </button>
+    </nav>
+    <div class="sidebar-footer">
+        <button class="btn-logout" onclick="fazerLogout()">
+            <span>🚪</span> <span>Sair do sistema</span>
+        </button>
+    </div>
+</aside>
+
+<main class="main">
+    <div class="topbar">
+        <div class="topbar-left">
+            <h1 id="pageTitle">Dashboard</h1>
+            <p id="pageSubtitle">Visão geral do negócio</p>
+        </div>
+        <div class="topbar-right">
+            <div class="topbar-date" id="dataHoje"></div>
+            <button class="btn-novo" id="actionButton" onclick="acaoPrincipal()" style="display:none">➕ Novo</button>
+        </div>
+    </div>
+    <div class="content" id="mainContent">
+        <div style="display:flex;align-items:center;justify-content:center;height:200px;color:var(--cinza-medio)">
+            Carregando...
+        </div>
+    </div>
+</main>
+
+<div class="modal" id="modal" onclick="fecharModalFora(event)">
+    <div class="modal-content" id="modalContent"></div>
+</div>
+
+<div id="toastContainer"></div>
+
+<script>
+const API_URL = 'http://localhost:3000';
+let currentPage = 'dashboard';
+
+const usuarioLogado = JSON.parse(localStorage.getItem('usuario') || '{"nome":"Admin","email":"admin@barbearia.com","cep":""}');
+
+// ===================== TOAST =====================
+function toast(msg, tipo = 'success') {
+    const icons = { success: '✅', error: '❌', info: 'ℹ️' };
+    const el = document.createElement('div');
+    el.className = `toast ${tipo}`;
+    el.innerHTML = `<span class="toast-icon">${icons[tipo]}</span><span>${msg}</span>`;
+    document.getElementById('toastContainer').appendChild(el);
+    setTimeout(() => {
+        el.style.animation = 'toastOut 0.3s ease forwards';
+        setTimeout(() => el.remove(), 300);
+    }, 3200);
+}
+
+// ===================== API =====================
+async function apiGet(endpoint) {
+    try {
+        const r = await fetch(`${API_URL}${endpoint}`);
+        if (!r.ok) throw new Error('Erro');
+        return await r.json();
+    } catch { return []; }
+}
+async function apiPost(endpoint, data) {
+    try {
+        const r = await fetch(`${API_URL}${endpoint}`, {
+            method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)
+        });
+        return await r.json();
+    } catch { return { error: 'Erro de conexão' }; }
+}
+async function apiPut(endpoint, data) {
+    try {
+        const r = await fetch(`${API_URL}${endpoint}`, {
+            method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)
+        });
+        return await r.json();
+    } catch { return { error: 'Erro de conexão' }; }
+}
+async function apiDelete(endpoint, data = null) {
+    try {
+        const opts = { method: 'DELETE' };
+        if (data) { opts.headers = {'Content-Type':'application/json'}; opts.body = JSON.stringify(data); }
+        const r = await fetch(`${API_URL}${endpoint}`, opts);
+        return await r.json();
+    } catch { return { error: 'Erro de conexão' }; }
+}
+
+// ===================== INIT =====================
+function inicializar() {
+    document.getElementById('sidebarNome').textContent = usuarioLogado.nome || 'Usuário';
+    const iniciais = (usuarioLogado.nome || 'U').split(' ').slice(0,2).map(n => n[0]).join('').toUpperCase();
+    document.getElementById('sidebarAvatar').textContent = iniciais;
+    const agora = new Date();
+    document.getElementById('dataHoje').textContent = '📅 ' + agora.toLocaleDateString('pt-BR', { weekday:'long', day:'numeric', month:'long' });
+    showPage('dashboard', document.querySelector('.nav-item[data-page="dashboard"]'));
+}
+
+// ===================== NAVIGATION =====================
+const pageMeta = {
+    dashboard:     { title: 'Dashboard',     subtitle: 'Visão geral do negócio',  btn: null },
+    usuarios:      { title: 'Usuários',       subtitle: 'Gerenciar usuários',       btn: '➕ Novo Usuário' },
+    servicos:      { title: 'Serviços',       subtitle: 'Gerenciar serviços',       btn: '➕ Novo Serviço' },
+    funcionarios:  { title: 'Funcionários',   subtitle: 'Gerenciar funcionários',   btn: '➕ Novo Funcionário' },
+    agendamentos:  { title: 'Agendamentos',   subtitle: 'Gerenciar agendamentos',   btn: '➕ Novo Agendamento' },
+    fidelidade:    { title: 'Fidelidade',      subtitle: 'Pontos e recompensas',     btn: '🎁 Resgatar Serviço' },
+    configuracoes: { title: 'Configurações',  subtitle: 'Configurações do sistema', btn: null },
+};
+
+function showPage(page, btn) {
+    currentPage = page;
+    document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+    if (btn) btn.closest('.nav-item').classList.add('active');
+
+    const meta = pageMeta[page] || {};
+    document.getElementById('pageTitle').textContent = meta.title || page;
+    document.getElementById('pageSubtitle').textContent = meta.subtitle || '';
+
+    const actionBtn = document.getElementById('actionButton');
+    if (meta.btn) { actionBtn.style.display = 'flex'; actionBtn.innerHTML = meta.btn; }
+    else actionBtn.style.display = 'none';
+
+    renderPage();
+}
+
+async function renderPage() {
+    const c = document.getElementById('mainContent');
+    const map = { dashboard: renderDashboard, usuarios: renderUsuarios, servicos: renderServicos, funcionarios: renderFuncionarios, agendamentos: renderAgendamentos, fidelidade: renderFidelidade, configuracoes: renderConfiguracoes };
+    c.innerHTML = map[currentPage] ? await map[currentPage]() : '<p>Página não encontrada</p>';
+}
+
+function acaoPrincipal() {
+    const map = { usuarios: () => abrirModalUsuario(), servicos: () => abrirModalServico(), funcionarios: () => abrirModalFuncionario(), agendamentos: () => abrirModalAgendamento(), fidelidade: () => abrirModalResgate() };
+    if (map[currentPage]) map[currentPage]();
+}
+
+// ===================== MODAL =====================
+function fecharModal() { document.getElementById('modal').style.display = 'none'; }
+function fecharModalFora(e) { if (e.target === document.getElementById('modal')) fecharModal(); }
+
+function modalHeader(titulo) {
+    return `<div class="modal-header"><h3>${titulo}</h3><button class="modal-close" onclick="fecharModal()">✕</button></div>`;
+}
+
+// ===================== DASHBOARD =====================
+async function renderDashboard() {
+    const [usuarios, servicos] = await Promise.all([apiGet('/buscar'), apiGet('/servicos')]);
+    const servicosAtivos = servicos.filter(s => s.status == 1);
+    const ticketMedio = servicosAtivos.length ? (servicosAtivos.reduce((a, s) => a + parseFloat(s.preco), 0) / servicosAtivos.length) : 0;
+    const totalPontos = servicos.reduce((a, s) => a + parseInt(s.pontos || 0), 0);
+
+    const recentUsers = usuarios.slice(0, 5);
+    const topServicos = [...servicos].sort((a, b) => parseFloat(b.preco) - parseFloat(a.preco)).slice(0, 5);
+
+    return `
+        <div class="kpi-grid">
+            <div class="kpi-card azul">
+                <div class="kpi-card-icon">👤</div>
+                <div class="kpi-value">${usuarios.length}</div>
+                <div class="kpi-label">Total de Usuários</div>
+                <div class="kpi-sub">Sistema ativo</div>
+            </div>
+            <div class="kpi-card verde">
+                <div class="kpi-card-icon">✂️</div>
+                <div class="kpi-value">${servicosAtivos.length}</div>
+                <div class="kpi-label">Serviços Ativos</div>
+                <div class="kpi-sub">${servicos.length - servicosAtivos.length} inativos</div>
+            </div>
+            <div class="kpi-card amarelo">
+                <div class="kpi-card-icon">💰</div>
+                <div class="kpi-value">R$&nbsp;${ticketMedio.toFixed(0)}</div>
+                <div class="kpi-label">Ticket Médio</div>
+                <div class="kpi-sub">Média dos serviços</div>
+            </div>
+            <div class="kpi-card roxo">
+                <div class="kpi-card-icon">⭐</div>
+                <div class="kpi-value">${totalPontos}</div>
+                <div class="kpi-label">Total de Pontos</div>
+                <div class="kpi-sub">Programa fidelidade</div>
+            </div>
+        </div>
+        <div class="dash-grid">
+            <div class="card">
+                <div class="card-header"><div class="card-title">👤 Últimos Usuários</div></div>
+                <div class="card-body">
+                    ${recentUsers.length ? recentUsers.map(u => {
+                        const ini = u.nome_completo.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase();
+                        return `<div class="user-row">
+                            <div class="user-row-avatar">${ini}</div>
+                            <div class="user-row-info">
+                                <strong>${u.nome_completo}</strong>
+                                <small>${u.email}</small>
+                            </div>
+                            ${u.primeiro_acesso ? '<span class="status-badge status-pendente">1º Acesso</span>' : '<span class="status-badge status-ativo">Ativo</span>'}
+                        </div>`;
+                    }).join('') : '<div class="empty-state"><div class="empty-icon">👤</div><p>Nenhum usuário</p></div>'}
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">✂️ Serviços por Preço</div></div>
+                <div class="card-body">
+                    ${topServicos.length ? topServicos.map(s => `
+                        <div class="servico-row">
+                            <div>
+                                <div class="servico-row-nome">${s.nome}</div>
+                                <small style="color:var(--cinza-medio)">${s.duracao}min · ${s.pontos}pts</small>
+                            </div>
+                            <div style="text-align:right">
+                                <div class="servico-row-preco">R$ ${parseFloat(s.preco).toFixed(2)}</div>
+                                <span class="status-badge ${s.status==1?'status-ativo':'status-inativo'}">${s.status==1?'Ativo':'Inativo'}</span>
+                            </div>
+                        </div>
+                    `).join('') : '<div class="empty-state"><div class="empty-icon">✂️</div><p>Nenhum serviço</p></div>'}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// ===================== USUÁRIOS =====================
+async function renderUsuarios() {
+    const usuarios = await apiGet('/buscar');
+    const ativos = usuarios.filter(u => !u.primeiro_acesso).length;
+    return `
+        <div class="filter-bar">
+            <input type="text" id="buscaUsuario" placeholder="🔍 Buscar por nome ou email..." oninput="filtrarUsuarios()" style="min-width:240px">
+            <select onchange="filtrarUsuariosPorStatus(this.value)" style="width:auto">
+                <option value="">Todos os status</option>
+                <option value="ativo">Ativos</option>
+                <option value="pendente">1º Acesso</option>
+            </select>
+            <span style="color:var(--cinza-medio);font-size:0.8rem;margin-left:auto">${usuarios.length} usuários · ${ativos} ativos</span>
+        </div>
+        <div class="card">
+            <div class="card-header"><div class="card-title">👤 Usuários do Sistema</div></div>
+            <div class="card-body" style="padding:0">
+                <table class="data-table" id="tabelaUsuarios">
+                    <thead><tr><th>ID</th><th>Nome</th><th>Email</th><th>CEP</th><th>Status</th><th>Ações</th></tr></thead>
+                    <tbody>
+                        ${usuarios.length ? usuarios.map(u => `
+                            <tr data-status="${u.primeiro_acesso ? 'pendente' : 'ativo'}">
+                                <td style="color:var(--cinza-medio)">#${u.id_usuario}</td>
+                                <td><strong>${u.nome_completo}</strong></td>
+                                <td>${u.email}</td>
+                                <td>${u.cep}</td>
+                                <td>${u.primeiro_acesso
+                                    ? '<span class="status-badge status-pendente">1º Acesso</span>'
+                                    : '<span class="status-badge status-ativo">Ativo</span>'}</td>
+                                <td>
+                                    <button class="btn-editar" onclick="editarUsuario(${u.id_usuario})">Editar</button>
+                                    <button class="btn-deletar" onclick="deletarUsuario(${u.id_usuario})">Excluir</button>
+                                </td>
+                            </tr>
+                        `).join('') : `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👤</div><p>Nenhum usuário cadastrado</p></div></td></tr>`}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function filtrarUsuarios() {
+    const busca = document.getElementById('buscaUsuario')?.value.toLowerCase() || '';
+    document.querySelectorAll('#tabelaUsuarios tbody tr').forEach(row => {
+        const nome = row.cells[1]?.textContent.toLowerCase() || '';
+        const email = row.cells[2]?.textContent.toLowerCase() || '';
+        row.style.display = (nome.includes(busca) || email.includes(busca)) ? '' : 'none';
+    });
+}
+function filtrarUsuariosPorStatus(val) {
+    document.querySelectorAll('#tabelaUsuarios tbody tr').forEach(row => {
+        row.style.display = (!val || row.dataset.status === val) ? '' : 'none';
+    });
+}
+
+function abrirModalUsuario(data = null) {
+    document.getElementById('modal').style.display = 'flex';
+    document.getElementById('modalContent').innerHTML = `
+        ${modalHeader(data ? 'Editar Usuário' : 'Novo Usuário')}
+        <div class="form-group"><label>Nome Completo *</label><input type="text" id="uNome" value="${data?.nome_completo || ''}"></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="uEmail" value="${data?.email || ''}"></div>
+        <div class="form-group"><label>CEP *</label><input type="text" id="uCep" value="${data?.cep || ''}" maxlength="10"></div>
+        <div class="form-group"><label>Senha ${data ? '(deixe vazio para manter)' : '(opcional — se vazio, usuário define no 1º acesso)'}</label><input type="password" id="uSenha" placeholder="••••••"></div>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-save" style="margin:0" onclick="salvarUsuario(${data?.id_usuario || 'null'})">Salvar</button>
+        </div>
+    `;
+}
+
+async function salvarUsuario(id) {
+    const dados = {
+        nome_completo: document.getElementById('uNome').value.trim(),
+        email: document.getElementById('uEmail').value.trim(),
+        cep: document.getElementById('uCep').value.trim(),
+        senha: document.getElementById('uSenha').value
+    };
+    if (!dados.nome_completo || !dados.email || !dados.cep) { toast('Preencha todos os campos obrigatórios', 'error'); return; }
+    const result = id
+        ? await apiPut('/atualizar', { id_usuario: id, ...dados })
+        : await apiPost('/cadastrar', dados);
+    if (result.error) { toast(result.error, 'error'); return; }
+    toast(result.mensagem || 'Operação realizada!');
+    fecharModal(); renderPage();
+}
+
+async function editarUsuario(id) {
+    const usuarios = await apiGet('/buscar');
+    abrirModalUsuario(usuarios.find(u => u.id_usuario === id));
+}
+
+async function deletarUsuario(id) {
+    if (!confirm('Excluir este usuário? Esta ação não pode ser desfeita.')) return;
+    const result = await apiDelete('/deletar', { id_usuario: id });
+    toast(result.mensagem || result.error || 'Operação realizada', result.error ? 'error' : 'success');
+    renderPage();
+}
+
+// ===================== SERVIÇOS =====================
+async function renderServicos() {
+    const servicos = await apiGet('/servicos');
+    return `
+        <div class="filter-bar">
+            <input type="text" id="buscaServico" placeholder="🔍 Buscar serviço..." oninput="filtrarServicos()" style="min-width:220px">
+            <select onchange="filtrarServicosPorStatus(this.value)" style="width:auto">
+                <option value="">Todos</option>
+                <option value="1">Ativos</option>
+                <option value="0">Inativos</option>
+            </select>
+            <span style="color:var(--cinza-medio);font-size:0.8rem;margin-left:auto">${servicos.length} serviços</span>
+        </div>
+        <div class="card">
+            <div class="card-header"><div class="card-title">✂️ Serviços</div></div>
+            <div class="card-body" style="padding:0">
+                <table class="data-table" id="tabelaServicos">
+                    <thead><tr><th>ID</th><th>Serviço</th><th>Preço</th><th>Duração</th><th>Pontos</th><th>Status</th><th>Ações</th></tr></thead>
+                    <tbody>
+                        ${servicos.length ? servicos.map(s => `
+                            <tr data-status="${s.status}">
+                                <td style="color:var(--cinza-medio)">#${s.id_servicos}</td>
+                                <td><strong>${s.nome}</strong></td>
+                                <td>R$ ${parseFloat(s.preco).toFixed(2)}</td>
+                                <td>${s.duracao} min</td>
+                                <td><span style="background:#f5f3ff;color:#7c3aed;padding:2px 8px;border-radius:12px;font-size:0.75rem;font-weight:600">${s.pontos} pts</span></td>
+                                <td><span class="status-badge ${s.status==1?'status-ativo':'status-inativo'}">${s.status==1?'Ativo':'Inativo'}</span></td>
+                                <td>
+                                    <button class="btn-editar" onclick="editarServico(${s.id_servicos})">Editar</button>
+                                    <button class="btn-deletar" onclick="deletarServico(${s.id_servicos})">Excluir</button>
+                                </td>
+                            </tr>
+                        `).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">✂️</div><p>Nenhum serviço cadastrado</p></div></td></tr>`}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function filtrarServicos() {
+    const busca = document.getElementById('buscaServico')?.value.toLowerCase() || '';
+    document.querySelectorAll('#tabelaServicos tbody tr').forEach(row => {
+        row.style.display = row.cells[1]?.textContent.toLowerCase().includes(busca) ? '' : 'none';
+    });
+}
+function filtrarServicosPorStatus(val) {
+    document.querySelectorAll('#tabelaServicos tbody tr').forEach(row => {
+        row.style.display = (!val || row.dataset.status == val) ? '' : 'none';
+    });
+}
+
+function abrirModalServico(data = null) {
+    document.getElementById('modal').style.display = 'flex';
+    document.getElementById('modalContent').innerHTML = `
+        ${modalHeader(data ? 'Editar Serviço' : 'Novo Serviço')}
+        <div class="form-group"><label>Nome *</label><input type="text" id="sNome" value="${data?.nome || ''}"></div>
+        <div class="form-row">
+            <div class="form-group"><label>Preço (R$) *</label><input type="number" id="sPreco" step="0.01" min="0" value="${data?.preco || ''}"></div>
+            <div class="form-group"><label>Duração (min) *</label><input type="number" id="sDuracao" min="1" value="${data?.duracao || ''}"></div>
+        </div>
+        <div class="form-group"><label>Pontos de Fidelidade</label><input type="number" id="sPontos" min="0" value="${data?.pontos ?? 0}"></div>
+        ${data ? `<div class="form-group"><label>Status</label><select id="sStatus"><option value="1" ${data.status==1?'selected':''}>Ativo</option><option value="0" ${data.status==0?'selected':''}>Inativo</option></select></div>` : ''}
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-save" style="margin:0" onclick="salvarServico(${data?.id_servicos || 'null'})">Salvar</button>
+        </div>
+    `;
+}
+
+async function salvarServico(id) {
+    const dados = {
+        nome: document.getElementById('sNome').value.trim(),
+        preco: parseFloat(document.getElementById('sPreco').value),
+        duracao: parseInt(document.getElementById('sDuracao').value),
+        pontos: parseInt(document.getElementById('sPontos').value) || 0
+    };
+    if (!dados.nome || isNaN(dados.preco) || isNaN(dados.duracao)) { toast('Preencha todos os campos obrigatórios', 'error'); return; }
+    let result;
+    if (id) {
+        dados.status = parseInt(document.getElementById('sStatus')?.value ?? 1);
+        result = await apiPut(`/servicos/${id}`, dados);
+    } else {
+        dados.status = 1; // Novo serviço sempre começa ativo
+        result = await apiPost('/servicos', dados);
+    }
+    if (result.error) { toast(result.error, 'error'); return; }
+    toast(result.mensagem || 'Serviço salvo!');
+    fecharModal(); renderPage();
+}
+
+async function editarServico(id) { abrirModalServico(await apiGet(`/servicos/${id}`)); }
+async function deletarServico(id) {
+    if (!confirm('Desativar este serviço?')) return;
+    const result = await apiDelete(`/servicos/${id}`);
+    toast(result.mensagem || result.error, result.error ? 'error' : 'success');
+    renderPage();
+}
+
+// ===================== FUNCIONÁRIOS (API) =====================
+async function renderFuncionarios() {
+    const funcs = await apiGet('/funcionarios');
+    return `
+        <div class="filter-bar">
+            <input type="text" id="buscaFunc" placeholder="🔍 Buscar funcionário..." oninput="filtrarFuncionarios()" style="min-width:220px">
+            <span style="color:var(--cinza-medio);font-size:0.8rem;margin-left:auto">${funcs.length} funcionários</span>
+        </div>
+        <div class="card">
+            <div class="card-header"><div class="card-title">💈 Funcionários</div></div>
+            <div class="card-body" style="padding:0">
+                <table class="data-table" id="tabelaFunc">
+                    <thead><tr><th>ID</th><th>Nome</th><th>Função</th><th>Ações</th></tr></thead>
+                    <tbody>
+                        ${funcs.length ? funcs.map(f => `
+                            <tr>
+                                <td style="color:var(--cinza-medio)">#${f.id_funcionario}</td>
+                                <td><strong>${f.nome}</strong></td>
+                                <td><span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:12px;font-size:0.75rem;font-weight:600">${f.funcao}</span></td>
+                                <td>
+                                    <button class="btn-editar" onclick="editarFuncionario(${f.id_funcionario})">Editar</button>
+                                    <button class="btn-deletar" onclick="deletarFuncionario(${f.id_funcionario})">Excluir</button>
+                                </td>
+                            </tr>
+                        `).join('') : `<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">💈</div><p>Nenhum funcionário cadastrado</p></div></td></tr>`}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function filtrarFuncionarios() {
+    const busca = document.getElementById('buscaFunc')?.value.toLowerCase() || '';
+    document.querySelectorAll('#tabelaFunc tbody tr').forEach(row => {
+        const nome = row.cells[1]?.textContent.toLowerCase() || '';
+        row.style.display = nome.includes(busca) ? '' : 'none';
+    });
+}
+
+function abrirModalFuncionario(data = null) {
+    document.getElementById('modal').style.display = 'flex';
+    document.getElementById('modalContent').innerHTML = `
+        ${modalHeader(data ? 'Editar Funcionário' : 'Novo Funcionário')}
+        <div class="form-group"><label>Nome *</label><input type="text" id="fNome" value="${data?.nome || ''}"></div>
+        <div class="form-group"><label>Função *</label><input type="text" id="fFuncao" value="${data?.funcao || ''}" placeholder="Ex: Barbeiro, Estilista..."></div>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-save" style="margin:0" onclick="salvarFuncionario(${data?.id_funcionario || 'null'})">Salvar</button>
+        </div>
+    `;
+}
+
+async function salvarFuncionario(id) {
+    const dados = {
+        nome: document.getElementById('fNome').value.trim(),
+        funcao: document.getElementById('fFuncao').value.trim()
+    };
+    if (!dados.nome || !dados.funcao) { toast('Preencha todos os campos', 'error'); return; }
+    const result = id
+        ? await apiPut(`/funcionarios/${id}`, dados)
+        : await apiPost('/funcionarios', dados);
+    if (result.error) { toast(result.error, 'error'); return; }
+    toast(result.mensagem || 'Funcionário salvo!');
+    fecharModal(); renderPage();
+}
+
+async function editarFuncionario(id) {
+    const funcs = await apiGet('/funcionarios');
+    abrirModalFuncionario(funcs.find(f => f.id_funcionario === id));
+}
+
+async function deletarFuncionario(id) {
+    if (!confirm('Excluir este funcionário?')) return;
+    const result = await apiDelete(`/funcionarios/${id}`);
+    toast(result.mensagem || result.error, result.error ? 'error' : 'success');
+    renderPage();
+}
+
+// ===================== AGENDAMENTOS (API) =====================
+async function renderAgendamentos() {
+    const agendamentos = await apiGet('/agendamentos');
+    return `
+        <div class="filter-bar">
+            <input type="date" id="filtroData" onchange="filtrarAgendamentos()">
+            <select id="filtroStatus" onchange="filtrarAgendamentos()" style="width:auto">
+                <option value="">Todos os status</option>
+                <option value="agendado">Agendado</option>
+                <option value="confirmado">Confirmado</option>
+                <option value="concluido">Concluído</option>
+                <option value="cancelado">Cancelado</option>
+            </select>
+            <span style="color:var(--cinza-medio);font-size:0.8rem;margin-left:auto">${agendamentos.length} agendamentos</span>
+        </div>
+        <div class="card">
+            <div class="card-header"><div class="card-title">📅 Agendamentos</div></div>
+            <div class="card-body" style="padding:0">
+                <table class="data-table" id="tabelaAg">
+                    <thead><tr><th>ID</th><th>Data/Hora</th><th>Cliente</th><th>Serviços</th><th>Total</th><th>Pagamento</th><th>Profissional</th><th>Status</th><th>Ações</th></tr></thead>
+                    <tbody>
+                        ${agendamentos.length ? agendamentos.map(a => {
+                            const d = new Date(a.data);
+                            const dataFmt = d.toLocaleDateString('pt-BR');
+                            const horaFmt = d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+                            // Serviços: pode ser array (agendavalor) ou campo legado
+                            const servicosHtml = a.servicos && a.servicos.length
+                                ? a.servicos.map(s => `<span style="display:inline-block;background:#eff6ff;color:#2563eb;padding:1px 7px;border-radius:10px;font-size:0.72rem;margin:1px">${s.nome}</span>`).join('')
+                                : `<span style="display:inline-block;background:#eff6ff;color:#2563eb;padding:1px 7px;border-radius:10px;font-size:0.72rem">${a.servico_nome || '—'}</span>`;
+                            const valorTotal = a.valor_total != null ? parseFloat(a.valor_total) : (a.agenda_valor ? parseFloat(a.agenda_valor) : null);
+                            return `
+                            <tr data-status="${a.status}">
+                                <td style="color:var(--cinza-medio)">#${a.id}</td>
+                                <td><strong>${dataFmt}</strong><br><small style="color:var(--cinza-medio)">${horaFmt}</small></td>
+                                <td>${a.cliente_nome || a.id_usuario}</td>
+                                <td style="max-width:200px">${servicosHtml}</td>
+                                <td><strong style="color:var(--verde)">${valorTotal != null ? 'R$ ' + valorTotal.toFixed(2) : '—'}</strong></td>
+                                <td>${a.forma_pagamento
+                                    ? `<span style="background:#f0fdf4;color:#059669;padding:2px 9px;border-radius:12px;font-size:0.75rem;font-weight:600">${a.forma_pagamento}</span>`
+                                    : `<span style="color:var(--cinza-medio);font-size:0.8rem">—</span>`}</td>
+                                <td>${a.funcionario_nome || a.id_funcionario}</td>
+                                <td><span class="status-badge status-${a.status}">${a.status}</span></td>
+                                <td>
+                                    <button class="btn-editar" onclick="editarAgendamento(${a.id})">Editar</button>
+                                    <button class="btn-deletar" onclick="deletarAgendamento(${a.id})">Excluir</button>
+                                </td>
+                            </tr>`;
+                        }).join('') : `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📅</div><p>Nenhum agendamento encontrado</p></div></td></tr>`}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function filtrarAgendamentos() {
+    const data = document.getElementById('filtroData')?.value || '';
+    const status = document.getElementById('filtroStatus')?.value || '';
+    document.querySelectorAll('#tabelaAg tbody tr').forEach(row => {
+        let show = true;
+        if (status && row.dataset.status !== status) show = false;
+        if (data) {
+            const cellData = row.cells[1]?.querySelector('strong')?.textContent || '';
+            const [day, month, year] = cellData.split('/');
+            const rowDate = year && month && day ? `${year}-${month}-${day}` : '';
+            if (rowDate !== data) show = false;
+        }
+        row.style.display = show ? '' : 'none';
+    });
+}
+
+async function abrirModalAgendamento(data = null) {
+    const [usuarios, servicos, funcs] = await Promise.all([apiGet('/buscar'), apiGet('/servicos'), apiGet('/funcionarios')]);
+    const servicosAtivos = servicos.filter(s => s.status == 1);
+
+    let dataVal = '', horaVal = '';
+    if (data?.data) {
+        const d = new Date(data.data);
+        dataVal = d.toISOString().split('T')[0];
+        horaVal = d.toTimeString().slice(0,5);
+    }
+
+    window._agUsuarios = usuarios;
+    window._agServicos = servicosAtivos;
+
+    // Serviços já selecionados (ao editar, carrega da tabela agendavalor)
+    let servicosSelecionados = [];
+    if (data?.id) {
+        const agValores = await apiGet(`/agendavalor/${data.id}`);
+        servicosSelecionados = agValores.map(av => av.tipo_servico);
+    }
+
+    const clienteNomeInicial = data ? (usuarios.find(u => u.id_usuario == data.id_usuario)?.nome_completo || '') : '';
+
+    document.getElementById('modal').style.display = 'flex';
+    document.getElementById('modalContent').innerHTML = `
+        ${modalHeader(data ? 'Editar Agendamento' : 'Novo Agendamento')}
+        <div class="form-group" style="position:relative">
+            <label>Cliente *</label>
+            <input type="text" id="agClienteSearch" placeholder="Digite para buscar cliente..."
+                autocomplete="off"
+                value="${clienteNomeInicial}"
+                oninput="filtrarClientesDropdown()"
+                onfocus="document.getElementById('agClienteDropdown').style.display='block'; filtrarClientesDropdown()"
+                onblur="setTimeout(()=>{ document.getElementById('agClienteDropdown').style.display='none' }, 200)"
+                style="cursor:text">
+            <input type="hidden" id="agCliente" value="${data?.id_usuario || ''}">
+            <div id="agClienteDropdown"
+                style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;background:white;
+                border:1px solid #e2e8f0;border-radius:9px;max-height:180px;overflow-y:auto;
+                z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.12)">
+                ${usuarios.map(u => `
+                <div class="ag-cliente-opt" data-id="${u.id_usuario}" data-nome="${u.nome_completo.replace(/"/g,'&quot;')}"
+                    onmousedown="selecionarClienteAg(${u.id_usuario}, this.dataset.nome)"
+                    style="padding:9px 13px;cursor:pointer;font-size:0.86rem;border-bottom:1px solid #f1f5f9;transition:background 0.1s"
+                    onmouseover="this.style.background='#eff6ff'"
+                    onmouseout="this.style.background=''">
+                    ${u.nome_completo}
+                </div>`).join('')}
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Serviços * <small style="color:var(--cinza-medio);font-weight:400">(selecione um ou mais)</small></label>
+            <div id="agServicosLista" style="border:1px solid var(--cinza-claro);border-radius:9px;overflow:hidden;max-height:220px;overflow-y:auto;">
+                ${servicosAtivos.map(s => `
+                <label style="display:flex;align-items:center;gap:11px;padding:10px 13px;cursor:pointer;
+                    border-bottom:1px solid #f1f5f9;transition:background 0.12s;font-weight:400;"
+                    onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
+                    <input type="checkbox" class="ag-servico-check"
+                        data-id="${s.id_servicos}" data-preco="${parseFloat(s.preco).toFixed(2)}" data-nome="${s.nome}"
+                        onchange="recalcularTotalAgendamento()"
+                        ${servicosSelecionados.includes(s.id_servicos) ? 'checked' : ''}
+                        style="width:16px;height:16px;accent-color:var(--azul-accent);cursor:pointer;flex-shrink:0">
+                    <span style="flex:1;font-size:0.86rem;">${s.nome}</span>
+                    <span style="font-size:0.8rem;color:var(--cinza-medio)">${s.duracao}min · ${s.pontos}pts</span>
+                    <span style="font-weight:700;color:var(--azul-accent);font-size:0.88rem;min-width:72px;text-align:right">R$ ${parseFloat(s.preco).toFixed(2)}</span>
+                </label>`).join('')}
+            </div>
+        </div>
+
+        <div id="agTotalBox" style="display:none;background:linear-gradient(135deg,#eff6ff,#f5f3ff);border:1px solid #bfdbfe;
+            border-radius:10px;padding:13px 16px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+                <div style="font-size:0.75rem;color:var(--cinza-medio);font-weight:600;text-transform:uppercase;letter-spacing:0.06em">Total do Agendamento</div>
+                <div id="agServicosResumo" style="font-size:0.77rem;color:var(--cinza-medio);margin-top:2px"></div>
+            </div>
+            <div id="agTotal" style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--azul-accent)">R$ 0,00</div>
+        </div>
+
+        <div class="form-group"><label>Profissional *</label>
+            <select id="agFuncionario">
+                <option value="">Selecione o profissional</option>
+                ${funcs.map(f => `<option value="${f.id_funcionario}" ${data?.id_funcionario==f.id_funcionario?'selected':''}>${f.nome} — ${f.funcao}</option>`).join('')}
+            </select>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Data *</label><input type="date" id="agData" value="${dataVal}"></div>
+            <div class="form-group"><label>Horário *</label><input type="time" id="agHora" value="${horaVal}"></div>
+        </div>
+        <div class="form-row">
+            <div class="form-group"><label>Status</label>
+                <select id="agStatus">
+                    ${['agendado','confirmado','concluido','cancelado'].map(s => `<option value="${s}" ${data?.status===s?'selected':''}>${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
+                </select>
+            </div>
+            <div class="form-group"><label>Forma de Pagamento</label>
+                <select id="agFormaPagamento">
+                    <option value="" ${!data?.forma_pagamento?'selected':''}>Não informado</option>
+                    <option value="Dinheiro"      ${data?.forma_pagamento==='Dinheiro'?'selected':''}>💵 Dinheiro</option>
+                    <option value="Pix"           ${data?.forma_pagamento==='Pix'?'selected':''}>📱 Pix</option>
+                    <option value="Cartão Débito" ${data?.forma_pagamento==='Cartão Débito'?'selected':''}>💳 Cartão Débito</option>
+                    <option value="Cartão Crédito"${data?.forma_pagamento==='Cartão Crédito'?'selected':''}>💳 Cartão Crédito</option>
+                    <option value="Transferência" ${data?.forma_pagamento==='Transferência'?'selected':''}>🏦 Transferência</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-save" style="margin:0" onclick="salvarAgendamento(${data?.id || 'null'})">Salvar</button>
+        </div>
+    `;
+
+    // Recalcula o total se estiver editando com serviços já selecionados
+    recalcularTotalAgendamento();
+}
+
+function recalcularTotalAgendamento() {
+    const checks = document.querySelectorAll('.ag-servico-check:checked');
+    const totalBox = document.getElementById('agTotalBox');
+    const totalEl = document.getElementById('agTotal');
+    const resumoEl = document.getElementById('agServicosResumo');
+
+    let total = 0;
+    const nomes = [];
+    checks.forEach(c => {
+        total += parseFloat(c.dataset.preco);
+        nomes.push(c.dataset.nome);
+    });
+
+    if (checks.length > 0) {
+        totalBox.style.display = 'flex';
+        totalEl.textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
+        resumoEl.textContent = nomes.join(' + ');
+    } else {
+        totalBox.style.display = 'none';
+    }
+}
+
+function filtrarClientesDropdown() {
+    const termo = document.getElementById('agClienteSearch').value.toLowerCase();
+    const dropdown = document.getElementById('agClienteDropdown');
+    if (!dropdown) return;
+    dropdown.style.display = 'block';
+    const opts = dropdown.querySelectorAll('.ag-cliente-opt');
+    opts.forEach(opt => {
+        const nome = opt.dataset.nome.toLowerCase();
+        opt.style.display = nome.includes(termo) ? '' : 'none';
+    });
+    // Se o campo foi limpo, limpa o hidden também
+    if (!document.getElementById('agClienteSearch').value.trim()) {
+        document.getElementById('agCliente').value = '';
+    }
+}
+
+function selecionarClienteAg(id, nome) {
+    document.getElementById('agCliente').value = id;
+    document.getElementById('agClienteSearch').value = nome;
+    document.getElementById('agClienteDropdown').style.display = 'none';
+}
+
+async function salvarAgendamento(id) {
+    const dataInput = document.getElementById('agData').value;
+    const horaInput = document.getElementById('agHora').value;
+
+    // Coleta serviços selecionados
+    const checks = document.querySelectorAll('.ag-servico-check:checked');
+    if (checks.length === 0) { toast('Selecione ao menos um serviço', 'error'); return; }
+
+    const servicos_selecionados = Array.from(checks).map(c => ({
+        tipo_servico: parseInt(c.dataset.id),
+        valor: parseFloat(c.dataset.preco)
+    }));
+    const valor_total = servicos_selecionados.reduce((sum, s) => sum + s.valor, 0);
+
+    const dados = {
+        id_usuario: parseInt(document.getElementById('agCliente').value),
+        id_funcionario: parseInt(document.getElementById('agFuncionario').value),
+        servicos: servicos_selecionados,
+        valor_total,
+        data: dataInput && horaInput ? `${dataInput}T${horaInput}:00` : null,
+        status: document.getElementById('agStatus').value,
+        forma_pagamento: document.getElementById('agFormaPagamento').value || null
+    };
+    if (!dados.id_usuario || !dados.id_funcionario || !dados.data) {
+        toast('Preencha todos os campos obrigatórios', 'error'); return;
+    }
+    const result = id
+        ? await apiPut(`/agendamentos/${id}`, dados)
+        : await apiPost('/agendamentos', dados);
+    if (result.error) { toast(result.error, 'error'); return; }
+    toast(result.mensagem || 'Agendamento salvo!');
+    fecharModal(); renderPage();
+}
+
+async function editarAgendamento(id) {
+    const ag = await apiGet(`/agendamentos/${id}`);
+    if (!ag || ag.error || Array.isArray(ag)) { toast('Erro ao carregar agendamento', 'error'); return; }
+    abrirModalAgendamento(ag);
+}
+
+async function deletarAgendamento(id) {
+    if (!confirm('Excluir este agendamento?')) return;
+    const result = await apiDelete(`/agendamentos/${id}`);
+    if (result.error) { toast(result.error, 'error'); return; }
+    toast(result.mensagem || 'Agendamento excluído!');
+    renderPage();
+}
+
+// ===================== FIDELIDADE =====================
+async function renderFidelidade() {
+    const [ranking, servicos, usuarios] = await Promise.all([
+        apiGet('/fidelidade/ranking/top'),
+        apiGet('/servicos'),
+        apiGet('/buscar')
+    ]);
+
+    const totalPontos = ranking.reduce((s, r) => s + parseFloat(r.pontos || 0), 0);
+    const totalClientes = ranking.length;
+    const topPts = ranking.length ? parseFloat(ranking[0].pontos) : 1;
+    const servicosResgate = servicos.filter(s => s.status == 1 && s.pontos_resgate > 0);
+
+    const posClass = i => i === 0 ? 'gold' : i === 1 ? 'silver' : i === 2 ? 'bronze' : 'default';
+    const posMedal = i => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+
+    return `
+        <div class="fid-stats-grid">
+            <div class="fid-stat-card">
+                <div class="fid-stat-icon roxo">⭐</div>
+                <div>
+                    <div class="fid-stat-value">${Math.round(totalPontos).toLocaleString('pt-BR')}</div>
+                    <div class="fid-stat-label">Pontos em Circulação</div>
+                </div>
+            </div>
+            <div class="fid-stat-card">
+                <div class="fid-stat-icon verde">👥</div>
+                <div>
+                    <div class="fid-stat-value">${usuarios.length}</div>
+                    <div class="fid-stat-label">Clientes no Programa</div>
+                </div>
+            </div>
+            <div class="fid-stat-card">
+                <div class="fid-stat-icon amarelo">🎁</div>
+                <div>
+                    <div class="fid-stat-value">${servicosResgate.length}</div>
+                    <div class="fid-stat-label">Serviços p/ Resgate</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dash-grid">
+            <!-- RANKING -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🏆 Ranking de Pontos</div>
+                    <span style="font-size:0.75rem;color:var(--cinza-medio)">Top 10 clientes</span>
+                </div>
+                <div class="card-body">
+                    ${ranking.length ? ranking.map((r, i) => {
+                        const ini = r.nome_completo.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase();
+                        const pct = Math.round((parseFloat(r.pontos) / topPts) * 100);
+                        return `
+                        <div class="ranking-row">
+                            <div class="ranking-pos ${posClass(i)}">${posMedal(i)}</div>
+                            <div class="ranking-avatar">${ini}</div>
+                            <div class="ranking-info">
+                                <strong>${r.nome_completo}</strong>
+                                <small>${parseFloat(r.total_ganho || 0).toFixed(0)} pts acumulados</small>
+                            </div>
+                            <div class="pts-bar-wrap">
+                                <div class="pts-bar-fill" style="width:${pct}%"></div>
+                            </div>
+                            <div class="ranking-pts">${parseFloat(r.pontos).toFixed(0)} pts</div>
+                        </div>`;
+                    }).join('') : `<div class="empty-state"><div class="empty-icon">⭐</div><p>Nenhum cliente com pontos ainda</p></div>`}
+                </div>
+            </div>
+
+            <!-- CONSULTA DE PONTOS POR CLIENTE -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">🔍 Consultar Cliente</div>
+                </div>
+                <div class="card-body">
+                    <div class="form-group fid-search-wrap">
+                        <label>Buscar Cliente</label>
+                        <input type="text" id="fidClienteSearch"
+                            placeholder="Digite o nome do cliente..."
+                            autocomplete="off"
+                            oninput="filtrarClientesFid()"
+                            onfocus="document.getElementById('fidDropdown').style.display='block'; filtrarClientesFid()"
+                            onblur="setTimeout(()=>document.getElementById('fidDropdown').style.display='none', 200)">
+                        <input type="hidden" id="fidClienteId">
+                        <div class="fid-client-dropdown" id="fidDropdown">
+                            ${usuarios.map(u => `
+                            <div class="fid-client-opt" data-id="${u.id_usuario}" data-nome="${u.nome_completo.replace(/"/g,'&quot;')}"
+                                onmousedown="selecionarClienteFid(${u.id_usuario}, '${u.nome_completo.replace(/'/g,"\\'")}')">
+                                ${u.nome_completo} <small style="color:var(--cinza-medio);margin-left:6px">${u.email}</small>
+                            </div>`).join('')}
+                        </div>
+                    </div>
+                    <div id="fidResultado" style="margin-top:6px"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TABELA DE SERVIÇOS DISPONÍVEIS PARA RESGATE -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">🎁 Serviços Disponíveis para Resgate</div>
+                <span style="font-size:0.75rem;color:var(--cinza-medio)">Serviços que clientes podem resgatar com pontos</span>
+            </div>
+            <div class="card-body" style="padding:0">
+                <table class="data-table">
+                    <thead><tr><th>Serviço</th><th>Preço Normal</th><th>Duração</th><th>Pontos que Ganha</th><th>Pontos para Resgatar</th></tr></thead>
+                    <tbody>
+                        ${servicosResgate.length ? servicosResgate.map(s => `
+                            <tr>
+                                <td><strong>${s.nome}</strong></td>
+                                <td>R$ ${parseFloat(s.preco).toFixed(2)}</td>
+                                <td>${s.duracao} min</td>
+                                <td><span style="background:#ecfdf5;color:#059669;padding:2px 9px;border-radius:12px;font-size:0.75rem;font-weight:700">+${s.pontos} pts</span></td>
+                                <td><span style="background:#f5f3ff;color:#7c3aed;padding:2px 9px;border-radius:12px;font-size:0.75rem;font-weight:700">⭐ ${s.pontos_resgate} pts</span></td>
+                            </tr>
+                        `).join('') : `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎁</div><p>Nenhum serviço configurado para resgate</p></div></td></tr>`}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    `;
+}
+
+function filtrarClientesFid() {
+    const termo = document.getElementById('fidClienteSearch')?.value.toLowerCase() || '';
+    const dropdown = document.getElementById('fidDropdown');
+    if (!dropdown) return;
+    dropdown.style.display = 'block';
+    dropdown.querySelectorAll('.fid-client-opt').forEach(opt => {
+        opt.style.display = opt.dataset.nome.toLowerCase().includes(termo) ? '' : 'none';
+    });
+    if (!termo) document.getElementById('fidClienteId').value = '';
+}
+
+async function selecionarClienteFid(id, nome) {
+    document.getElementById('fidClienteId').value = id;
+    document.getElementById('fidClienteSearch').value = nome;
+    document.getElementById('fidDropdown').style.display = 'none';
+
+    const res = document.getElementById('fidResultado');
+    res.innerHTML = `<div style="color:var(--cinza-medio);font-size:0.85rem;padding:8px 0">Buscando pontos...</div>`;
+
+    const data = await apiGet(`/fidelidade/${id}`);
+
+    if (!data || data.error) {
+        res.innerHTML = `<div style="color:var(--vermelho);font-size:0.85rem;padding:8px 0">❌ ${data?.error || 'Erro ao buscar pontos'}</div>`;
+        return;
+    }
+
+    const pts = parseFloat(data.pontos || 0);
+    const ganho = parseFloat(data.total_ganho || 0);
+    const resgatado = parseFloat(data.total_resgatado || 0);
+    const hist = data.historico || [];
+
+    res.innerHTML = `
+        <div class="saldo-display">
+            <div class="sd-label">Saldo de Pontos</div>
+            <div class="sd-value">${pts.toFixed(0)} <span style="font-size:1rem;opacity:0.8">pts</span></div>
+            <div class="sd-sub">${ganho.toFixed(0)} ganhos · ${resgatado.toFixed(0)} resgatados</div>
+        </div>
+        ${hist.length ? `
+        <div style="font-size:0.78rem;font-weight:700;color:var(--cinza-medio);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:10px">Últimas Transações</div>
+        ${hist.slice(0,6).map(h => `
+            <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--cinza-claro)">
+                <span class="status-badge hist-tipo-${h.tipo}">${h.tipo}</span>
+                <span style="flex:1;font-size:0.82rem;color:var(--cinza-escuro)">${h.descricao || '—'}</span>
+                <span style="font-weight:700;font-size:0.84rem;color:${h.tipo==='ganho'?'#059669':'#dc2626'}">${h.tipo==='ganho'?'+':''}${parseFloat(h.pontos).toFixed(0)} pts</span>
+            </div>
+        `).join('')}` : `<div style="font-size:0.82rem;color:var(--cinza-medio);padding:8px 0">Nenhuma transação ainda.</div>`}
+        <button class="btn-novo" style="width:100%;margin-top:14px;justify-content:center" onclick="abrirModalResgate(${id}, '${nome.replace(/'/g,"\\'")}', ${pts.toFixed(0)})">🎁 Resgatar Serviço</button>
+    `;
+}
+
+async function abrirModalResgate(id_usuario = null, nome_usuario = '', saldo_atual = 0) {
+    const [servicos, usuarios] = await Promise.all([apiGet('/servicos'), apiGet('/buscar')]);
+    const servicosResgate = servicos.filter(s => s.status == 1 && s.pontos_resgate > 0);
+
+    let clienteId = id_usuario;
+    let clienteNome = nome_usuario;
+    let saldo = saldo_atual;
+
+    // Se não foi chamado com cliente, deixa usuário escolher
+    const preenchido = !!clienteId;
+
+    document.getElementById('modal').style.display = 'flex';
+    document.getElementById('modalContent').innerHTML = `
+        ${modalHeader('🎁 Resgatar Serviço')}
+        ${!preenchido ? `
+        <div class="form-group fid-search-wrap" style="margin-bottom:14px">
+            <label>Cliente *</label>
+            <input type="text" id="resgClienteSearch" placeholder="Buscar cliente..." autocomplete="off"
+                oninput="filtrarClientesResg()"
+                onfocus="document.getElementById('resgDropdown').style.display='block'; filtrarClientesResg()"
+                onblur="setTimeout(()=>document.getElementById('resgDropdown').style.display='none',200)">
+            <input type="hidden" id="resgClienteId">
+            <div class="fid-client-dropdown" id="resgDropdown">
+                ${usuarios.map(u => `
+                <div class="fid-client-opt" data-id="${u.id_usuario}" data-nome="${u.nome_completo.replace(/"/g,'&quot;')}"
+                    onmousedown="preencherResgCliente(${u.id_usuario}, '${u.nome_completo.replace(/'/g,"\\'")}')">
+                    ${u.nome_completo} <small style="color:var(--cinza-medio);margin-left:6px">${u.email}</small>
+                </div>`).join('')}
+            </div>
+        </div>
+        <div id="resgSaldoInfo" style="margin-bottom:14px"></div>
+        ` : `
+        <div class="saldo-display" style="margin-bottom:16px">
+            <div class="sd-label">Saldo de ${clienteNome}</div>
+            <div class="sd-value">${saldo} <span style="font-size:1rem;opacity:0.8">pts</span></div>
+        </div>
+        <input type="hidden" id="resgClienteId" value="${clienteId}">
+        `}
+        <div class="form-group">
+            <label>Serviço para Resgatar *</label>
+            ${servicosResgate.length ? servicosResgate.map(s => `
+            <div class="servico-resgate-card" id="resgCard_${s.id_servicos}" onclick="selecionarServicoResgate(${s.id_servicos})">
+                <div style="flex:1">
+                    <div style="font-weight:600;font-size:0.88rem">${s.nome}</div>
+                    <div style="font-size:0.75rem;color:var(--cinza-medio);margin-top:2px">${s.duracao}min · R$ ${parseFloat(s.preco).toFixed(2)} normalmente</div>
+                </div>
+                <span class="servico-resgate-pts">⭐ ${s.pontos_resgate} pts</span>
+            </div>
+            `).join('') : `<div class="empty-state" style="padding:24px"><div class="empty-icon">🎁</div><p>Nenhum serviço disponível para resgate</p></div>`}
+            <input type="hidden" id="resgServicoId">
+        </div>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-save" style="margin:0" onclick="confirmarResgate()">🎁 Confirmar Resgate</button>
+        </div>
+    `;
+
+    window._resgUsuarios = usuarios;
+}
+
+function filtrarClientesResg() {
+    const termo = document.getElementById('resgClienteSearch')?.value.toLowerCase() || '';
+    document.getElementById('resgDropdown').querySelectorAll('.fid-client-opt').forEach(opt => {
+        opt.style.display = opt.dataset.nome.toLowerCase().includes(termo) ? '' : 'none';
+    });
+}
+
+async function preencherResgCliente(id, nome) {
+    document.getElementById('resgClienteId').value = id;
+    document.getElementById('resgClienteSearch').value = nome;
+    document.getElementById('resgDropdown').style.display = 'none';
+    const data = await apiGet(`/fidelidade/${id}`);
+    const pts = parseFloat(data?.pontos || 0);
+    document.getElementById('resgSaldoInfo').innerHTML = `
+        <div class="saldo-display">
+            <div class="sd-label">Saldo de ${nome}</div>
+            <div class="sd-value">${pts.toFixed(0)} <span style="font-size:1rem;opacity:0.8">pts</span></div>
+        </div>`;
+}
+
+function selecionarServicoResgate(id) {
+    document.querySelectorAll('.servico-resgate-card').forEach(c => c.classList.remove('selecionado'));
+    document.getElementById(`resgCard_${id}`)?.classList.add('selecionado');
+    document.getElementById('resgServicoId').value = id;
+}
+
+async function confirmarResgate() {
+    const id_usuario = parseInt(document.getElementById('resgClienteId')?.value);
+    const id_servico = parseInt(document.getElementById('resgServicoId')?.value);
+    if (!id_usuario) { toast('Selecione o cliente', 'error'); return; }
+    if (!id_servico) { toast('Selecione um serviço para resgatar', 'error'); return; }
+    const result = await apiPost('/fidelidade/resgatar', { id_usuario, id_servico });
+    if (result.error) { toast(result.error, 'error'); return; }
+    toast(result.mensagem || 'Resgate realizado!');
+    fecharModal(); renderPage();
+}
+
+// ===================== CONFIGURAÇÕES =====================
+async function renderConfiguracoes() {
+    return `
+        <div class="dash-grid">
+            <div class="card">
+                <div class="card-header"><div class="card-title">👤 Meu Perfil</div></div>
+                <div class="card-body">
+                    <div class="config-section">
+                        <div class="info-row"><span>Nome</span><span>${usuarioLogado.nome || '—'}</span></div>
+                        <div class="info-row"><span>Email</span><span>${usuarioLogado.email || '—'}</span></div>
+                        <div class="info-row"><span>CEP</span><span>${usuarioLogado.cep || 'Não informado'}</span></div>
+                    </div>
+                    <button class="btn-novo" style="width:auto;margin-top:6px" onclick="abrirModalEditarPerfil()">✏️ Editar Perfil</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">🔒 Segurança</div></div>
+                <div class="card-body">
+                    <p style="font-size:0.85rem;color:var(--cinza-medio);margin-bottom:14px">Altere sua senha de acesso ao sistema.</p>
+                    <div class="form-group"><label>Nova Senha</label><input type="password" id="novaSenha" placeholder="Mínimo 6 caracteres"></div>
+                    <div class="form-group"><label>Confirmar Senha</label><input type="password" id="confirmarSenha" placeholder="Repita a senha"></div>
+                    <button class="btn-novo" style="width:auto" onclick="alterarSenha()">🔑 Alterar Senha</button>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><div class="card-title">ℹ️ Sobre o Sistema</div></div>
+            <div class="card-body">
+                <div class="info-row"><span>Sistema</span><span>BarbershopSystem</span></div>
+                <div class="info-row"><span>Versão</span><span>2.0.0</span></div>
+                <div class="info-row"><span>Backend</span><span>Node.js + Express + MySQL</span></div>
+                <div class="info-row"><span>API Base</span><span>${API_URL}</span></div>
+            </div>
+        </div>
+    `;
+}
+
+function abrirModalEditarPerfil() {
+    document.getElementById('modal').style.display = 'flex';
+    document.getElementById('modalContent').innerHTML = `
+        ${modalHeader('Editar Perfil')}
+        <div class="form-group"><label>Nome Completo *</label><input type="text" id="pNome" value="${usuarioLogado.nome || ''}"></div>
+        <div class="form-group"><label>Email *</label><input type="email" id="pEmail" value="${usuarioLogado.email || ''}"></div>
+        <div class="form-group"><label>CEP</label><input type="text" id="pCep" value="${usuarioLogado.cep || ''}"></div>
+        <div class="modal-btns">
+            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-save" style="margin:0" onclick="salvarPerfil()">Salvar</button>
+        </div>
+    `;
+}
+
+async function salvarPerfil() {
+    const dados = {
+        id_usuario: usuarioLogado.id_usuario,
+        nome_completo: document.getElementById('pNome').value.trim(),
+        email: document.getElementById('pEmail').value.trim(),
+        cep: document.getElementById('pCep').value.trim()
+    };
+    if (!dados.nome_completo || !dados.email) { toast('Preencha os campos obrigatórios', 'error'); return; }
+    const result = await apiPut('/atualizar', dados);
+    if (result.error) { toast(result.error, 'error'); return; }
+    usuarioLogado.nome = dados.nome_completo;
+    usuarioLogado.email = dados.email;
+    usuarioLogado.cep = dados.cep;
+    localStorage.setItem('usuario', JSON.stringify(usuarioLogado));
+    document.getElementById('sidebarNome').textContent = dados.nome_completo;
+    document.getElementById('sidebarAvatar').textContent = dados.nome_completo.split(' ').slice(0,2).map(n=>n[0]).join('').toUpperCase();
+    toast('Perfil atualizado!');
+    fecharModal(); renderPage();
+}
+
+async function alterarSenha() {
+    const nova = document.getElementById('novaSenha')?.value;
+    const conf = document.getElementById('confirmarSenha')?.value;
+    if (!nova || nova.length < 6) { toast('Senha deve ter mínimo 6 caracteres', 'error'); return; }
+    if (nova !== conf) { toast('As senhas não conferem', 'error'); return; }
+    const result = await apiPut('/atualizar', { id_usuario: usuarioLogado.id_usuario, nome_completo: usuarioLogado.nome, email: usuarioLogado.email, cep: usuarioLogado.cep || '', senha: nova });
+    if (result.error) { toast(result.error, 'error'); return; }
+    toast('Senha alterada com sucesso!');
+    document.getElementById('novaSenha').value = '';
+    document.getElementById('confirmarSenha').value = '';
+}
+
+// ===================== LOGOUT =====================
+function fazerLogout() {
+    if (!confirm('Deseja sair do sistema?')) return;
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    window.location.href = 'index.html';
+}
+
+inicializar();
+</script>
+</body>
+</html>
