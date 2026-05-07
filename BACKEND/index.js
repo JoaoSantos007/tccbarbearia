@@ -332,6 +332,20 @@ app.get('/servicos', async (req, res) => {
     }
 });
 
+// Buscar serviços disponíveis para resgate (pontos_resgate preenchido e ativo)
+// ATENÇÃO: esta rota DEVE vir antes de /servicos/:id para não ser capturada como :id = "resgate"
+app.get('/servicos/resgate', async (req, res) => {
+    try {
+        const [resultado] = await conexao.query(
+            'SELECT * FROM servicos WHERE status = 1 AND pontos_resgate IS NOT NULL AND pontos_resgate > 0 ORDER BY pontos_resgate ASC'
+        );
+        res.json(resultado);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Erro ao buscar serviços de resgate" });
+    }
+});
+
 // Buscar serviço por ID
 app.get('/servicos/:id', async (req, res) => {
     try {
@@ -353,15 +367,15 @@ app.get('/servicos/:id', async (req, res) => {
 // Cadastrar serviço
 app.post('/servicos', async (req, res) => {
     try {
-        const { nome, preco, duracao, pontos, status } = req.body;
+        const { nome, preco, duracao, pontos, status, pontos_resgate } = req.body;
        
         if (!nome || !preco || !duracao) {
             return res.status(400).json({ error: "Nome, preço e duração são obrigatórios" });
         }
        
         const [resultado] = await conexao.execute(
-            'INSERT INTO servicos (nome, preco, duracao, pontos, status) VALUES (?, ?, ?, ?, ?)',
-            [nome, preco, duracao, pontos || 0, status !== undefined ? status : 1]
+            'INSERT INTO servicos (nome, preco, duracao, pontos, status, pontos_resgate) VALUES (?, ?, ?, ?, ?, ?)',
+            [nome, preco, duracao, pontos || 0, status !== undefined ? status : 1, pontos_resgate || null]
         );
        
         res.json({
@@ -378,11 +392,11 @@ app.post('/servicos', async (req, res) => {
 app.put('/servicos/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { nome, preco, duracao, pontos, status } = req.body;
+        const { nome, preco, duracao, pontos, status, pontos_resgate } = req.body;
        
         const [resultado] = await conexao.execute(
-            'UPDATE servicos SET nome = ?, preco = ?, duracao = ?, pontos = ?, status = ? WHERE id_servicos = ?',
-            [nome, preco, duracao, pontos || 0, status !== undefined ? status : 1, id]
+            'UPDATE servicos SET nome = ?, preco = ?, duracao = ?, pontos = ?, status = ?, pontos_resgate = ? WHERE id_servicos = ?',
+            [nome, preco, duracao, pontos || 0, status !== undefined ? status : 1, pontos_resgate || null, id]
         );
        
         if (resultado.affectedRows === 0) {
@@ -565,6 +579,7 @@ app.get('/agendamentos', async (req, res) => {
                 a.data,
                 a.status,
                 a.feedback,
+                a.forma_pagamento,
                 u.nome_completo  AS cliente_nome,
                 f.nome           AS funcionario_nome
             FROM agendamentos a
@@ -810,5 +825,234 @@ app.patch('/agendamentos/:id/status', async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: "Erro ao atualizar status" });
+    }
+});
+
+// ===================== FIDELIDADE =====================
+
+// GET ranking de pontos de todos os clientes
+app.get('/fidelidade/ranking', async (req, res) => {
+    try {
+        const [resultado] = await conexao.query(`
+            SELECT u.id_usuario, u.nome_completo, u.email,
+                   COALESCE(f.pontos, 0) AS pontos
+            FROM usuarios u
+            LEFT JOIN fidelidade f ON f.id_usuario = u.id_usuario
+            ORDER BY pontos DESC
+        `);
+        res.json(resultado);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Erro ao buscar ranking de fidelidade" });
+    }
+});
+
+// GET historico de resgates realizados — DEVE vir antes de /fidelidade/:id_usuario
+app.get('/fidelidade/resgates', async (req, res) => {
+    try {
+        const [rows] = await conexao.execute(`
+            SELECT
+                hr.id,
+                u.nome_completo AS nome_cliente,
+                s.nome AS nome_servico,
+                hr.pontos_gastos,
+                hr.data_resgate
+            FROM historico_resgates hr
+            JOIN usuarios u ON u.id_usuario = hr.id_usuario
+            JOIN servicos s ON s.id_servicos = hr.id_servico
+            ORDER BY hr.data_resgate DESC
+        `);
+        res.json(rows);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Erro ao buscar historico de resgates" });
+    }
+});
+
+// GET pontos de um cliente específico (saldo, historico, total ganho/resgatado)
+app.get('/fidelidade/:id_usuario', async (req, res) => {
+    try {
+        const { id_usuario } = req.params;
+
+        const [fidRows] = await conexao.execute(
+            'SELECT pontos FROM fidelidade WHERE id_usuario = ?',
+            [id_usuario]
+        );
+        const pontos = fidRows.length > 0 ? parseFloat(fidRows[0].pontos) : 0;
+
+        // Historico: agendamentos concluidos com pontos ganhos
+        const [agendamentosConc] = await conexao.execute(`
+            SELECT a.id, a.data, a.status,
+                   GROUP_CONCAT(s.nome ORDER BY s.nome SEPARATOR ', ') AS servicos_nomes,
+                   SUM(s.pontos) AS pontos_ganhos
+            FROM agendamentos a
+            JOIN agendavalor av ON av.id_agendamento = a.id
+            JOIN servicos    s  ON s.id_servicos = av.tipo_servico
+            WHERE a.id_usuario = ? AND a.status = 'concluido'
+            GROUP BY a.id, a.data, a.status
+            ORDER BY a.data DESC
+            LIMIT 20
+        `, [id_usuario]);
+
+        const total_ganho = agendamentosConc.reduce((sum, a) => sum + parseFloat(a.pontos_ganhos || 0), 0);
+        const total_resgatado = Math.max(0, total_ganho - pontos);
+
+        const historico = agendamentosConc.map(a => ({
+            tipo: 'ganho',
+            pontos: parseFloat(a.pontos_ganhos || 0),
+            descricao: `Servico: ${a.servicos_nomes || '-'}`,
+            data: a.data
+        }));
+
+        res.json({ id_usuario, pontos, total_ganho, total_resgatado, historico });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Erro ao buscar pontos do cliente" });
+    }
+});
+
+// POST adicionar pontos manualmente a um cliente
+app.post('/fidelidade/adicionar', async (req, res) => {
+    try {
+        const { id_usuario, pontos } = req.body;
+        if (!id_usuario || pontos == null) {
+            return res.status(400).json({ error: "id_usuario e pontos sao obrigatorios" });
+        }
+
+        const [exists] = await conexao.execute(
+            'SELECT id_usuario FROM fidelidade WHERE id_usuario = ?',
+            [id_usuario]
+        );
+
+        if (exists.length > 0) {
+            await conexao.execute(
+                'UPDATE fidelidade SET pontos = pontos + ? WHERE id_usuario = ?',
+                [pontos, id_usuario]
+            );
+        } else {
+            await conexao.execute(
+                'INSERT INTO fidelidade (id_usuario, pontos) VALUES (?, ?)',
+                [id_usuario, pontos]
+            );
+        }
+
+        const [updated] = await conexao.execute(
+            'SELECT pontos FROM fidelidade WHERE id_usuario = ?',
+            [id_usuario]
+        );
+        res.json({ mensagem: `${pontos} pontos adicionados com sucesso!`, saldo: parseFloat(updated[0].pontos) });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Erro ao adicionar pontos" });
+    }
+});
+
+// GET historico de resgates realizados
+// POST resgatar servico com pontos
+app.post('/fidelidade/resgatar', async (req, res) => {
+    try {
+        const { id_usuario, id_servico } = req.body;
+        if (!id_usuario || !id_servico) {
+            return res.status(400).json({ error: "id_usuario e id_servico sao obrigatorios" });
+        }
+
+        const [servicos] = await conexao.execute(
+            'SELECT * FROM servicos WHERE id_servicos = ? AND status = 1 AND pontos_resgate IS NOT NULL AND pontos_resgate > 0',
+            [id_servico]
+        );
+
+        if (servicos.length === 0) {
+            return res.status(404).json({ error: "Servico nao encontrado ou nao disponivel para resgate" });
+        }
+
+        const servico = servicos[0];
+        const custoResgate = parseFloat(servico.pontos_resgate);
+
+        const [fidRows] = await conexao.execute(
+            'SELECT pontos FROM fidelidade WHERE id_usuario = ?',
+            [id_usuario]
+        );
+        const saldoAtual = fidRows.length > 0 ? parseFloat(fidRows[0].pontos) : 0;
+
+        if (saldoAtual < custoResgate) {
+            return res.status(400).json({
+                error: `Saldo insuficiente. Voce tem ${saldoAtual.toFixed(0)} pts e precisa de ${custoResgate.toFixed(0)} pts.`
+            });
+        }
+
+        await conexao.execute(
+            'UPDATE fidelidade SET pontos = pontos - ? WHERE id_usuario = ?',
+            [custoResgate, id_usuario]
+        );
+
+        await conexao.execute(
+            'INSERT INTO historico_resgates (id_usuario, id_servico, pontos_gastos) VALUES (?, ?, ?)',
+            [id_usuario, id_servico, custoResgate]
+        );
+
+        const novoSaldo = saldoAtual - custoResgate;
+        res.json({
+            mensagem: `Resgate realizado! Servico: ${servico.nome}. Pontos usados: ${custoResgate.toFixed(0)}. Saldo restante: ${novoSaldo.toFixed(0)} pts.`,
+            pontos_usados: custoResgate,
+            saldo_restante: novoSaldo
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Erro ao resgatar servico" });
+    }
+});
+
+// POST creditar pontos automaticamente ao concluir agendamento
+app.post('/fidelidade/creditar-agendamento', async (req, res) => {
+    try {
+        const { id_agendamento } = req.body;
+        if (!id_agendamento) {
+            return res.status(400).json({ error: "id_agendamento e obrigatorio" });
+        }
+
+        const [agRows] = await conexao.execute(
+            'SELECT id, id_usuario, status FROM agendamentos WHERE id = ?',
+            [id_agendamento]
+        );
+        if (agRows.length === 0) {
+            return res.status(404).json({ error: "Agendamento nao encontrado" });
+        }
+        const ag = agRows[0];
+        if (ag.status !== 'concluido') {
+            return res.status(400).json({ error: "Pontos so sao creditados para agendamentos concluidos" });
+        }
+
+        const [servicos] = await conexao.execute(`
+            SELECT s.pontos
+            FROM agendavalor av
+            JOIN servicos s ON s.id_servicos = av.tipo_servico
+            WHERE av.id_agendamento = ?
+        `, [id_agendamento]);
+
+        const totalPontos = servicos.reduce((sum, s) => sum + parseInt(s.pontos || 0), 0);
+        if (totalPontos === 0) {
+            return res.json({ mensagem: "Nenhum ponto a creditar para este agendamento." });
+        }
+
+        const [exists] = await conexao.execute(
+            'SELECT id_usuario FROM fidelidade WHERE id_usuario = ?',
+            [ag.id_usuario]
+        );
+        if (exists.length > 0) {
+            await conexao.execute(
+                'UPDATE fidelidade SET pontos = pontos + ? WHERE id_usuario = ?',
+                [totalPontos, ag.id_usuario]
+            );
+        } else {
+            await conexao.execute(
+                'INSERT INTO fidelidade (id_usuario, pontos) VALUES (?, ?)',
+                [ag.id_usuario, totalPontos]
+            );
+        }
+
+        res.json({ mensagem: `${totalPontos} pontos creditados com sucesso!`, pontos_creditados: totalPontos });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Erro ao creditar pontos" });
     }
 });
