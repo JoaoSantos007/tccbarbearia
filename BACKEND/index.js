@@ -332,8 +332,7 @@ app.get('/servicos', async (req, res) => {
     }
 });
 
-// Buscar serviços disponíveis para resgate (pontos_resgate preenchido e ativo)
-// ATENÇÃO: esta rota DEVE vir antes de /servicos/:id para não ser capturada como :id = "resgate"
+// Buscar serviços disponíveis para resgate
 app.get('/servicos/resgate', async (req, res) => {
     try {
         const [resultado] = await conexao.query(
@@ -410,7 +409,7 @@ app.put('/servicos/:id', async (req, res) => {
     }
 });
 
-// Deletar serviço (soft delete)
+// Deletar serviço
 app.delete('/servicos/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -430,14 +429,7 @@ app.delete('/servicos/:id', async (req, res) => {
         res.status(500).json({ error: "Erro ao deletar serviço" });
     }
 });
-
-// ================================================================
-// NOVAS ROTAS — cole no final do seu index.js
-// (antes do inicializar() ou de qualquer outro código final)
-// ================================================================
-
 // ===================== FUNCIONÁRIOS =====================
-
 // GET todos os funcionários
 app.get('/funcionarios', async (req, res) => {
     try {
@@ -554,20 +546,7 @@ app.delete('/funcionarios/:id', async (req, res) => {
 
 
 // ===================== AGENDAMENTOS =====================
-//
-// A tabela agendavalor (já existente no banco) é usada para
-// registrar múltiplos serviços por agendamento:
-//   agendavalor(tipo_servico, valor, id_agendamento)
-//
-// Se a coluna id_servicos ainda existir em agendamentos,
-// ela pode ser mantida ou removida. As novas rotas não a utilizam.
-// Para remover (opcional):
-//   ALTER TABLE agendamentos DROP FOREIGN KEY fk_agendamento_servico;
-//   ALTER TABLE agendamentos DROP COLUMN id_servicos;
-//   ALTER TABLE agendamentos DROP COLUMN agenda_valor;
-//
-
-// GET todos os agendamentos (com JOIN para trazer nomes e serviços via agendavalor)
+// GET todos os agendamentos
 app.get('/agendamentos', async (req, res) => {
     try {
         // Busca agendamentos com dados básicos
@@ -673,7 +652,7 @@ app.post('/agendamentos', async (req, res) => {
 
         const valor_total = servicos.reduce((sum, s) => sum + parseFloat(s.valor), 0);
 
-        // Insere o agendamento (sem id_servicos — agora usa agendavalor)
+        // Insere o agendamento
         const [resultado] = await conexao.execute(
             `INSERT INTO agendamentos (id_usuario, id_funcionario, data, status, feedback, forma_pagamento)
              VALUES (?, ?, ?, ?, ?, ?)`,
@@ -744,7 +723,7 @@ app.delete('/agendamentos/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        // Remove os serviços vinculados primeiro (FK agendavalor → agendamentos)
+        // Remove os serviços vinculados primeiro
         await conexao.execute('DELETE FROM agendavalor WHERE id_agendamento = ?', [id]);
 
         const [resultado] = await conexao.execute(
@@ -847,7 +826,7 @@ app.get('/fidelidade/ranking', async (req, res) => {
     }
 });
 
-// GET historico de resgates realizados — DEVE vir antes de /fidelidade/:id_usuario
+// GET historico de resgates realizados
 app.get('/fidelidade/resgates', async (req, res) => {
     try {
         const [rows] = await conexao.execute(`
@@ -869,7 +848,7 @@ app.get('/fidelidade/resgates', async (req, res) => {
     }
 });
 
-// GET pontos de um cliente específico (saldo, historico, total ganho/resgatado)
+// GET pontos de um cliente específico saldo, historico, total ganho e esgatado
 app.get('/fidelidade/:id_usuario', async (req, res) => {
     try {
         const { id_usuario } = req.params;
