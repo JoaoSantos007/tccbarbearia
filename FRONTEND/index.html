@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Barbershop System - Barbearia de Elite</title>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -107,7 +109,8 @@
             color: var(--azul-accent);
         }
 
-        .btn-acessar-nav, .btn-cadastrar-nav {
+        .btn-acessar-nav,
+        .btn-cadastrar-nav {
             padding: 10px 30px;
             border-radius: 30px;
             font-weight: 600;
@@ -189,7 +192,8 @@
             margin-bottom: 30px;
         }
 
-        .btn-acessar, .btn-cadastrar {
+        .btn-acessar,
+        .btn-cadastrar {
             border: none;
             padding: 15px 50px;
             font-size: 1.1rem;
@@ -610,7 +614,8 @@
                 grid-template-columns: 1fr;
             }
 
-            .btn-acessar, .btn-cadastrar {
+            .btn-acessar,
+            .btn-cadastrar {
                 padding: 12px 30px;
                 font-size: 1rem;
                 margin: 5px;
@@ -668,7 +673,7 @@
                             desenvolvimento da nossa equipe.</p>
                     </div>
                     <div class="about-image">
-                        <img class="gallery-img" src="barbearia.png" alt="imagem corte" >
+                        <img class="gallery-img" src="barbearia.png" alt="imagem corte">
                         <p style="margin-top: 20px; color: var(--cinza-medio);">Ambiente premium e acolhedor</p>
                     </div>
                 </div>
@@ -728,7 +733,7 @@
         </div>
 
         <div class="footer">
-            <p>© 2026 Barbershop System </p>
+            <p>© 2024 Barbershop System - Todos os direitos reservados</p>
             <p style="margin-top: 10px;">📍 Rua da Barbearia, 123 | 📞 (11) 99999-9999 | ✉️ contato@barbershop.com</p>
         </div>
     </div>
@@ -964,6 +969,7 @@
         }
 
         // Fazer login
+
         async function fazerLogin() {
             const email = document.getElementById('loginEmail').value;
             const senha = document.getElementById('loginSenha').value;
@@ -1061,6 +1067,11 @@
                 console.error('Erro:', error);
                 alert('❌ Erro de conexão com o servidor');
             }
+        }
+        function voltarHome() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('registerPage').style.display = 'none';
+            document.getElementById('landingPage').style.display = 'block';
         }
 
         // Inicializar
