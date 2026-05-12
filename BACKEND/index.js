@@ -818,6 +818,7 @@ app.get('/fidelidade/ranking', async (req, res) => {
             FROM usuarios u
             LEFT JOIN fidelidade f ON f.id_usuario = u.id_usuario
             ORDER BY pontos DESC
+            LIMIT 10
         `);
         res.json(resultado);
     } catch (error) {
