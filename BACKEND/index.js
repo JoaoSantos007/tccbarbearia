@@ -1,52 +1,74 @@
-const express = require('express')  
-const cors = require('cors')  
-const mysql = require('mysql2/promise')  
+const express = require('express')
+const cors = require('cors')
+const mysql = require('mysql2/promise')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
-const app = express()  
-app.use(cors())  
-app.use(express.json())  
+const app = express()
+app.use(cors())
+app.use(express.json())
 
 const conexao = require("./db.js")
-const porta = 3000  
+const porta = 3000
 const api_chave = "barbershop_secret_key_2024"
 
-app.listen(porta, () => {  
+app.listen(porta, () => {
     console.log(`Servidor rodando em http://localhost:${porta}`)
     console.log(`Documentação Swagger: http://localhost:${porta}/api-docs`)
 })
+
+// Verifica se está autenticado
+function autenticar(req, res, next) {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) return res.status(401).json({ error: "Token não fornecido" });
+    try {
+        req.usuario = jwt.verify(token, api_chave);
+        next();
+    } catch {
+        res.status(401).json({ error: "Token inválido" });
+    }
+}
+
+// Verifica se tem o perfil necessário
+function autorizar(...perfis) {
+    return (req, res, next) => {
+        if (!perfis.includes(req.usuario.perfil)) {
+            return res.status(403).json({ error: "Acesso negado para seu perfil" });
+        }
+        next();
+    };
+}
 
 // ================= CADASTRAR USUÁRIO =================
 // Requisito 3c: Senha em branco no primeiro cadastro
 app.post('/cadastrar', async (req, res) => {
     try {
         const { nome_completo, cep, email, senha } = req.body;
-       
+
         // Verificar se email já existe
         const [existe] = await conexao.execute(
             'SELECT email FROM usuarios WHERE email = ?',
             [email]
         );
-       
+
         if (existe.length > 0) {
             return res.status(400).json({ error: "Email já cadastrado!" });
         }
-       
+
         // Se senha for vazia ou null, cadastra sem senha (primeiro acesso)
         let senhaHash = null;
         let primeiro_acesso = true;
-       
+
         if (senha && senha.trim() !== '') {
             senhaHash = await bcrypt.hash(senha, 10);
             primeiro_acesso = false;
         }
-       
+
         const [resultado] = await conexao.execute(
             'INSERT INTO usuarios (nome_completo, cep, email, senha, primeiro_acesso) VALUES (?, ?, ?, ?, ?)',
             [nome_completo, cep, email, senhaHash, primeiro_acesso]
         );
-       
+
         res.json({
             insertId: resultado.insertId,
             mensagem: primeiro_acesso ?
@@ -74,7 +96,7 @@ app.post('/login', async (req, res) => {
         }
 
         const usuario = resultado[0];
-       
+
         // Requisito 3c: Verificar se é primeiro acesso (senha não cadastrada)
         if (usuario.primeiro_acesso === 1 || !usuario.senha) {
             return res.status(403).json({
@@ -94,7 +116,8 @@ app.post('/login', async (req, res) => {
             {
                 id_usuario: usuario.id_usuario,
                 email: usuario.email,
-                nome: usuario.nome_completo
+                nome: usuario.nome_completo,
+                perfil: usuario.perfil  // ← adicionar isso
             },
             api_chave,
             { expiresIn: "2h" }
@@ -134,26 +157,26 @@ app.get('/buscar', async (req, res) => {
 app.put('/atualizar', async (req, res) => {
     try {
         const { id_usuario, nome_completo, cep, email, senha } = req.body;
-       
+
         let query = 'UPDATE usuarios SET nome_completo = ?, cep = ?, email = ?';
         const params = [nome_completo, cep, email];
-       
+
         // Se senha foi fornecida, atualiza também
         if (senha && senha.trim() !== '') {
             const hash = await bcrypt.hash(senha, 10);
             query += ', senha = ?, primeiro_acesso = 0';
             params.push(hash);
         }
-       
+
         query += ' WHERE id_usuario = ?';
         params.push(id_usuario);
-       
+
         const [resultado] = await conexao.execute(query, params);
-       
+
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ error: "Usuário não encontrado" });
         }
-       
+
         res.json({
             affectedRows: resultado.affectedRows,
             mensagem: "Usuário atualizado com sucesso!"
@@ -168,16 +191,16 @@ app.put('/atualizar', async (req, res) => {
 app.delete('/deletar', async (req, res) => {
     try {
         const { id_usuario } = req.body;
-       
+
         const [resultado] = await conexao.execute(
             'DELETE FROM usuarios WHERE id_usuario = ?',
             [id_usuario]
         );
-       
+
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ error: "Usuário não encontrado" });
         }
-       
+
         res.json({
             affectedRows: resultado.affectedRows,
             mensagem: "Usuário deletado com sucesso!"
@@ -192,39 +215,39 @@ app.delete('/deletar', async (req, res) => {
 // Requisito 3b: Recuperação de senha
 app.post('/esqueci-senha', async (req, res) => {
     const { email } = req.body;
-   
+
     try {
         const [usuario] = await conexao.execute(
             'SELECT id_usuario, email, nome_completo FROM usuarios WHERE email = ?',
             [email]
         );
-       
+
         if (usuario.length === 0) {
             return res.status(404).json({ mensagem: "Email não encontrado!" });
         }
-       
+
         // Gerar token único para troca de senha
         const resetToken = jwt.sign(
             { id_usuario: usuario[0].id_usuario, email: usuario[0].email },
             api_chave,
             { expiresIn: "30min" }
         );
-       
+
         // Remover tokens antigos deste usuário
         await conexao.execute(
             'DELETE FROM reset_tokens WHERE id_usuario = ?',
             [usuario[0].id_usuario]
         );
-       
+
         // Salvar novo token no banco
         const expiraEm = new Date();
         expiraEm.setMinutes(expiraEm.getMinutes() + 30);
-       
+
         await conexao.execute(
             'INSERT INTO reset_tokens (id_usuario, token, expira_em) VALUES (?, ?, ?)',
             [usuario[0].id_usuario, resetToken, expiraEm]
         );
-       
+
         // Retornar token para demonstração (em produção enviaria por email)
         res.json({
             mensagem: "Link de recuperação gerado! (Em produção seria enviado por email)",
@@ -241,44 +264,44 @@ app.post('/esqueci-senha', async (req, res) => {
 // Requisito 3b: Trocar senha
 app.post('/resetar-senha', async (req, res) => {
     const { token, nova_senha } = req.body;
-   
+
     if (!nova_senha || nova_senha.trim() === '') {
         return res.status(400).json({ error: "Senha não pode estar vazia!" });
     }
-   
+
     if (nova_senha.length < 6) {
         return res.status(400).json({ error: "Senha deve ter no mínimo 6 caracteres!" });
     }
-   
+
     try {
         // Verificar se token existe e não foi usado
         const [tokenValido] = await conexao.execute(
             'SELECT * FROM reset_tokens WHERE token = ? AND usado = 0 AND expira_em > NOW()',
             [token]
         );
-       
+
         if (tokenValido.length === 0) {
             return res.status(400).json({ error: "Token inválido ou expirado! Solicite nova recuperação." });
         }
-       
+
         // Decodificar token
         const decoded = jwt.verify(token, api_chave);
-       
+
         // Hash da nova senha
         const hash = await bcrypt.hash(nova_senha, 10);
-       
+
         // Atualizar senha do usuário
         await conexao.execute(
             'UPDATE usuarios SET senha = ?, primeiro_acesso = 0 WHERE id_usuario = ?',
             [hash, decoded.id_usuario]
         );
-       
+
         // Marcar token como usado
         await conexao.execute(
             'UPDATE reset_tokens SET usado = 1 WHERE token = ?',
             [token]
         );
-       
+
         res.json({ mensagem: "Senha alterada com sucesso! Agora você pode fazer login." });
     } catch (error) {
         console.log(error);
@@ -292,27 +315,27 @@ app.post('/resetar-senha', async (req, res) => {
 // ================= CADASTRAR SENHA NO PRIMEIRO ACESSO =================
 app.post('/primeiro-acesso', async (req, res) => {
     const { id_usuario, nova_senha } = req.body;
-   
+
     if (!nova_senha || nova_senha.trim() === '') {
         return res.status(400).json({ error: "Senha não pode estar vazia!" });
     }
-   
+
     if (nova_senha.length < 6) {
         return res.status(400).json({ error: "Senha deve ter no mínimo 6 caracteres!" });
     }
-   
+
     try {
         const hash = await bcrypt.hash(nova_senha, 10);
-       
+
         const [resultado] = await conexao.execute(
             'UPDATE usuarios SET senha = ?, primeiro_acesso = 0 WHERE id_usuario = ? AND primeiro_acesso = 1',
             [hash, id_usuario]
         );
-       
+
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ error: "Usuário não encontrado ou já possui senha!" });
         }
-       
+
         res.json({ mensagem: "Senha cadastrada com sucesso! Agora você pode fazer login." });
     } catch (error) {
         console.log(error);
@@ -367,16 +390,16 @@ app.get('/servicos/:id', async (req, res) => {
 app.post('/servicos', async (req, res) => {
     try {
         const { nome, preco, duracao, pontos, status, pontos_resgate } = req.body;
-       
+
         if (!nome || !preco || !duracao) {
             return res.status(400).json({ error: "Nome, preço e duração são obrigatórios" });
         }
-       
+
         const [resultado] = await conexao.execute(
             'INSERT INTO servicos (nome, preco, duracao, pontos, status, pontos_resgate) VALUES (?, ?, ?, ?, ?, ?)',
             [nome, preco, duracao, pontos || 0, status !== undefined ? status : 1, pontos_resgate || null]
         );
-       
+
         res.json({
             insertId: resultado.insertId,
             mensagem: "Serviço cadastrado com sucesso!"
@@ -392,16 +415,16 @@ app.put('/servicos/:id', async (req, res) => {
     try {
         const { id } = req.params;
         const { nome, preco, duracao, pontos, status, pontos_resgate } = req.body;
-       
+
         const [resultado] = await conexao.execute(
             'UPDATE servicos SET nome = ?, preco = ?, duracao = ?, pontos = ?, status = ?, pontos_resgate = ? WHERE id_servicos = ?',
             [nome, preco, duracao, pontos || 0, status !== undefined ? status : 1, pontos_resgate || null, id]
         );
-       
+
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ error: "Serviço não encontrado" });
         }
-       
+
         res.json({ mensagem: "Serviço atualizado com sucesso!" });
     } catch (error) {
         console.log(error);
@@ -413,16 +436,16 @@ app.put('/servicos/:id', async (req, res) => {
 app.delete('/servicos/:id', async (req, res) => {
     try {
         const { id } = req.params;
-       
+
         const [resultado] = await conexao.execute(
             'UPDATE servicos SET status = 0 WHERE id_servicos = ?',
             [id]
         );
-       
+
         if (resultado.affectedRows === 0) {
             return res.status(404).json({ error: "Serviço não encontrado" });
         }
-       
+
         res.json({ mensagem: "Serviço deletado com sucesso!" });
     } catch (error) {
         console.log(error);
@@ -818,6 +841,7 @@ app.get('/fidelidade/ranking', async (req, res) => {
             FROM usuarios u
             LEFT JOIN fidelidade f ON f.id_usuario = u.id_usuario
             ORDER BY pontos DESC
+            LIMIT 10
         `);
         res.json(resultado);
     } catch (error) {
