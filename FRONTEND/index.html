@@ -899,6 +899,22 @@
                 return;
             }
 
+            // Valida formato de email (precisa de algo@algo.algo)
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                messageDiv.className = 'message error';
+                messageDiv.innerText = 'Digite um email válido!';
+                return;
+            }
+
+            // Valida CEP (8 dígitos numéricos, com ou sem hífen)
+            const cepDigits = cep.replace(/\D/g, '');
+            if (cepDigits.length !== 8) {
+                messageDiv.className = 'message error';
+                messageDiv.innerText = 'Digite um CEP válido com 8 dígitos!';
+                return;
+            }
+
             if (senha.length < 6) {
                 messageDiv.className = 'message error';
                 messageDiv.innerText = 'A senha deve ter no mínimo 6 caracteres!';

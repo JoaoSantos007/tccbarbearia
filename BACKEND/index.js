@@ -45,6 +45,23 @@ app.post('/cadastrar', async (req, res) => {
     try {
         const { nome_completo, cep, email, senha } = req.body;
 
+        // Validar campos obrigatórios
+        if (!nome_completo || !cep || !email) {
+            return res.status(400).json({ error: "Preencha todos os campos obrigatórios!" });
+        }
+
+        // Validar formato do email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: "Email inválido!" });
+        }
+
+        // Validar CEP (8 dígitos numéricos, com ou sem hífen/pontuação)
+        const cepDigits = String(cep).replace(/\D/g, '');
+        if (cepDigits.length !== 8) {
+            return res.status(400).json({ error: "CEP inválido! Deve conter 8 dígitos." });
+        }
+
         // Verificar se email já existe
         const [existe] = await conexao.execute(
             'SELECT email FROM usuarios WHERE email = ?',
@@ -56,7 +73,8 @@ app.post('/cadastrar', async (req, res) => {
         }
 
         // Se senha for vazia ou null, cadastra sem senha (primeiro acesso)
-        let senhaHash = null;
+        // OBS: a coluna 'senha' é NOT NULL no banco, então usamos string vazia em vez de null
+        let senhaHash = '';
         let primeiro_acesso = true;
 
         if (senha && senha.trim() !== '') {
@@ -157,6 +175,18 @@ app.get('/buscar', async (req, res) => {
 app.put('/atualizar', async (req, res) => {
     try {
         const { id_usuario, nome_completo, cep, email, senha } = req.body;
+
+        // Validar formato do email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: "Email inválido!" });
+        }
+
+        // Validar CEP (8 dígitos numéricos, com ou sem hífen/pontuação)
+        const cepDigits = String(cep).replace(/\D/g, '');
+        if (cepDigits.length !== 8) {
+            return res.status(400).json({ error: "CEP inválido! Deve conter 8 dígitos." });
+        }
 
         let query = 'UPDATE usuarios SET nome_completo = ?, cep = ?, email = ?';
         const params = [nome_completo, cep, email];
