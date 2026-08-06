@@ -222,6 +222,19 @@ app.delete('/deletar', async (req, res) => {
     try {
         const { id_usuario } = req.body;
 
+        // Remove primeiro os registros dependentes que não têm ON DELETE CASCADE
+        // (agendamentos e fidelidade referenciam usuarios sem cascade no banco)
+        const [agendamentosDoUsuario] = await conexao.execute(
+            'SELECT id FROM agendamentos WHERE id_usuario = ?',
+            [id_usuario]
+        );
+        for (const agendamento of agendamentosDoUsuario) {
+            await conexao.execute('DELETE FROM agendavalor WHERE id_agendamento = ?', [agendamento.id]);
+        }
+        await conexao.execute('DELETE FROM agendamentos WHERE id_usuario = ?', [id_usuario]);
+        await conexao.execute('DELETE FROM fidelidade WHERE id_usuario = ?', [id_usuario]);
+        // historico_resgates e reset_tokens já têm ON DELETE CASCADE no banco
+
         const [resultado] = await conexao.execute(
             'DELETE FROM usuarios WHERE id_usuario = ?',
             [id_usuario]
@@ -467,8 +480,32 @@ app.delete('/servicos/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
+        // Verifica se o serviço já foi usado em algum agendamento (agendavalor não tem ON DELETE CASCADE)
+        const [emUso] = await conexao.execute(
+            'SELECT COUNT(*) as total FROM agendavalor WHERE tipo_servico = ?',
+            [id]
+        );
+
+        if (emUso[0].total > 0) {
+            // Serviço com histórico de uso: não pode ser excluído por causa da FK, então é apenas desativado
+            const [resultado] = await conexao.execute(
+                'UPDATE servicos SET status = 0 WHERE id_servicos = ?',
+                [id]
+            );
+
+            if (resultado.affectedRows === 0) {
+                const [existe] = await conexao.execute('SELECT id_servicos FROM servicos WHERE id_servicos = ?', [id]);
+                if (existe.length === 0) {
+                    return res.status(404).json({ error: "Serviço não encontrado" });
+                }
+            }
+
+            return res.json({ mensagem: "Este serviço já possui agendamentos vinculados e foi apenas desativado, pois não pode ser excluído permanentemente." });
+        }
+
+        // Sem vínculos: pode excluir de fato
         const [resultado] = await conexao.execute(
-            'UPDATE servicos SET status = 0 WHERE id_servicos = ?',
+            'DELETE FROM servicos WHERE id_servicos = ?',
             [id]
         );
 
@@ -476,10 +513,10 @@ app.delete('/servicos/:id', async (req, res) => {
             return res.status(404).json({ error: "Serviço não encontrado" });
         }
 
-        res.json({ mensagem: "Serviço deletado com sucesso!" });
+        res.json({ mensagem: "Serviço excluído com sucesso!" });
     } catch (error) {
         console.log(error);
-        res.status(500).json({ error: "Erro ao deletar serviço" });
+        res.status(500).json({ error: "Erro ao excluir serviço" });
     }
 });
 // ===================== FUNCIONÁRIOS =====================
@@ -524,7 +561,7 @@ app.post('/funcionarios', async (req, res) => {
         }
 
         const [resultado] = await conexao.execute(
-            'INSERT INTO funcionario (nome, funcao) VALUES (?, ?)',
+            'INSERT INTO funcionario (nome, funcao, status) VALUES (?, ?, 1)',
             [nome, funcao]
         );
 
@@ -542,15 +579,15 @@ app.post('/funcionarios', async (req, res) => {
 app.put('/funcionarios/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { nome, funcao } = req.body;
+        const { nome, funcao, status } = req.body;
 
         if (!nome || !funcao) {
             return res.status(400).json({ error: "Nome e função são obrigatórios" });
         }
 
         const [resultado] = await conexao.execute(
-            'UPDATE funcionario SET nome = ?, funcao = ? WHERE id_funcionario = ?',
-            [nome, funcao, id]
+            'UPDATE funcionario SET nome = ?, funcao = ?, status = ? WHERE id_funcionario = ?',
+            [nome, funcao, status !== undefined ? status : 1, id]
         );
 
         if (resultado.affectedRows === 0) {
@@ -576,11 +613,20 @@ app.delete('/funcionarios/:id', async (req, res) => {
         );
 
         if (agendamentos.length > 0) {
-            return res.status(400).json({
-                error: "Não é possível excluir: funcionário possui agendamentos vinculados."
-            });
+            // Funcionário com histórico: não pode ser excluído por causa da FK, então é apenas desativado
+            const [resultado] = await conexao.execute(
+                'UPDATE funcionario SET status = 0 WHERE id_funcionario = ?',
+                [id]
+            );
+
+            if (resultado.affectedRows === 0) {
+                return res.status(404).json({ error: "Funcionário não encontrado" });
+            }
+
+            return res.json({ mensagem: "Este funcionário já possui agendamentos vinculados e foi apenas desativado, pois não pode ser excluído permanentemente." });
         }
 
+        // Sem vínculos: pode excluir de fato
         const [resultado] = await conexao.execute(
             'DELETE FROM funcionario WHERE id_funcionario = ?',
             [id]
@@ -701,6 +747,11 @@ app.post('/agendamentos', async (req, res) => {
             return res.status(400).json({
                 error: "id_usuario, id_funcionario, servicos (array) e data são obrigatórios"
             });
+        }
+
+        // Impede agendar em data/horário que já passou
+        if (new Date(data) < new Date()) {
+            return res.status(400).json({ error: "Não é possível agendar em uma data/horário que já passou" });
         }
 
         const valor_total = servicos.reduce((sum, s) => sum + parseFloat(s.valor), 0);

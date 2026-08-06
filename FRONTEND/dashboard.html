@@ -274,6 +274,12 @@
             border-color: var(--azul-accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
         }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+        .senha-wrapper { position: relative; }
+        .senha-wrapper input { padding-right: 38px; }
+        .toggle-senha {
+            position: absolute; top: 50%; right: 10px; transform: translateY(-50%);
+            cursor: pointer; user-select: none; font-size: 1rem; color: var(--cinza-medio);
+        }
 
         /* =========== TOAST =========== */
         #toastContainer {
@@ -575,6 +581,17 @@ async function apiDelete(endpoint, data = null) {
     } catch { return { error: 'Erro de conexão' }; }
 }
 
+function toggleSenha(inputId, icone) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icone.textContent = '🙈';
+    } else {
+        input.type = 'password';
+        icone.textContent = '👁️';
+    }
+}
+
 // ===================== INIT =====================
 function inicializar() {
     // Verificar se está autenticado
@@ -777,7 +794,12 @@ function abrirModalUsuario(data = null) {
         <div class="form-group"><label>Nome Completo *</label><input type="text" id="uNome" value="${data?.nome_completo || ''}"></div>
         <div class="form-group"><label>Email *</label><input type="email" id="uEmail" value="${data?.email || ''}"></div>
         <div class="form-group"><label>CEP *</label><input type="text" id="uCep" value="${data?.cep || ''}" maxlength="10"></div>
-        <div class="form-group"><label>Senha ${data ? '(deixe vazio para manter)' : '(opcional — se vazio, usuário define no 1º acesso)'}</label><input type="password" id="uSenha" placeholder="••••••"></div>
+        <div class="form-group"><label>Senha ${data ? '(deixe vazio para manter)' : '(opcional — se vazio, usuário define no 1º acesso)'}</label>
+            <div class="senha-wrapper">
+                <input type="password" id="uSenha" placeholder="••••••">
+                <span class="toggle-senha" onclick="toggleSenha('uSenha', this)">👁️</span>
+            </div>
+        </div>
         <div class="modal-btns">
             <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
             <button class="btn-save" style="margin:0" onclick="salvarUsuario(${data?.id_usuario || 'null'})">Salvar</button>
@@ -911,7 +933,7 @@ async function salvarServico(id) {
 
 async function editarServico(id) { abrirModalServico(await apiGet(`/servicos/${id}`)); }
 async function deletarServico(id) {
-    if (!confirm('Desativar este serviço?')) return;
+    if (!confirm('Excluir este serviço? Se ele já tiver agendamentos vinculados, será apenas desativado.')) return;
     const result = await apiDelete(`/servicos/${id}`);
     toast(result.mensagem || result.error, result.error ? 'error' : 'success');
     renderPage();
@@ -923,25 +945,31 @@ async function renderFuncionarios() {
     return `
         <div class="filter-bar">
             <input type="text" id="buscaFunc" placeholder="🔍 Buscar funcionário..." oninput="filtrarFuncionarios()" style="min-width:220px">
+            <select onchange="filtrarFuncionariosPorStatus(this.value)" style="width:auto">
+                <option value="">Todos</option>
+                <option value="1">Ativos</option>
+                <option value="0">Inativos</option>
+            </select>
             <span style="color:var(--cinza-medio);font-size:0.8rem;margin-left:auto">${funcs.length} funcionários</span>
         </div>
         <div class="card">
             <div class="card-header"><div class="card-title">💈 Funcionários</div></div>
             <div class="card-body" style="padding:0">
                 <table class="data-table" id="tabelaFunc">
-                    <thead><tr><th>ID</th><th>Nome</th><th>Função</th><th>Ações</th></tr></thead>
+                    <thead><tr><th>ID</th><th>Nome</th><th>Função</th><th>Status</th><th>Ações</th></tr></thead>
                     <tbody>
                         ${funcs.length ? funcs.map(f => `
-                            <tr>
+                            <tr data-status="${f.status}">
                                 <td style="color:var(--cinza-medio)">#${f.id_funcionario}</td>
                                 <td><strong>${f.nome}</strong></td>
                                 <td><span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:12px;font-size:0.75rem;font-weight:600">${f.funcao}</span></td>
+                                <td><span class="status-badge ${f.status==1?'status-ativo':'status-inativo'}">${f.status==1?'Ativo':'Inativo'}</span></td>
                                 <td>
                                     <button class="btn-editar" onclick="editarFuncionario(${f.id_funcionario})">Editar</button>
                                     <button class="btn-deletar" onclick="deletarFuncionario(${f.id_funcionario})">Excluir</button>
                                 </td>
                             </tr>
-                        `).join('') : `<tr><td colspan="4"><div class="empty-state"><div class="empty-icon">💈</div><p>Nenhum funcionário cadastrado</p></div></td></tr>`}
+                        `).join('') : `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">💈</div><p>Nenhum funcionário cadastrado</p></div></td></tr>`}
                     </tbody>
                 </table>
             </div>
@@ -956,6 +984,11 @@ function filtrarFuncionarios() {
         row.style.display = nome.includes(busca) ? '' : 'none';
     });
 }
+function filtrarFuncionariosPorStatus(val) {
+    document.querySelectorAll('#tabelaFunc tbody tr').forEach(row => {
+        row.style.display = (!val || row.dataset.status == val) ? '' : 'none';
+    });
+}
 
 function abrirModalFuncionario(data = null) {
     document.getElementById('modal').style.display = 'flex';
@@ -963,6 +996,7 @@ function abrirModalFuncionario(data = null) {
         ${modalHeader(data ? 'Editar Funcionário' : 'Novo Funcionário')}
         <div class="form-group"><label>Nome *</label><input type="text" id="fNome" value="${data?.nome || ''}"></div>
         <div class="form-group"><label>Função *</label><input type="text" id="fFuncao" value="${data?.funcao || ''}" placeholder="Ex: Barbeiro, Estilista..."></div>
+        ${data ? `<div class="form-group"><label>Status</label><select id="fStatus"><option value="1" ${data.status==1?'selected':''}>Ativo</option><option value="0" ${data.status==0?'selected':''}>Inativo</option></select></div>` : ''}
         <div class="modal-btns">
             <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
             <button class="btn-save" style="margin:0" onclick="salvarFuncionario(${data?.id_funcionario || 'null'})">Salvar</button>
@@ -975,6 +1009,9 @@ async function salvarFuncionario(id) {
         nome: document.getElementById('fNome').value.trim(),
         funcao: document.getElementById('fFuncao').value.trim()
     };
+    if (id) {
+        dados.status = parseInt(document.getElementById('fStatus')?.value ?? 1);
+    }
     if (!dados.nome || !dados.funcao) { toast('Preencha todos os campos', 'error'); return; }
     const result = id
         ? await apiPut(`/funcionarios/${id}`, dados)
@@ -990,7 +1027,7 @@ async function editarFuncionario(id) {
 }
 
 async function deletarFuncionario(id) {
-    if (!confirm('Excluir este funcionário?')) return;
+    if (!confirm('Excluir este funcionário? Se ele já tiver agendamentos vinculados, será apenas desativado.')) return;
     const result = await apiDelete(`/funcionarios/${id}`);
     toast(result.mensagem || result.error, result.error ? 'error' : 'success');
     renderPage();
@@ -1070,6 +1107,7 @@ function filtrarAgendamentos() {
 async function abrirModalAgendamento(data = null) {
     const [usuarios, servicos, funcs] = await Promise.all([apiGet('/buscar'), apiGet('/servicos'), apiGet('/funcionarios')]);
     const servicosAtivos = servicos.filter(s => s.status == 1);
+    const funcsAtivos = funcs.filter(f => f.status == 1 || (data?.id_funcionario == f.id_funcionario));
 
     let dataVal = '', horaVal = '';
     if (data?.data) {
@@ -1149,11 +1187,11 @@ async function abrirModalAgendamento(data = null) {
         <div class="form-group"><label>Profissional *</label>
             <select id="agFuncionario">
                 <option value="">Selecione o profissional</option>
-                ${funcs.map(f => `<option value="${f.id_funcionario}" ${data?.id_funcionario==f.id_funcionario?'selected':''}>${f.nome} — ${f.funcao}</option>`).join('')}
+                ${funcsAtivos.map(f => `<option value="${f.id_funcionario}" ${data?.id_funcionario==f.id_funcionario?'selected':''}>${f.nome} — ${f.funcao}${f.status==0?' (inativo)':''}</option>`).join('')}
             </select>
         </div>
         <div class="form-row">
-            <div class="form-group"><label>Data *</label><input type="date" id="agData" value="${dataVal}"></div>
+            <div class="form-group"><label>Data *</label><input type="date" id="agData" value="${dataVal}" ${!data ? `min="${new Date().toISOString().split('T')[0]}"` : ''}></div>
             <div class="form-group"><label>Horário *</label><input type="time" id="agHora" value="${horaVal}"></div>
         </div>
         <div class="form-row">
@@ -1252,6 +1290,10 @@ async function salvarAgendamento(id) {
     };
     if (!dados.id_usuario || !dados.id_funcionario || !dados.data) {
         toast('Preencha todos os campos obrigatórios', 'error'); return;
+    }
+    // Bloqueia datas passadas apenas ao criar um novo agendamento
+    if (!id && new Date(dados.data) < new Date()) {
+        toast('Não é possível agendar em uma data/horário que já passou', 'error'); return;
     }
     const result = id
         ? await apiPut(`/agendamentos/${id}`, dados)
@@ -1634,8 +1676,18 @@ async function renderConfiguracoes() {
                 <div class="card-header"><div class="card-title">🔒 Segurança</div></div>
                 <div class="card-body">
                     <p style="font-size:0.85rem;color:var(--cinza-medio);margin-bottom:14px">Altere sua senha de acesso ao sistema.</p>
-                    <div class="form-group"><label>Nova Senha</label><input type="password" id="novaSenha" placeholder="Mínimo 6 caracteres"></div>
-                    <div class="form-group"><label>Confirmar Senha</label><input type="password" id="confirmarSenha" placeholder="Repita a senha"></div>
+                    <div class="form-group"><label>Nova Senha</label>
+                        <div class="senha-wrapper">
+                            <input type="password" id="novaSenha" placeholder="Mínimo 6 caracteres">
+                            <span class="toggle-senha" onclick="toggleSenha('novaSenha', this)">👁️</span>
+                        </div>
+                    </div>
+                    <div class="form-group"><label>Confirmar Senha</label>
+                        <div class="senha-wrapper">
+                            <input type="password" id="confirmarSenha" placeholder="Repita a senha">
+                            <span class="toggle-senha" onclick="toggleSenha('confirmarSenha', this)">👁️</span>
+                        </div>
+                    </div>
                     <button class="btn-novo" style="width:auto" onclick="alterarSenha()">🔑 Alterar Senha</button>
                 </div>
             </div>

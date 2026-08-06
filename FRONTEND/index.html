@@ -228,30 +228,6 @@
             transform: translateY(-3px);
         }
 
-        /* Status Banner */
-        .status-banner {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--branco);
-            padding: 10px 15px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            font-size: 0.85rem;
-            z-index: 1000;
-            border-left: 4px solid;
-        }
-
-        .status-banner.online {
-            border-left-color: var(--verde);
-            color: var(--verde);
-        }
-
-        .status-banner.offline {
-            border-left-color: var(--vermelho);
-            color: var(--vermelho);
-        }
-
         /* Sections */
         .section {
             padding: 80px 50px;
@@ -506,6 +482,29 @@
             font-family: 'DM Sans', sans-serif;
         }
 
+        .senha-wrapper {
+            position: relative;
+        }
+
+        .senha-wrapper input {
+            padding-right: 45px;
+        }
+
+        .toggle-senha {
+            position: absolute;
+            top: 50%;
+            right: 14px;
+            transform: translateY(-50%);
+            cursor: pointer;
+            user-select: none;
+            font-size: 1.1rem;
+            color: var(--cinza-escuro);
+            width: auto;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
         input:focus,
         select:focus {
             outline: none;
@@ -625,11 +624,6 @@
 </head>
 
 <body>
-    <!-- Status Banner -->
-    <div class="status-banner offline" id="statusBanner">
-        🔌 Verificando conexão...
-    </div>
-
     <!-- Landing Page -->
     <div class="landing-page" id="landingPage">
         <div class="header">
@@ -752,7 +746,10 @@
                 </div>
                 <div class="form-group">
                     <label>Senha</label>
-                    <input type="password" id="loginSenha" placeholder="********">
+                    <div class="senha-wrapper">
+                        <input type="password" id="loginSenha" placeholder="********">
+                        <span class="toggle-senha" onclick="toggleSenha('loginSenha', this)">👁️</span>
+                    </div>
                 </div>
                 <button onclick="fazerLogin()">Entrar</button>
                 <div class="forgot-password">
@@ -786,11 +783,17 @@
                 </div>
                 <div class="form-group">
                     <label>Senha *</label>
-                    <input type="password" id="regSenha" placeholder="Mínimo 6 caracteres">
+                    <div class="senha-wrapper">
+                        <input type="password" id="regSenha" placeholder="Mínimo 6 caracteres">
+                        <span class="toggle-senha" onclick="toggleSenha('regSenha', this)">👁️</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Confirmar Senha *</label>
-                    <input type="password" id="regSenhaConfirm" placeholder="Repita sua senha">
+                    <div class="senha-wrapper">
+                        <input type="password" id="regSenhaConfirm" placeholder="Repita sua senha">
+                        <span class="toggle-senha" onclick="toggleSenha('regSenhaConfirm', this)">👁️</span>
+                    </div>
                 </div>
                 <button onclick="cadastrarNovoUsuario()">Cadastrar</button>
                 <div class="forgot-password">
@@ -805,28 +808,14 @@
     <script>
         const API_URL = 'http://localhost:3000';
 
-        // Testar conexão com o backend
-        async function testarConexao() {
-            const statusBanner = document.getElementById('statusBanner');
-            try {
-                const response = await fetch(`${API_URL}/buscar`, {
-                    method: 'GET',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-
-                if (response.ok) {
-                    statusBanner.className = 'status-banner online';
-                    statusBanner.innerHTML = '✅ Conectado ao servidor';
-                    console.log('✅ Conexão com backend estabelecida!');
-                    return true;
-                } else {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-            } catch (error) {
-                statusBanner.className = 'status-banner offline';
-                statusBanner.innerHTML = '❌ Sem conexão. Verifique se o backend está rodando em ' + API_URL;
-                console.error('❌ Erro de conexão:', error);
-                return false;
+        function toggleSenha(inputId, icone) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icone.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                icone.textContent = '👁️';
             }
         }
 
@@ -1092,8 +1081,6 @@
 
         // Inicializar
         carregarLogo();
-        testarConexao();
-        setInterval(testarConexao, 30000);
     </script>
 </body>
 
