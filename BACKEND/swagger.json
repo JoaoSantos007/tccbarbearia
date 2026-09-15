@@ -1,146 +1,982 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-      "title": "API de Usuários",
-      "description": "Documentação da API para gerenciamento de usuários",
-      "version": "1.0.0"
-    },
-    "servers": [
-      {
-        "url": "http://localhost:3000",
-        "description": "Servidor local"
-      }
-    ],
-    "paths": {
-      "/cadastrar": {
-        "post": {
-          "summary": "Cadastrar usuário",
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Usuario"
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "Usuário cadastrado com sucesso"
-            }
-          }
-        }
-      },
-      "/buscar": {
-        "get": {
-          "summary": "Buscar todos os usuários",
-          "responses": {
-            "200": {
-              "description": "Lista de usuários",
-              "content": {
-                "application/json": {
-                  "schema": {
-                    "type": "array",
-                    "items": {
-                      "$ref": "#/components/schemas/Usuario"
-                    }
-                  }
-                }
-              }
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Barbershop",
+    "description": "Documentação da API para gerenciamento de usuários, autenticação, serviços, funcionários, agendamentos e programa de fidelidade.",
+    "version": "2.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://10.111.9.50:3000",
+      "description": "Servidor local"
+    }
+  ],
+  "tags": [
+    { "name": "Usuários", "description": "Cadastro, consulta, atualização e remoção de usuários" },
+    { "name": "Autenticação", "description": "Login e recuperação/definição de senha" },
+    { "name": "Serviços", "description": "Catálogo de serviços da barbearia" },
+    { "name": "Funcionários", "description": "Gerenciamento de funcionários" },
+    { "name": "Agendamentos", "description": "Criação e gestão de agendamentos" },
+    { "name": "Fidelidade", "description": "Programa de pontos de fidelidade" }
+  ],
+  "paths": {
+    "/cadastrar": {
+      "post": {
+        "tags": ["Usuários"],
+        "summary": "Cadastrar usuário",
+        "description": "Cria um novo usuário. Se a senha não for informada, o usuário é criado em modo 'primeiro acesso' e deverá cadastrá-la depois via /primeiro-acesso.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UsuarioCadastro" }
             }
           }
-        }
-      },
-      "/atualizar": {
-        "put": {
-          "summary": "Atualizar usuário",
-          "requestBody": {
-            "required": true,
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UsuarioComId"
-                }
-              }
-            }
-          },
-          "responses": {
-            "200": {
-              "description": "Usuário atualizado com sucesso"
-            }
-          }
-        }
-      },
-      "/deletar": {
-        "delete": {
-          "summary": "Deletar usuário",
-          "requestBody": {
-            "required": true,
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário cadastrado com sucesso",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "id": {
-                      "type": "integer",
-                      "example": 1
-                    }
-                  },
-                  "required": ["id"]
+                    "insertId": { "type": "integer", "example": 1 },
+                    "mensagem": { "type": "string", "example": "Usuário cadastrado com sucesso!" }
+                  }
                 }
               }
             }
           },
-          "responses": {
-            "200": {
-              "description": "Usuário deletado com sucesso"
-            }
-          }
+          "400": { "description": "Campos obrigatórios ausentes, email inválido, CEP inválido ou email já cadastrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao cadastrar usuário", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
         }
       }
     },
-    "components": {
-      "schemas": {
-        "Usuario": {
-          "type": "object",
-          "properties": {
-            "nome_completo": {
-              "type": "string",
-              "example": "João da Silva"
-            },
-            "cep": {
-              "type": "string",
-              "example": "19000-000"
-            },
-            "email": {
-              "type": "string",
-              "example": "joao@email.com"
-            },
-            "senha": {
-              "type": "string",
-              "example": "123456"
+    "/login": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Login do usuário",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Login" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensagem": { "type": "string" },
+                    "token": { "type": "string" },
+                    "usuario": {
+                      "type": "object",
+                      "properties": {
+                        "id_usuario": { "type": "integer" },
+                        "nome": { "type": "string" },
+                        "email": { "type": "string" },
+                        "cep": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
             }
           },
-          "required": ["nome_completo", "cep", "email", "senha"]
+          "401": { "description": "Email ou senha inválidos", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "403": {
+            "description": "Primeiro acesso: usuário ainda não cadastrou senha",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensagem": { "type": "string", "example": "Primeiro acesso! Cadastre sua senha." },
+                    "primeiro_acesso": { "type": "boolean", "example": true },
+                    "usuario_id": { "type": "integer", "example": 1 }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Email não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao fazer login", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/buscar": {
+      "get": {
+        "tags": ["Usuários"],
+        "summary": "Buscar todos os usuários",
+        "responses": {
+          "200": {
+            "description": "Lista de usuários",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/UsuarioResumo" }
+                }
+              }
+            }
+          },
+          "500": { "description": "Erro ao buscar usuários", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/atualizar": {
+      "put": {
+        "tags": ["Usuários"],
+        "summary": "Atualizar usuário",
+        "description": "Atualiza dados do usuário. Se 'senha' for informada, ela também é atualizada e o usuário deixa de estar em modo 'primeiro acesso'.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UsuarioAtualizar" }
+            }
+          }
         },
-        "UsuarioComId": {
-          "allOf": [
-            {
-              "$ref": "#/components/schemas/Usuario"
-            },
-            {
+        "responses": {
+          "200": {
+            "description": "Usuário atualizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "affectedRows": { "type": "integer", "example": 1 },
+                    "mensagem": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Email ou CEP inválido", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "404": { "description": "Usuário não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao atualizar usuário", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/deletar": {
+      "delete": {
+        "tags": ["Usuários"],
+        "summary": "Deletar usuário",
+        "description": "Remove o usuário e seus registros dependentes (agendamentos, valores de agendamento e fidelidade).",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_usuario": { "type": "integer", "example": 1 }
+                },
+                "required": ["id_usuario"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Usuário deletado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "affectedRows": { "type": "integer", "example": 1 },
+                    "mensagem": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Usuário não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao deletar usuário", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/esqueci-senha": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Solicitar recuperação de senha",
+        "description": "Gera um token de recuperação válido por 30 minutos. Em produção seria enviado por email; aqui é retornado na resposta para demonstração.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": { "email": { "type": "string", "example": "joao@email.com" } },
+                "required": ["email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Link de recuperação gerado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensagem": { "type": "string" },
+                    "token": { "type": "string" },
+                    "link_demo": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Email não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao processar solicitação", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/resetar-senha": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Resetar senha via token",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": { "type": "string" },
+                  "nova_senha": { "type": "string", "example": "novaSenha123", "minLength": 6 }
+                },
+                "required": ["token", "nova_senha"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Senha alterada com sucesso",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "mensagem": { "type": "string" } } } } }
+          },
+          "400": { "description": "Senha vazia/curta ou token inválido/expirado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao resetar senha", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/primeiro-acesso": {
+      "post": {
+        "tags": ["Autenticação"],
+        "summary": "Cadastrar senha no primeiro acesso",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_usuario": { "type": "integer", "example": 1 },
+                  "nova_senha": { "type": "string", "example": "minhaSenha123", "minLength": 6 }
+                },
+                "required": ["id_usuario", "nova_senha"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Senha cadastrada com sucesso",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "mensagem": { "type": "string" } } } } }
+          },
+          "400": { "description": "Senha vazia ou muito curta", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "404": { "description": "Usuário não encontrado ou já possui senha", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao cadastrar senha", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/servicos": {
+      "get": {
+        "tags": ["Serviços"],
+        "summary": "Buscar todos os serviços",
+        "responses": {
+          "200": {
+            "description": "Lista de serviços",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Servico" } } } }
+          },
+          "500": { "description": "Erro ao buscar serviços", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      },
+      "post": {
+        "tags": ["Serviços"],
+        "summary": "Cadastrar serviço",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServicoEntrada" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Serviço cadastrado com sucesso",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "insertId": { "type": "integer" }, "mensagem": { "type": "string" } } } } }
+          },
+          "400": { "description": "Nome, preço e duração são obrigatórios", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao cadastrar serviço", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/servicos/resgate": {
+      "get": {
+        "tags": ["Serviços"],
+        "summary": "Buscar serviços disponíveis para resgate por pontos",
+        "description": "Retorna serviços ativos que possuem pontos_resgate definido, ordenados do menor para o maior custo em pontos.",
+        "responses": {
+          "200": {
+            "description": "Lista de serviços resgatáveis",
+            "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Servico" } } } }
+          },
+          "500": { "description": "Erro ao buscar serviços de resgate", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/servicos/{id}": {
+      "get": {
+        "tags": ["Serviços"],
+        "summary": "Buscar serviço por ID",
+        "parameters": [{ "$ref": "#/components/parameters/ServicoId" }],
+        "responses": {
+          "200": { "description": "Serviço encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Servico" } } } },
+          "404": { "description": "Serviço não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao buscar serviço", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      },
+      "put": {
+        "tags": ["Serviços"],
+        "summary": "Atualizar serviço",
+        "parameters": [{ "$ref": "#/components/parameters/ServicoId" }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ServicoEntrada" } } }
+        },
+        "responses": {
+          "200": { "description": "Serviço atualizado com sucesso", "content": { "application/json": { "schema": { "type": "object", "properties": { "mensagem": { "type": "string" } } } } } },
+          "404": { "description": "Serviço não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao atualizar serviço", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      },
+      "delete": {
+        "tags": ["Serviços"],
+        "summary": "Excluir serviço",
+        "description": "Exclui o serviço permanentemente. Se já houver agendamentos vinculados a ele, apenas desativa (status = 0) em vez de excluir.",
+        "parameters": [{ "$ref": "#/components/parameters/ServicoId" }],
+        "responses": {
+          "200": {
+            "description": "Serviço excluído ou desativado com sucesso",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "mensagem": { "type": "string" } } } } }
+          },
+          "404": { "description": "Serviço não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao excluir serviço", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/funcionarios": {
+      "get": {
+        "tags": ["Funcionários"],
+        "summary": "Buscar todos os funcionários",
+        "responses": {
+          "200": { "description": "Lista de funcionários", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Funcionario" } } } } },
+          "500": { "description": "Erro ao buscar funcionários", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      },
+      "post": {
+        "tags": ["Funcionários"],
+        "summary": "Cadastrar funcionário",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FuncionarioEntrada" } } }
+        },
+        "responses": {
+          "200": { "description": "Funcionário cadastrado com sucesso", "content": { "application/json": { "schema": { "type": "object", "properties": { "insertId": { "type": "integer" }, "mensagem": { "type": "string" } } } } } },
+          "400": { "description": "Nome e função são obrigatórios", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao cadastrar funcionário", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/funcionarios/{id}": {
+      "get": {
+        "tags": ["Funcionários"],
+        "summary": "Buscar funcionário por ID",
+        "parameters": [{ "$ref": "#/components/parameters/FuncionarioId" }],
+        "responses": {
+          "200": { "description": "Funcionário encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Funcionario" } } } },
+          "404": { "description": "Funcionário não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao buscar funcionário", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      },
+      "put": {
+        "tags": ["Funcionários"],
+        "summary": "Atualizar funcionário",
+        "parameters": [{ "$ref": "#/components/parameters/FuncionarioId" }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/FuncionarioEntrada" } } }
+        },
+        "responses": {
+          "200": { "description": "Funcionário atualizado com sucesso", "content": { "application/json": { "schema": { "type": "object", "properties": { "mensagem": { "type": "string" } } } } } },
+          "400": { "description": "Nome e função são obrigatórios", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "404": { "description": "Funcionário não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao atualizar funcionário", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      },
+      "delete": {
+        "tags": ["Funcionários"],
+        "summary": "Excluir funcionário",
+        "description": "Exclui o funcionário permanentemente. Se já houver agendamentos vinculados a ele, apenas desativa (status = 0) em vez de excluir.",
+        "parameters": [{ "$ref": "#/components/parameters/FuncionarioId" }],
+        "responses": {
+          "200": { "description": "Funcionário excluído ou desativado com sucesso", "content": { "application/json": { "schema": { "type": "object", "properties": { "mensagem": { "type": "string" } } } } } },
+          "404": { "description": "Funcionário não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao excluir funcionário", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/agendamentos": {
+      "get": {
+        "tags": ["Agendamentos"],
+        "summary": "Buscar todos os agendamentos",
+        "description": "Retorna todos os agendamentos com dados do cliente, funcionário, serviços vinculados e valor total.",
+        "responses": {
+          "200": { "description": "Lista de agendamentos", "content": { "application/json": { "schema": { "type": "array", "items": { "$ref": "#/components/schemas/AgendamentoSaida" } } } } },
+          "500": { "description": "Erro ao buscar agendamentos", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      },
+      "post": {
+        "tags": ["Agendamentos"],
+        "summary": "Criar agendamento com múltiplos serviços",
+        "description": "Não permite agendar em data/horário que já passou.",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgendamentoEntrada" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "Agendamento criado com sucesso",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "insertId": { "type": "integer" }, "valor_total": { "type": "number" }, "mensagem": { "type": "string" } } } } }
+          },
+          "400": { "description": "Campos obrigatórios ausentes ou data no passado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao criar agendamento", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/agendamentos/{id}": {
+      "get": {
+        "tags": ["Agendamentos"],
+        "summary": "Buscar agendamento por ID",
+        "parameters": [{ "$ref": "#/components/parameters/AgendamentoId" }],
+        "responses": {
+          "200": { "description": "Agendamento encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgendamentoSaida" } } } },
+          "404": { "description": "Agendamento não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao buscar agendamento", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      },
+      "put": {
+        "tags": ["Agendamentos"],
+        "summary": "Atualizar agendamento",
+        "description": "Se 'servicos' for informado, os vínculos antigos em agendavalor são apagados e reinseridos.",
+        "parameters": [{ "$ref": "#/components/parameters/AgendamentoId" }],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/AgendamentoEntrada" } } }
+        },
+        "responses": {
+          "200": { "description": "Agendamento atualizado com sucesso", "content": { "application/json": { "schema": { "type": "object", "properties": { "mensagem": { "type": "string" }, "valor_total": { "type": "number" } } } } } },
+          "404": { "description": "Agendamento não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao atualizar agendamento", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      },
+      "delete": {
+        "tags": ["Agendamentos"],
+        "summary": "Excluir agendamento",
+        "parameters": [{ "$ref": "#/components/parameters/AgendamentoId" }],
+        "responses": {
+          "200": { "description": "Agendamento excluído com sucesso", "content": { "application/json": { "schema": { "type": "object", "properties": { "mensagem": { "type": "string" } } } } } },
+          "404": { "description": "Agendamento não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao excluir agendamento", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/agendamentos/{id}/status": {
+      "patch": {
+        "tags": ["Agendamentos"],
+        "summary": "Atualizar apenas o status de um agendamento",
+        "parameters": [{ "$ref": "#/components/parameters/AgendamentoId" }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "status": { "type": "string", "enum": ["agendado", "confirmado", "concluido", "cancelado"], "example": "confirmado" }
+                },
+                "required": ["status"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Status atualizado com sucesso", "content": { "application/json": { "schema": { "type": "object", "properties": { "mensagem": { "type": "string" } } } } } },
+          "400": { "description": "Status inválido", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "404": { "description": "Agendamento não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao atualizar status", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/agendamentos/funcionario/{id}": {
+      "get": {
+        "tags": ["Agendamentos"],
+        "summary": "Buscar agendamentos por funcionário",
+        "parameters": [{ "$ref": "#/components/parameters/FuncionarioId" }],
+        "responses": {
+          "200": { "description": "Lista de agendamentos do funcionário", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "object" } } } } },
+          "500": { "description": "Erro ao buscar agendamentos do funcionário", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/agendamentos/usuario/{id}": {
+      "get": {
+        "tags": ["Agendamentos"],
+        "summary": "Buscar agendamentos por usuário/cliente",
+        "parameters": [{ "$ref": "#/components/parameters/UsuarioIdParam" }],
+        "responses": {
+          "200": { "description": "Lista de agendamentos do usuário", "content": { "application/json": { "schema": { "type": "array", "items": { "type": "object" } } } } },
+          "500": { "description": "Erro ao buscar agendamentos do usuário", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/agendavalor/{id_agendamento}": {
+      "get": {
+        "tags": ["Agendamentos"],
+        "summary": "Buscar serviços vinculados a um agendamento",
+        "parameters": [
+          {
+            "name": "id_agendamento",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de serviços do agendamento",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "tipo_servico": { "type": "integer" },
+                      "valor": { "type": "number" },
+                      "nome": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": { "description": "Erro ao buscar serviços do agendamento", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/fidelidade/ranking": {
+      "get": {
+        "tags": ["Fidelidade"],
+        "summary": "Ranking de pontos dos 10 clientes com mais pontos",
+        "responses": {
+          "200": {
+            "description": "Ranking de fidelidade",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id_usuario": { "type": "integer" },
+                      "nome_completo": { "type": "string" },
+                      "email": { "type": "string" },
+                      "pontos": { "type": "number" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": { "description": "Erro ao buscar ranking de fidelidade", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/fidelidade/resgates": {
+      "get": {
+        "tags": ["Fidelidade"],
+        "summary": "Histórico de resgates realizados por todos os clientes",
+        "responses": {
+          "200": {
+            "description": "Lista de resgates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": { "type": "integer" },
+                      "nome_cliente": { "type": "string" },
+                      "nome_servico": { "type": "string" },
+                      "pontos_gastos": { "type": "number" },
+                      "data_resgate": { "type": "string", "format": "date-time" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": { "description": "Erro ao buscar histórico de resgates", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/fidelidade/{id_usuario}": {
+      "get": {
+        "tags": ["Fidelidade"],
+        "summary": "Consultar pontos e histórico de um cliente",
+        "description": "Retorna saldo atual, total ganho, total resgatado e histórico de pontos ganhos por agendamentos concluídos (até 20 registros mais recentes).",
+        "parameters": [
+          {
+            "name": "id_usuario",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados de fidelidade do cliente",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id_usuario": { "type": "string" },
+                    "pontos": { "type": "number" },
+                    "total_ganho": { "type": "number" },
+                    "total_resgatado": { "type": "number" },
+                    "historico": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "tipo": { "type": "string", "example": "ganho" },
+                          "pontos": { "type": "number" },
+                          "descricao": { "type": "string" },
+                          "data": { "type": "string", "format": "date-time" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": { "description": "Erro ao buscar pontos do cliente", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/fidelidade/adicionar": {
+      "post": {
+        "tags": ["Fidelidade"],
+        "summary": "Adicionar pontos manualmente a um cliente",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_usuario": { "type": "integer", "example": 1 },
+                  "pontos": { "type": "number", "example": 50 }
+                },
+                "required": ["id_usuario", "pontos"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pontos adicionados com sucesso",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "mensagem": { "type": "string" }, "saldo": { "type": "number" } } } } }
+          },
+          "400": { "description": "id_usuario e pontos são obrigatórios", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao adicionar pontos", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/fidelidade/resgatar": {
+      "post": {
+        "tags": ["Fidelidade"],
+        "summary": "Resgatar serviço usando pontos",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_usuario": { "type": "integer", "example": 1 },
+                  "id_servico": { "type": "integer", "example": 3 }
+                },
+                "required": ["id_usuario", "id_servico"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Resgate realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "mensagem": { "type": "string" },
+                    "pontos_usados": { "type": "number" },
+                    "saldo_restante": { "type": "number" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "id_usuario/id_servico ausentes ou saldo insuficiente", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "404": { "description": "Serviço não encontrado ou não disponível para resgate", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao resgatar serviço", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    },
+    "/fidelidade/creditar-agendamento": {
+      "post": {
+        "tags": ["Fidelidade"],
+        "summary": "Creditar pontos automaticamente ao concluir agendamento",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_agendamento": { "type": "integer", "example": 10 }
+                },
+                "required": ["id_agendamento"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pontos creditados com sucesso (ou nenhum ponto a creditar)",
+            "content": { "application/json": { "schema": { "type": "object", "properties": { "mensagem": { "type": "string" }, "pontos_creditados": { "type": "number" } } } } }
+          },
+          "400": { "description": "id_agendamento ausente ou agendamento não concluído", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "404": { "description": "Agendamento não encontrado", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } },
+          "500": { "description": "Erro ao creditar pontos", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Erro" } } } }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token JWT obtido em /login. Utilizado pelo middleware de autenticação (não aplicado a todas as rotas atualmente)."
+      }
+    },
+    "parameters": {
+      "ServicoId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer" },
+        "example": 1
+      },
+      "FuncionarioId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer" },
+        "example": 1
+      },
+      "AgendamentoId": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer" },
+        "example": 1
+      },
+      "UsuarioIdParam": {
+        "name": "id",
+        "in": "path",
+        "required": true,
+        "schema": { "type": "integer" },
+        "example": 1
+      }
+    },
+    "schemas": {
+      "Erro": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" }
+        }
+      },
+      "UsuarioCadastro": {
+        "type": "object",
+        "properties": {
+          "nome_completo": { "type": "string", "example": "João da Silva" },
+          "cep": { "type": "string", "example": "19000-000" },
+          "email": { "type": "string", "example": "joao@email.com" },
+          "senha": {
+            "type": "string",
+            "example": "123456",
+            "description": "Opcional. Se omitida ou vazia, o usuário é criado em modo 'primeiro acesso' e deve cadastrá-la via /primeiro-acesso."
+          }
+        },
+        "required": ["nome_completo", "cep", "email"]
+      },
+      "UsuarioAtualizar": {
+        "type": "object",
+        "properties": {
+          "id_usuario": { "type": "integer", "example": 1 },
+          "nome_completo": { "type": "string", "example": "João da Silva" },
+          "cep": { "type": "string", "example": "19000-000" },
+          "email": { "type": "string", "example": "joao@email.com" },
+          "senha": { "type": "string", "example": "novaSenha123", "description": "Opcional. Se informada, atualiza a senha do usuário." }
+        },
+        "required": ["id_usuario", "nome_completo", "cep", "email"]
+      },
+      "UsuarioResumo": {
+        "type": "object",
+        "properties": {
+          "id_usuario": { "type": "integer", "example": 1 },
+          "nome_completo": { "type": "string", "example": "João da Silva" },
+          "email": { "type": "string", "example": "joao@email.com" },
+          "cep": { "type": "string", "example": "19000-000" },
+          "primeiro_acesso": { "type": "boolean", "example": false }
+        }
+      },
+      "Login": {
+        "type": "object",
+        "properties": {
+          "email": { "type": "string", "example": "joao@email.com" },
+          "senha": { "type": "string", "example": "123456" }
+        },
+        "required": ["email", "senha"]
+      },
+      "Servico": {
+        "type": "object",
+        "properties": {
+          "id_servicos": { "type": "integer", "example": 1 },
+          "nome": { "type": "string", "example": "Corte de cabelo" },
+          "preco": { "type": "number", "example": 40.0 },
+          "duracao": { "type": "integer", "description": "Duração em minutos", "example": 30 },
+          "pontos": { "type": "integer", "description": "Pontos de fidelidade ganhos ao concluir este serviço", "example": 10 },
+          "status": { "type": "integer", "description": "1 = ativo, 0 = inativo", "example": 1 },
+          "pontos_resgate": { "type": "integer", "nullable": true, "description": "Custo em pontos para resgatar este serviço (quando disponível para resgate)", "example": 100 }
+        }
+      },
+      "ServicoEntrada": {
+        "type": "object",
+        "properties": {
+          "nome": { "type": "string", "example": "Corte de cabelo" },
+          "preco": { "type": "number", "example": 40.0 },
+          "duracao": { "type": "integer", "example": 30 },
+          "pontos": { "type": "integer", "example": 10 },
+          "status": { "type": "integer", "example": 1 },
+          "pontos_resgate": { "type": "integer", "nullable": true, "example": 100 }
+        },
+        "required": ["nome", "preco", "duracao"]
+      },
+      "Funcionario": {
+        "type": "object",
+        "properties": {
+          "id_funcionario": { "type": "integer", "example": 1 },
+          "nome": { "type": "string", "example": "Carlos Souza" },
+          "funcao": { "type": "string", "example": "Barbeiro" },
+          "status": { "type": "integer", "description": "1 = ativo, 0 = inativo", "example": 1 }
+        }
+      },
+      "FuncionarioEntrada": {
+        "type": "object",
+        "properties": {
+          "nome": { "type": "string", "example": "Carlos Souza" },
+          "funcao": { "type": "string", "example": "Barbeiro" },
+          "status": { "type": "integer", "example": 1 }
+        },
+        "required": ["nome", "funcao"]
+      },
+      "AgendamentoServicoItem": {
+        "type": "object",
+        "properties": {
+          "tipo_servico": { "type": "integer", "example": 1 },
+          "valor": { "type": "number", "example": 40.0 }
+        },
+        "required": ["tipo_servico", "valor"]
+      },
+      "AgendamentoEntrada": {
+        "type": "object",
+        "properties": {
+          "id_usuario": { "type": "integer", "example": 1 },
+          "id_funcionario": { "type": "integer", "example": 1 },
+          "servicos": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AgendamentoServicoItem" }
+          },
+          "data": { "type": "string", "format": "date-time", "example": "2026-09-20T14:00:00" },
+          "status": { "type": "string", "enum": ["agendado", "confirmado", "concluido", "cancelado"], "example": "agendado" },
+          "feedback": { "type": "string", "nullable": true, "example": null },
+          "forma_pagamento": { "type": "string", "nullable": true, "example": "pix" }
+        },
+        "required": ["id_usuario", "id_funcionario", "servicos", "data"]
+      },
+      "AgendamentoSaida": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "example": 1 },
+          "id_usuario": { "type": "integer", "example": 1 },
+          "id_funcionario": { "type": "integer", "example": 1 },
+          "data": { "type": "string", "format": "date-time" },
+          "status": { "type": "string", "example": "agendado" },
+          "feedback": { "type": "string", "nullable": true },
+          "forma_pagamento": { "type": "string", "nullable": true },
+          "cliente_nome": { "type": "string" },
+          "funcionario_nome": { "type": "string" },
+          "servicos": {
+            "type": "array",
+            "items": {
               "type": "object",
               "properties": {
-                "id": {
-                  "type": "integer",
-                  "example": 1
-                }
-              },
-              "required": ["id"]
+                "tipo_servico": { "type": "integer" },
+                "valor": { "type": "number" },
+                "nome": { "type": "string" }
+              }
             }
-          ]
+          },
+          "valor_total": { "type": "number", "example": 80.0 }
         }
       }
     }
   }
+}

@@ -12,6 +12,11 @@ const conexao = require("./db.js")
 const porta = 3000
 const api_chave = "barbershop_secret_key_2024"
 
+const swaggerUi = require('swagger-ui-express')
+const swaggerDocument = require('./swagger.json')
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument))
+
 app.listen(porta, () => {
     console.log(`Servidor rodando em http://localhost:${porta}`)
     console.log(`Documentação Swagger: http://localhost:${porta}/api-docs`)
@@ -885,6 +890,14 @@ app.get('/agendamentos/usuario/:id', async (req, res) => {
 });
 
 // PATCH atualizar apenas o status de um agendamento
+// Fluxo obrigatório (não pode pular etapas): agendado -> confirmado -> concluido
+// De 'agendado' ou 'confirmado' também é possível ir para 'cancelado'
+const FLUXO_STATUS = {
+    agendado: ['confirmado', 'cancelado'],
+    confirmado: ['concluido', 'cancelado'],
+    concluido: [],
+    cancelado: []
+};
 app.patch('/agendamentos/:id/status', async (req, res) => {
     try {
         const { id } = req.params;
@@ -893,6 +906,26 @@ app.patch('/agendamentos/:id/status', async (req, res) => {
         const statusValidos = ['agendado', 'confirmado', 'concluido', 'cancelado'];
         if (!statusValidos.includes(status)) {
             return res.status(400).json({ error: `Status inválido. Use: ${statusValidos.join(', ')}` });
+        }
+
+        const [agendamentoAtual] = await conexao.execute(
+            'SELECT status FROM agendamentos WHERE id = ?',
+            [id]
+        );
+
+        if (agendamentoAtual.length === 0) {
+            return res.status(404).json({ error: "Agendamento não encontrado" });
+        }
+
+        const statusAtual = agendamentoAtual[0].status;
+        const proximosPermitidos = FLUXO_STATUS[statusAtual] || [];
+
+        if (!proximosPermitidos.includes(status)) {
+            return res.status(400).json({
+                error: proximosPermitidos.length
+                    ? `Não é possível pular etapas. De "${statusAtual}" só pode ir para: ${proximosPermitidos.join(', ')}.`
+                    : `Status "${statusAtual}" é final e não pode ser alterado.`
+            });
         }
 
         const [resultado] = await conexao.execute(
