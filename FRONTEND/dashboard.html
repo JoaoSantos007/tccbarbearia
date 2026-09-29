@@ -1,13 +1,24 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BarbershopSystem — Dashboard</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
-        rel="stylesheet">
+    <meta name="description"
+        content="Painel administrativo da Barbershop System: gerencie usuários, serviços, funcionários, agendamentos e fidelidade.">
+    <meta name="theme-color" content="#0a1a2f">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✂️</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap"
+        media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap">
+    </noscript>
     <style>
         :root {
             --azul-escuro: #0a1a2f;
@@ -15,7 +26,7 @@
             --azul-accent: #2563eb;
             --azul-light: #dbeafe;
             --cinza-escuro: #1e293b;
-            --cinza-medio: #64748b;
+            --cinza-medio: #475569;
             --cinza-claro: #e2e8f0;
             --branco: #ffffff;
             --fundo: #f1f5f9;
@@ -34,7 +45,7 @@
         }
 
         body {
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             background: var(--fundo);
             color: var(--cinza-escuro);
             display: flex;
@@ -76,7 +87,7 @@
         }
 
         .logo-name {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Syne', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-weight: 800;
             font-size: 1rem;
             color: var(--branco);
@@ -87,7 +98,7 @@
             display: block;
             font-size: 0.62rem;
             font-weight: 400;
-            color: rgba(255, 255, 255, 0.38);
+            color: rgba(255, 255, 255, 0.7);
             letter-spacing: 0.08em;
             text-transform: uppercase;
         }
@@ -121,7 +132,7 @@
         }
 
         .user-meta small {
-            color: rgba(255, 255, 255, 0.38);
+            color: rgba(255, 255, 255, 0.7);
             font-size: 0.7rem;
         }
 
@@ -136,7 +147,7 @@
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.12em;
-            color: rgba(255, 255, 255, 0.25);
+            color: rgba(255, 255, 255, 0.62);
             padding: 10px 12px 6px;
             margin-top: 4px;
         }
@@ -147,15 +158,15 @@
             gap: 11px;
             padding: 9px 12px;
             border-radius: 9px;
-            color: rgba(255, 255, 255, 0.5);
+            color: rgba(255, 255, 255, 0.72);
             font-size: 0.86rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.16s;
+            transition: background-color 0.16s, color 0.16s, border-color 0.16s, box-shadow 0.16s, transform 0.16s;
             width: 100%;
             background: none;
             border: none;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             text-align: left;
         }
 
@@ -187,15 +198,15 @@
             gap: 10px;
             padding: 9px 12px;
             border-radius: 9px;
-            color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.75);
             cursor: pointer;
             width: 100%;
             background: none;
             border: none;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-size: 0.86rem;
             font-weight: 500;
-            transition: all 0.16s;
+            transition: background-color 0.16s, color 0.16s, border-color 0.16s, box-shadow 0.16s, transform 0.16s;
         }
 
         .btn-logout:hover {
@@ -226,7 +237,7 @@
         }
 
         .topbar-left h1 {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Syne', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-size: 1.2rem;
             font-weight: 700;
             color: var(--azul-escuro);
@@ -266,7 +277,7 @@
             align-items: center;
             gap: 7px;
             transition: background 0.15s, transform 0.1s;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
         }
 
         .btn-novo:hover {
@@ -359,7 +370,7 @@
         }
 
         .kpi-value {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Syne', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-size: 1.85rem;
             font-weight: 800;
             color: var(--azul-escuro);
@@ -375,7 +386,7 @@
 
         .kpi-sub {
             font-size: 0.72rem;
-            color: var(--verde);
+            color: #047857;
             margin-top: 3px;
             font-weight: 600;
         }
@@ -385,7 +396,8 @@
             background: white;
             border-radius: 14px;
             border: 1px solid var(--cinza-claro);
-            overflow: hidden;
+            overflow-x: auto;
+            overflow-y: hidden;
             margin-bottom: 18px;
         }
 
@@ -398,7 +410,7 @@
         }
 
         .card-title {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Syne', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-size: 0.92rem;
             font-weight: 700;
             color: var(--azul-escuro);
@@ -455,12 +467,12 @@
 
         .status-ativo {
             background: #ecfdf5;
-            color: #059669;
+            color: #047857;
         }
 
         .status-inativo {
             background: #fef2f2;
-            color: #dc2626;
+            color: #b91c1c;
         }
 
         .status-agendado {
@@ -470,7 +482,7 @@
 
         .status-confirmado {
             background: #ecfdf5;
-            color: #059669;
+            color: #047857;
         }
 
         .status-concluido {
@@ -480,12 +492,12 @@
 
         .status-cancelado {
             background: #fef2f2;
-            color: #dc2626;
+            color: #b91c1c;
         }
 
         .status-pendente {
             background: #fffbeb;
-            color: #d97706;
+            color: #b45309;
         }
 
         .status-select {
@@ -524,7 +536,7 @@
             border: 1px solid var(--cinza-claro);
             border-radius: 8px;
             font-size: 0.84rem;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             background: white;
             color: var(--cinza-escuro);
             outline: none;
@@ -548,7 +560,7 @@
             border: none;
             cursor: pointer;
             font-weight: 600;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             transition: opacity 0.15s, transform 0.1s;
         }
 
@@ -568,7 +580,7 @@
 
         .btn-deletar {
             background: #fef2f2;
-            color: #dc2626;
+            color: #b91c1c;
         }
 
         .btn-deletar:hover {
@@ -650,8 +662,8 @@
             margin-bottom: 22px;
         }
 
-        .modal-header h3 {
-            font-family: 'Syne', sans-serif;
+        .modal-header h2 {
+            font-family: 'Syne', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-size: 1.1rem;
             font-weight: 700;
             color: var(--azul-escuro);
@@ -663,7 +675,7 @@
             cursor: pointer;
             color: var(--cinza-medio);
             font-size: 1.3rem;
-            padding: 2px 6px;
+            padding: 6px 10px;
             border-radius: 6px;
         }
 
@@ -699,7 +711,7 @@
             padding: 9px 12px;
             border: 1px solid var(--cinza-claro);
             border-radius: 9px;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-size: 0.88rem;
             color: var(--cinza-escuro);
             outline: none;
@@ -731,12 +743,17 @@
         .toggle-senha {
             position: absolute;
             top: 50%;
-            right: 10px;
+            right: 6px;
             transform: translateY(-50%);
             cursor: pointer;
             user-select: none;
             font-size: 1rem;
             color: var(--cinza-medio);
+            background: none;
+            border: none;
+            padding: 6px 8px;
+            border-radius: 6px;
+            line-height: 1;
         }
 
         /* =========== TOAST =========== */
@@ -926,7 +943,7 @@
         }
 
         .config-section h4 {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Syne', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-size: 0.9rem;
             font-weight: 700;
             margin-bottom: 14px;
@@ -1006,7 +1023,7 @@
         }
 
         .fid-stat-value {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Syne', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-size: 1.6rem;
             font-weight: 800;
             color: var(--azul-escuro);
@@ -1047,7 +1064,7 @@
 
         .ranking-pos.gold {
             background: #fef3c7;
-            color: #d97706;
+            color: #b45309;
         }
 
         .ranking-pos.silver {
@@ -1062,7 +1079,7 @@
 
         .ranking-pos.default {
             background: #f8fafc;
-            color: #94a3b8;
+            color: #5b6b80;
         }
 
         .ranking-avatar {
@@ -1098,7 +1115,7 @@
         }
 
         .ranking-pts {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Syne', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-size: 0.92rem;
             font-weight: 800;
             color: #7c3aed;
@@ -1124,17 +1141,17 @@
         /* Histórico por usuário */
         .hist-tipo-ganho {
             background: #ecfdf5;
-            color: #059669;
+            color: #047857;
         }
 
         .hist-tipo-resgate {
             background: #fef2f2;
-            color: #dc2626;
+            color: #b91c1c;
         }
 
         .hist-tipo-ajuste {
             background: #fffbeb;
-            color: #d97706;
+            color: #b45309;
         }
 
         /* Busca de cliente fidelidade */
@@ -1179,7 +1196,7 @@
             gap: 13px;
             margin-bottom: 10px;
             cursor: pointer;
-            transition: all 0.15s;
+            transition: background-color 0.15s, color 0.15s, border-color 0.15s, box-shadow 0.15s, transform 0.15s;
         }
 
         .servico-resgate-card:hover {
@@ -1193,7 +1210,7 @@
         }
 
         .servico-resgate-pts {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Syne', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-size: 0.85rem;
             font-weight: 800;
             color: #7c3aed;
@@ -1213,13 +1230,13 @@
 
         .saldo-display .sd-label {
             font-size: 0.72rem;
-            opacity: 0.75;
+            opacity: 0.92;
             text-transform: uppercase;
             letter-spacing: 0.08em;
         }
 
         .saldo-display .sd-value {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Syne', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
             font-size: 2rem;
             font-weight: 800;
             line-height: 1.1;
@@ -1227,7 +1244,7 @@
 
         .saldo-display .sd-sub {
             font-size: 0.75rem;
-            opacity: 0.65;
+            opacity: 0.88;
             margin-top: 3px;
         }
 
@@ -1290,79 +1307,129 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* =========== ACESSIBILIDADE =========== */
+        :focus-visible {
+            outline: 3px solid var(--azul-accent);
+            outline-offset: 2px;
+        }
+
+        .sidebar :focus-visible {
+            outline-color: #fff;
+            outline-offset: -2px;
+        }
+
+        .skip-link {
+            position: absolute;
+            left: 10px;
+            top: -60px;
+            background: var(--azul-escuro);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 2000;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .skip-link:focus {
+            top: 10px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
     </style>
 </head>
 
 <body>
+    <a class="skip-link" href="#mainContent">Ir para o conteúdo</a>
 
-    <aside class="sidebar">
+    <aside class="sidebar" aria-label="Barra lateral">
         <div class="sidebar-logo">
-            <img src="logo2.png" alt="Logo Barbershop" class="logo-icon" id="logoImg">
+            <img src="logo2.png" alt="Logo Barbershop" class="logo-icon" id="logoImg" width="38" height="38"
+                decoding="async">
             <div class="logo-name">Barbershop<span>System v2</span></div>
         </div>
         <div class="sidebar-user">
-            <div class="user-avatar" id="sidebarAvatar">--</div>
+            <div class="user-avatar" id="sidebarAvatar" aria-hidden="true">--</div>
             <div class="user-meta">
                 <strong id="sidebarNome">Carregando...</strong>
                 <small>Administrador</small>
             </div>
         </div>
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav" aria-label="Menu principal">
             <div class="nav-section-label">Principal</div>
-            <button class="nav-item active" data-page="dashboard" onclick="showPage('dashboard', this)">
-                <span class="nav-icon">🏠</span> <span>Dashboard</span>
+            <button class="nav-item active" data-page="dashboard" type="button" aria-label="Dashboard" title="Dashboard"
+                onclick="showPage('dashboard', this)">
+                <span class="nav-icon" aria-hidden="true">🏠</span> <span>Dashboard</span>
             </button>
-            <button class="nav-item" data-page="usuarios" onclick="showPage('usuarios', this)">
-                <span class="nav-icon">👤</span> <span>Usuários</span>
+            <button class="nav-item" data-page="usuarios" type="button" aria-label="Usuários" title="Usuários"
+                onclick="showPage('usuarios', this)">
+                <span class="nav-icon" aria-hidden="true">👤</span> <span>Usuários</span>
             </button>
-            <button class="nav-item" data-page="servicos" onclick="showPage('servicos', this)">
-                <span class="nav-icon">✂️</span> <span>Serviços</span>
+            <button class="nav-item" data-page="servicos" type="button" aria-label="Serviços" title="Serviços"
+                onclick="showPage('servicos', this)">
+                <span class="nav-icon" aria-hidden="true">✂️</span> <span>Serviços</span>
             </button>
-            <button class="nav-item" data-page="funcionarios" onclick="showPage('funcionarios', this)">
-                <span class="nav-icon">💈</span> <span>Funcionários</span>
+            <button class="nav-item" data-page="funcionarios" type="button" aria-label="Funcionários"
+                title="Funcionários" onclick="showPage('funcionarios', this)">
+                <span class="nav-icon" aria-hidden="true">💈</span> <span>Funcionários</span>
             </button>
-            <button class="nav-item" data-page="agendamentos" onclick="showPage('agendamentos', this)">
-                <span class="nav-icon">📅</span> <span>Agendamentos</span>
+            <button class="nav-item" data-page="agendamentos" type="button" aria-label="Agendamentos"
+                title="Agendamentos" onclick="showPage('agendamentos', this)">
+                <span class="nav-icon" aria-hidden="true">📅</span> <span>Agendamentos</span>
             </button>
-            <button class="nav-item" data-page="fidelidade" onclick="showPage('fidelidade', this)">
-                <span class="nav-icon">⭐</span> <span>Fidelidade</span>
+            <button class="nav-item" data-page="fidelidade" type="button" aria-label="Fidelidade" title="Fidelidade"
+                onclick="showPage('fidelidade', this)">
+                <span class="nav-icon" aria-hidden="true">⭐</span> <span>Fidelidade</span>
             </button>
             <div class="nav-section-label">Sistema</div>
-            <button class="nav-item" data-page="configuracoes" onclick="showPage('configuracoes', this)">
-                <span class="nav-icon">⚙️</span> <span>Configurações</span>
+            <button class="nav-item" data-page="configuracoes" type="button" aria-label="Configurações"
+                title="Configurações" onclick="showPage('configuracoes', this)">
+                <span class="nav-icon" aria-hidden="true">⚙️</span> <span>Configurações</span>
             </button>
         </nav>
         <div class="sidebar-footer">
-            <button class="btn-logout" onclick="fazerLogout()">
-                <span>🚪</span> <span>Sair do sistema</span>
+            <button type="button" class="btn-logout" onclick="fazerLogout()" aria-label="Sair do sistema"
+                title="Sair do sistema">
+                <span aria-hidden="true">🚪</span> <span>Sair do sistema</span>
             </button>
         </div>
     </aside>
 
     <main class="main">
-        <div class="topbar">
+        <header class="topbar">
             <div class="topbar-left">
                 <h1 id="pageTitle">Dashboard</h1>
                 <p id="pageSubtitle">Visão geral do negócio</p>
             </div>
             <div class="topbar-right">
                 <div class="topbar-date" id="dataHoje"></div>
-                <button class="btn-novo" id="actionButton" onclick="acaoPrincipal()" style="display:none">➕
+                <button type="button" class="btn-novo" id="actionButton" onclick="acaoPrincipal()"
+                    style="display:none">➕
                     Novo</button>
             </div>
-        </div>
-        <div class="content" id="mainContent">
+        </header>
+        <div class="content" id="mainContent" tabindex="-1">
             <div style="display:flex;align-items:center;justify-content:center;height:200px;color:var(--cinza-medio)">
                 Carregando...
             </div>
         </div>
     </main>
 
-    <div class="modal" id="modal" onclick="fecharModalFora(event)">
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitulo"
+        onclick="fecharModalFora(event)">
         <div class="modal-content" id="modalContent"></div>
     </div>
 
-    <div id="toastContainer"></div>
+    <div id="toastContainer" role="status" aria-live="polite"></div>
 
     <script>
         const API_URL = 'http://localhost:3000';
@@ -1429,9 +1496,11 @@
             if (input.type === 'password') {
                 input.type = 'text';
                 icone.textContent = '🙈';
+                icone.setAttribute('aria-label', 'Ocultar senha');
             } else {
                 input.type = 'password';
                 icone.textContent = '👁️';
+                icone.setAttribute('aria-label', 'Mostrar senha');
             }
         }
 
@@ -1466,11 +1535,12 @@
 
         function showPage(page, btn) {
             currentPage = page;
-            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
-            if (btn) btn.closest('.nav-item').classList.add('active');
+            document.querySelectorAll('.nav-item').forEach(b => { b.classList.remove('active'); b.removeAttribute('aria-current'); });
+            if (btn) { const item = btn.closest('.nav-item'); item.classList.add('active'); item.setAttribute('aria-current', 'page'); }
 
             const meta = pageMeta[page] || {};
             document.getElementById('pageTitle').textContent = meta.title || page;
+            document.title = (meta.title || page) + ' — BarbershopSystem';
             document.getElementById('pageSubtitle').textContent = meta.subtitle || '';
 
             const actionBtn = document.getElementById('actionButton');
@@ -1496,7 +1566,7 @@
         function fecharModalFora(e) { if (e.target === document.getElementById('modal')) fecharModal(); }
 
         function modalHeader(titulo) {
-            return `<div class="modal-header"><h3>${titulo}</h3><button class="modal-close" onclick="fecharModal()">✕</button></div>`;
+            return `<div class="modal-header"><h2 id="modalTitulo">${titulo}</h2><button type="button" class="modal-close" aria-label="Fechar" onclick="fecharModal()">✕</button></div>`;
         }
 
         // ===================== DASHBOARD =====================
@@ -1512,25 +1582,25 @@
             return `
         <div class="kpi-grid">
             <div class="kpi-card azul">
-                <div class="kpi-card-icon">👤</div>
+                <div class="kpi-card-icon" aria-hidden="true">👤</div>
                 <div class="kpi-value">${usuarios.length}</div>
                 <div class="kpi-label">Total de Usuários</div>
                 <div class="kpi-sub">Sistema ativo</div>
             </div>
             <div class="kpi-card verde">
-                <div class="kpi-card-icon">✂️</div>
+                <div class="kpi-card-icon" aria-hidden="true">✂️</div>
                 <div class="kpi-value">${servicosAtivos.length}</div>
                 <div class="kpi-label">Serviços Ativos</div>
                 <div class="kpi-sub">${servicos.length - servicosAtivos.length} inativos</div>
             </div>
             <div class="kpi-card amarelo">
-                <div class="kpi-card-icon">💰</div>
+                <div class="kpi-card-icon" aria-hidden="true">💰</div>
                 <div class="kpi-value">R$&nbsp;${ticketMedio.toFixed(0)}</div>
                 <div class="kpi-label">Ticket Médio</div>
                 <div class="kpi-sub">Média dos serviços</div>
             </div>
             <div class="kpi-card roxo">
-                <div class="kpi-card-icon">⭐</div>
+                <div class="kpi-card-icon" aria-hidden="true">⭐</div>
                 <div class="kpi-value">${totalPontos}</div>
                 <div class="kpi-label">Total de Pontos</div>
                 <div class="kpi-sub">Programa fidelidade</div>
@@ -1580,8 +1650,8 @@
             const ativos = usuarios.filter(u => !u.primeiro_acesso).length;
             return `
         <div class="filter-bar">
-            <input type="text" id="buscaUsuario" placeholder="🔍 Buscar por nome ou email..." oninput="filtrarUsuarios()" style="min-width:240px">
-            <select onchange="filtrarUsuariosPorStatus(this.value)" style="width:auto">
+            <input type="text" id="buscaUsuario" aria-label="Buscar usuário por nome ou email" placeholder="🔍 Buscar por nome ou email..." oninput="filtrarUsuarios()" style="min-width:240px">
+            <select aria-label="Filtrar por status" onchange="filtrarUsuariosPorStatus(this.value)" style="width:auto">
                 <option value="">Todos os status</option>
                 <option value="ativo">Ativos</option>
                 <option value="pendente">1º Acesso</option>
@@ -1592,7 +1662,7 @@
             <div class="card-header"><div class="card-title">👤 Usuários do Sistema</div></div>
             <div class="card-body" style="padding:0">
                 <table class="data-table" id="tabelaUsuarios">
-                    <thead><tr><th>ID</th><th>Nome</th><th>Email</th><th>CEP</th><th>Status</th><th>Ações</th></tr></thead>
+                    <thead><tr><th scope="col">ID</th><th scope="col">Nome</th><th scope="col">Email</th><th scope="col">CEP</th><th scope="col">Status</th><th scope="col">Ações</th></tr></thead>
                     <tbody>
                         ${usuarios.length ? usuarios.map(u => `
                             <tr data-status="${u.primeiro_acesso ? 'pendente' : 'ativo'}">
@@ -1604,8 +1674,8 @@
                     ? '<span class="status-badge status-pendente">1º Acesso</span>'
                     : '<span class="status-badge status-ativo">Ativo</span>'}</td>
                                 <td>
-                                    <button class="btn-editar" onclick="editarUsuario(${u.id_usuario})">Editar</button>
-                                    <button class="btn-deletar" onclick="deletarUsuario(${u.id_usuario})">Excluir</button>
+                                    <button type="button" class="btn-editar" onclick="editarUsuario(${u.id_usuario})">Editar</button>
+                                    <button type="button" class="btn-deletar" onclick="deletarUsuario(${u.id_usuario})">Excluir</button>
                                 </td>
                             </tr>
                         `).join('') : `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👤</div><p>Nenhum usuário cadastrado</p></div></td></tr>`}
@@ -1634,18 +1704,18 @@
             document.getElementById('modal').style.display = 'flex';
             document.getElementById('modalContent').innerHTML = `
         ${modalHeader(data ? 'Editar Usuário' : 'Novo Usuário')}
-        <div class="form-group"><label>Nome Completo *</label><input type="text" id="uNome" value="${data?.nome_completo || ''}"></div>
-        <div class="form-group"><label>Email *</label><input type="email" id="uEmail" value="${data?.email || ''}"></div>
-        <div class="form-group"><label>CEP *</label><input type="text" id="uCep" value="${data?.cep || ''}" maxlength="10"></div>
-        <div class="form-group"><label>Senha ${data ? '(deixe vazio para manter)' : '(opcional — se vazio, usuário define no 1º acesso)'}</label>
+        <div class="form-group"><label for="uNome">Nome Completo *</label><input type="text" id="uNome" value="${data?.nome_completo || ''}"></div>
+        <div class="form-group"><label for="uEmail">Email *</label><input type="email" id="uEmail" value="${data?.email || ''}"></div>
+        <div class="form-group"><label for="uCep">CEP *</label><input type="text" id="uCep" value="${data?.cep || ''}" maxlength="10"></div>
+        <div class="form-group"><label for="uSenha">Senha ${data ? '(deixe vazio para manter)' : '(opcional — se vazio, usuário define no 1º acesso)'}</label>
             <div class="senha-wrapper">
-                <input type="password" id="uSenha" placeholder="••••••">
-                <span class="toggle-senha" onclick="toggleSenha('uSenha', this)">👁️</span>
+                <input type="password" id="uSenha" autocomplete="new-password" placeholder="••••••">
+                <button type="button" class="toggle-senha" aria-label="Mostrar senha" onclick="toggleSenha(\'uSenha\', this)">👁️</button>
             </div>
         </div>
         <div class="modal-btns">
-            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
-            <button class="btn-save" style="margin:0" onclick="salvarUsuario(${data?.id_usuario || 'null'})">Salvar</button>
+            <button type="button" class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button type="button" class="btn-save" style="margin:0" onclick="salvarUsuario(${data?.id_usuario || 'null'})">Salvar</button>
         </div>
     `;
         }
@@ -1683,8 +1753,8 @@
             const servicos = await apiGet('/servicos');
             return `
         <div class="filter-bar">
-            <input type="text" id="buscaServico" placeholder="🔍 Buscar serviço..." oninput="filtrarServicos()" style="min-width:220px">
-            <select onchange="filtrarServicosPorStatus(this.value)" style="width:auto">
+            <input type="text" id="buscaServico" aria-label="Buscar serviço" placeholder="🔍 Buscar serviço..." oninput="filtrarServicos()" style="min-width:220px">
+            <select aria-label="Filtrar por status" onchange="filtrarServicosPorStatus(this.value)" style="width:auto">
                 <option value="">Todos</option>
                 <option value="1">Ativos</option>
                 <option value="0">Inativos</option>
@@ -1695,7 +1765,7 @@
             <div class="card-header"><div class="card-title">✂️ Serviços</div></div>
             <div class="card-body" style="padding:0">
                 <table class="data-table" id="tabelaServicos">
-                    <thead><tr><th>ID</th><th>Serviço</th><th>Preço</th><th>Duração</th><th>Pontos</th><th>Status</th><th>Ações</th></tr></thead>
+                    <thead><tr><th scope="col">ID</th><th scope="col">Serviço</th><th scope="col">Preço</th><th scope="col">Duração</th><th scope="col">Pontos</th><th scope="col">Status</th><th scope="col">Ações</th></tr></thead>
                     <tbody>
                         ${servicos.length ? servicos.map(s => `
                             <tr data-status="${s.status}">
@@ -1706,8 +1776,8 @@
                                 <td><span style="background:#f5f3ff;color:#7c3aed;padding:2px 8px;border-radius:12px;font-size:0.75rem;font-weight:600">${s.pontos} pts</span></td>
                                 <td><span class="status-badge ${s.status == 1 ? 'status-ativo' : 'status-inativo'}">${s.status == 1 ? 'Ativo' : 'Inativo'}</span></td>
                                 <td>
-                                    <button class="btn-editar" onclick="editarServico(${s.id_servicos})">Editar</button>
-                                    <button class="btn-deletar" onclick="deletarServico(${s.id_servicos})">Excluir</button>
+                                    <button type="button" class="btn-editar" onclick="editarServico(${s.id_servicos})">Editar</button>
+                                    <button type="button" class="btn-deletar" onclick="deletarServico(${s.id_servicos})">Excluir</button>
                                 </td>
                             </tr>
                         `).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">✂️</div><p>Nenhum serviço cadastrado</p></div></td></tr>`}
@@ -1734,19 +1804,19 @@
             document.getElementById('modal').style.display = 'flex';
             document.getElementById('modalContent').innerHTML = `
         ${modalHeader(data ? 'Editar Serviço' : 'Novo Serviço')}
-        <div class="form-group"><label>Nome *</label><input type="text" id="sNome" value="${data?.nome || ''}"></div>
+        <div class="form-group"><label for="sNome">Nome *</label><input type="text" id="sNome" value="${data?.nome || ''}"></div>
         <div class="form-row">
-            <div class="form-group"><label>Preço (R$) *</label><input type="number" id="sPreco" step="0.01" min="0" value="${data?.preco || ''}"></div>
-            <div class="form-group"><label>Duração (min) *</label><input type="number" id="sDuracao" min="1" value="${data?.duracao || ''}"></div>
+            <div class="form-group"><label for="sPreco">Preço (R$) *</label><input type="number" id="sPreco" step="0.01" min="0" value="${data?.preco || ''}"></div>
+            <div class="form-group"><label for="sDuracao">Duração (min) *</label><input type="number" id="sDuracao" min="1" value="${data?.duracao || ''}"></div>
         </div>
         <div class="form-row">
-            <div class="form-group"><label>Pontos de Fidelidade</label><input type="number" id="sPontos" min="0" value="${data?.pontos ?? 0}"></div>
-            <div class="form-group"><label>Pontos para Resgate <small style="color:var(--cinza-medio)">(deixe 0 para não resgatar)</small></label><input type="number" id="sPontosResgate" min="0" value="${data?.pontos_resgate ?? 0}"></div>
+            <div class="form-group"><label for="sPontos">Pontos de Fidelidade</label><input type="number" id="sPontos" min="0" value="${data?.pontos ?? 0}"></div>
+            <div class="form-group"><label for="sPontosResgate">Pontos para Resgate <small style="color:var(--cinza-medio)">(deixe 0 para não resgatar)</small></label><input type="number" id="sPontosResgate" min="0" value="${data?.pontos_resgate ?? 0}"></div>
         </div>
-        ${data ? `<div class="form-group"><label>Status</label><select id="sStatus"><option value="1" ${data.status == 1 ? 'selected' : ''}>Ativo</option><option value="0" ${data.status == 0 ? 'selected' : ''}>Inativo</option></select></div>` : ''}
+        ${data ? `<div class="form-group"><label for="sStatus">Status</label><select id="sStatus"><option value="1" ${data.status == 1 ? 'selected' : ''}>Ativo</option><option value="0" ${data.status == 0 ? 'selected' : ''}>Inativo</option></select></div>` : ''}
         <div class="modal-btns">
-            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
-            <button class="btn-save" style="margin:0" onclick="salvarServico(${data?.id_servicos || 'null'})">Salvar</button>
+            <button type="button" class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button type="button" class="btn-save" style="margin:0" onclick="salvarServico(${data?.id_servicos || 'null'})">Salvar</button>
         </div>
     `;
         }
@@ -1787,8 +1857,8 @@
             const funcs = await apiGet('/funcionarios');
             return `
         <div class="filter-bar">
-            <input type="text" id="buscaFunc" placeholder="🔍 Buscar funcionário..." oninput="filtrarFuncionarios()" style="min-width:220px">
-            <select onchange="filtrarFuncionariosPorStatus(this.value)" style="width:auto">
+            <input type="text" id="buscaFunc" aria-label="Buscar funcionário" placeholder="🔍 Buscar funcionário..." oninput="filtrarFuncionarios()" style="min-width:220px">
+            <select aria-label="Filtrar por status" onchange="filtrarFuncionariosPorStatus(this.value)" style="width:auto">
                 <option value="">Todos</option>
                 <option value="1">Ativos</option>
                 <option value="0">Inativos</option>
@@ -1799,7 +1869,7 @@
             <div class="card-header"><div class="card-title">💈 Funcionários</div></div>
             <div class="card-body" style="padding:0">
                 <table class="data-table" id="tabelaFunc">
-                    <thead><tr><th>ID</th><th>Nome</th><th>Função</th><th>Status</th><th>Ações</th></tr></thead>
+                    <thead><tr><th scope="col">ID</th><th scope="col">Nome</th><th scope="col">Função</th><th scope="col">Status</th><th scope="col">Ações</th></tr></thead>
                     <tbody>
                         ${funcs.length ? funcs.map(f => `
                             <tr data-status="${f.status}">
@@ -1808,8 +1878,8 @@
                                 <td><span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:12px;font-size:0.75rem;font-weight:600">${f.funcao}</span></td>
                                 <td><span class="status-badge ${f.status == 1 ? 'status-ativo' : 'status-inativo'}">${f.status == 1 ? 'Ativo' : 'Inativo'}</span></td>
                                 <td>
-                                    <button class="btn-editar" onclick="editarFuncionario(${f.id_funcionario})">Editar</button>
-                                    <button class="btn-deletar" onclick="deletarFuncionario(${f.id_funcionario})">Excluir</button>
+                                    <button type="button" class="btn-editar" onclick="editarFuncionario(${f.id_funcionario})">Editar</button>
+                                    <button type="button" class="btn-deletar" onclick="deletarFuncionario(${f.id_funcionario})">Excluir</button>
                                 </td>
                             </tr>
                         `).join('') : `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">💈</div><p>Nenhum funcionário cadastrado</p></div></td></tr>`}
@@ -1837,12 +1907,12 @@
             document.getElementById('modal').style.display = 'flex';
             document.getElementById('modalContent').innerHTML = `
         ${modalHeader(data ? 'Editar Funcionário' : 'Novo Funcionário')}
-        <div class="form-group"><label>Nome *</label><input type="text" id="fNome" value="${data?.nome || ''}"></div>
-        <div class="form-group"><label>Função *</label><input type="text" id="fFuncao" value="${data?.funcao || ''}" placeholder="Ex: Barbeiro, Estilista..."></div>
-        ${data ? `<div class="form-group"><label>Status</label><select id="fStatus"><option value="1" ${data.status == 1 ? 'selected' : ''}>Ativo</option><option value="0" ${data.status == 0 ? 'selected' : ''}>Inativo</option></select></div>` : ''}
+        <div class="form-group"><label for="fNome">Nome *</label><input type="text" id="fNome" value="${data?.nome || ''}"></div>
+        <div class="form-group"><label for="fFuncao">Função *</label><input type="text" id="fFuncao" value="${data?.funcao || ''}" placeholder="Ex: Barbeiro, Estilista..."></div>
+        ${data ? `<div class="form-group"><label for="fStatus">Status</label><select id="fStatus"><option value="1" ${data.status == 1 ? 'selected' : ''}>Ativo</option><option value="0" ${data.status == 0 ? 'selected' : ''}>Inativo</option></select></div>` : ''}
         <div class="modal-btns">
-            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
-            <button class="btn-save" style="margin:0" onclick="salvarFuncionario(${data?.id_funcionario || 'null'})">Salvar</button>
+            <button type="button" class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button type="button" class="btn-save" style="margin:0" onclick="salvarFuncionario(${data?.id_funcionario || 'null'})">Salvar</button>
         </div>
     `;
         }
@@ -1881,8 +1951,8 @@
             const agendamentos = await apiGet('/agendamentos');
             return `
         <div class="filter-bar">
-            <input type="date" id="filtroData" onchange="filtrarAgendamentos()">
-            <select id="filtroStatus" onchange="filtrarAgendamentos()" style="width:auto">
+            <input type="date" id="filtroData" aria-label="Filtrar por data" onchange="filtrarAgendamentos()">
+            <select id="filtroStatus" aria-label="Filtrar por status" onchange="filtrarAgendamentos()" style="width:auto">
                 <option value="">Todos os status</option>
                 <option value="agendado">Agendado</option>
                 <option value="confirmado">Confirmado</option>
@@ -1895,7 +1965,7 @@
             <div class="card-header"><div class="card-title">📅 Agendamentos</div></div>
             <div class="card-body" style="padding:0">
                 <table class="data-table" id="tabelaAg">
-                    <thead><tr><th>ID</th><th>Data/Hora</th><th>Cliente</th><th>Serviços</th><th>Total</th><th>Pagamento</th><th>Profissional</th><th>Status</th><th>Ações</th></tr></thead>
+                    <thead><tr><th scope="col">ID</th><th scope="col">Data/Hora</th><th scope="col">Cliente</th><th scope="col">Serviços</th><th scope="col">Total</th><th scope="col">Pagamento</th><th scope="col">Profissional</th><th scope="col">Status</th><th scope="col">Ações</th></tr></thead>
                     <tbody>
                         ${agendamentos.length ? agendamentos.map(a => {
                 const d = new Date(a.data);
@@ -1912,9 +1982,9 @@
                                 <td><strong>${dataFmt}</strong><br><small style="color:var(--cinza-medio)">${horaFmt}</small></td>
                                 <td>${a.cliente_nome || a.id_usuario}</td>
                                 <td style="max-width:200px">${servicosHtml}</td>
-                                <td><strong style="color:var(--verde)">${valorTotal != null ? 'R$ ' + valorTotal.toFixed(2) : '—'}</strong></td>
+                                <td><strong style="color: #047857">${valorTotal != null ? 'R$ ' + valorTotal.toFixed(2) : '—'}</strong></td>
                                 <td>${a.forma_pagamento
-                        ? `<span style="background:#f0fdf4;color:#059669;padding:2px 9px;border-radius:12px;font-size:0.75rem;font-weight:600">${a.forma_pagamento}</span>`
+                        ? `<span style="background:#f0fdf4;color: #047857;padding:2px 9px;border-radius:12px;font-size:0.75rem;font-weight:600">${a.forma_pagamento}</span>`
                         : `<span style="color:var(--cinza-medio);font-size:0.8rem">—</span>`}</td>
                                 <td>${a.funcionario_nome || a.id_funcionario}</td>
                                 <td>
@@ -1922,19 +1992,19 @@
                                     ${(() => {
                         const proximos = proximosStatusPermitidos(a.status);
                         if (!proximos.length) {
-                            return `<select class="status-select" disabled title="Status final, não pode ser alterado">
+                            return `<select class="status-select" disabled aria-label="Status final, não pode ser alterado" title="Status final, não pode ser alterado">
                                                 <option>—</option>
                                             </select>`;
                         }
-                        return `<select class="status-select" title="Avançar status" onchange="mudarStatusAgendamento(${a.id}, this.value); this.selectedIndex=0;">
+                        return `<select class="status-select" aria-label="Avançar status do agendamento ${a.id}" title="Avançar status" onchange="mudarStatusAgendamento(${a.id}, this.value); this.selectedIndex=0;">
                                             <option value="" selected disabled>Avançar para...</option>
                                             ${proximos.map(s => `<option value="${s}">${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('')}
                                         </select>`;
                     })()}
                                 </td>
                                 <td>
-                                    <button class="btn-editar" onclick="editarAgendamento(${a.id})">Editar</button>
-                                    <button class="btn-deletar" onclick="deletarAgendamento(${a.id})">Excluir</button>
+                                    <button type="button" class="btn-editar" onclick="editarAgendamento(${a.id})">Editar</button>
+                                    <button type="button" class="btn-deletar" onclick="deletarAgendamento(${a.id})">Excluir</button>
                                 </td>
                             </tr>`;
             }).join('') : `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📅</div><p>Nenhum agendamento encontrado</p></div></td></tr>`}
@@ -1989,7 +2059,7 @@
             document.getElementById('modalContent').innerHTML = `
         ${modalHeader(data ? 'Editar Agendamento' : 'Novo Agendamento')}
         <div class="form-group" style="position:relative">
-            <label>Cliente *</label>
+            <label for="agClienteSearch">Cliente *</label>
             <input type="text" id="agClienteSearch" placeholder="Digite para buscar cliente..."
                 autocomplete="off"
                 value="${clienteNomeInicial}"
@@ -2041,23 +2111,23 @@
             <div id="agTotal" style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--azul-accent)">R$ 0,00</div>
         </div>
 
-        <div class="form-group"><label>Profissional *</label>
+        <div class="form-group"><label for="agFuncionario">Profissional *</label>
             <select id="agFuncionario">
                 <option value="">Selecione o profissional</option>
                 ${funcsAtivos.map(f => `<option value="${f.id_funcionario}" ${data?.id_funcionario == f.id_funcionario ? 'selected' : ''}>${f.nome} — ${f.funcao}${f.status == 0 ? ' (inativo)' : ''}</option>`).join('')}
             </select>
         </div>
         <div class="form-row">
-            <div class="form-group"><label>Data *</label><input type="date" id="agData" value="${dataVal}" ${!data ? `min="${new Date().toISOString().split('T')[0]}"` : ''}></div>
-            <div class="form-group"><label>Horário *</label><input type="time" id="agHora" value="${horaVal}"></div>
+            <div class="form-group"><label for="agData">Data *</label><input type="date" id="agData" value="${dataVal}" ${!data ? `min="${new Date().toISOString().split('T')[0]}"` : ''}></div>
+            <div class="form-group"><label for="agHora">Horário *</label><input type="time" id="agHora" value="${horaVal}"></div>
         </div>
         <div class="form-row">
-            <div class="form-group"><label>Status</label>
+            <div class="form-group"><label for="agStatus">Status</label>
                 <select id="agStatus">
                     ${['agendado', 'confirmado', 'concluido', 'cancelado'].map(s => `<option value="${s}" ${data?.status === s ? 'selected' : ''}>${s.charAt(0).toUpperCase() + s.slice(1)}</option>`).join('')}
                 </select>
             </div>
-            <div class="form-group"><label>Forma de Pagamento</label>
+            <div class="form-group"><label for="agFormaPagamento">Forma de Pagamento</label>
                 <select id="agFormaPagamento">
                     <option value="" ${!data?.forma_pagamento ? 'selected' : ''}>Não informado</option>
                     <option value="Dinheiro"      ${data?.forma_pagamento === 'Dinheiro' ? 'selected' : ''}>💵 Dinheiro</option>
@@ -2069,8 +2139,8 @@
             </div>
         </div>
         <div class="modal-btns">
-            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
-            <button class="btn-save" style="margin:0" onclick="salvarAgendamento(${data?.id || 'null'})">Salvar</button>
+            <button type="button" class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button type="button" class="btn-save" style="margin:0" onclick="salvarAgendamento(${data?.id || 'null'})">Salvar</button>
         </div>
     `;
 
@@ -2293,7 +2363,7 @@
                 </div>
                 <div class="card-body">
                     <div class="form-group fid-search-wrap">
-                        <label>Buscar Cliente</label>
+                        <label for="fidClienteSearch">Buscar Cliente</label>
                         <input type="text" id="fidClienteSearch"
                             placeholder="Digite o nome do cliente..."
                             autocomplete="off"
@@ -2322,14 +2392,14 @@
             </div>
             <div class="card-body" style="padding:0">
                 <table class="data-table">
-                    <thead><tr><th>Serviço</th><th>Preço Normal</th><th>Duração</th><th>Pontos que Ganha</th><th>Pontos para Resgatar</th></tr></thead>
+                    <thead><tr><th scope="col">Serviço</th><th scope="col">Preço Normal</th><th scope="col">Duração</th><th scope="col">Pontos que Ganha</th><th scope="col">Pontos para Resgatar</th></tr></thead>
                     <tbody>
                         ${servicosResgate.length ? servicosResgate.map(s => `
                             <tr>
                                 <td><strong>${s.nome}</strong></td>
                                 <td>R$ ${parseFloat(s.preco).toFixed(2)}</td>
                                 <td>${s.duracao} min</td>
-                                <td><span style="background:#ecfdf5;color:#059669;padding:2px 9px;border-radius:12px;font-size:0.75rem;font-weight:700">+${s.pontos} pts</span></td>
+                                <td><span style="background:#ecfdf5;color: #047857;padding:2px 9px;border-radius:12px;font-size:0.75rem;font-weight:700">+${s.pontos} pts</span></td>
                                 <td><span style="background:#f5f3ff;color:#7c3aed;padding:2px 9px;border-radius:12px;font-size:0.75rem;font-weight:700">⭐ ${s.pontos_resgate} pts</span></td>
                             </tr>
                         `).join('') : `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">🎁</div><p>Nenhum serviço configurado para resgate</p></div></td></tr>`}
@@ -2348,10 +2418,10 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Cliente</th>
-                            <th>Serviço Resgatado</th>
-                            <th>Pontos Gastos</th>
-                            <th>Data</th>
+                            <th scope="col">Cliente</th>
+                            <th scope="col">Serviço Resgatado</th>
+                            <th scope="col">Pontos Gastos</th>
+                            <th scope="col">Data</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -2375,7 +2445,7 @@
                                     <span style="font-weight:600">${r.nome_servico || '—'}</span>
                                 </td>
                                 <td>
-                                    <span style="background:#fef2f2;color:#dc2626;padding:2px 10px;border-radius:12px;font-size:0.75rem;font-weight:700">-${parseFloat(r.pontos_gastos || r.pontos_resgate || 0).toFixed(0)} pts</span>
+                                    <span style="background:#fef2f2;color: #b91c1c;padding:2px 10px;border-radius:12px;font-size:0.75rem;font-weight:700">-${parseFloat(r.pontos_gastos || r.pontos_resgate || 0).toFixed(0)} pts</span>
                                 </td>
                                 <td style="color:var(--cinza-medio);font-size:0.82rem">${dataStr}</td>
                             </tr>`;
@@ -2415,7 +2485,7 @@
             const data = await apiGet(`/fidelidade/${id}`);
 
             if (!data || data.error) {
-                res.innerHTML = `<div style="color:var(--vermelho);font-size:0.85rem;padding:8px 0">❌ ${data?.error || 'Erro ao buscar pontos'}</div>`;
+                res.innerHTML = `<div style="color: #b91c1c;font-size:0.85rem;padding:8px 0">❌ ${data?.error || 'Erro ao buscar pontos'}</div>`;
                 return;
             }
 
@@ -2439,7 +2509,7 @@
                 <span style="font-weight:700;font-size:0.84rem;color:${h.tipo === 'ganho' ? '#059669' : '#dc2626'}">${h.tipo === 'ganho' ? '+' : ''}${parseFloat(h.pontos).toFixed(0)} pts</span>
             </div>
         `).join('')}` : `<div style="font-size:0.82rem;color:var(--cinza-medio);padding:8px 0">Nenhuma transação ainda.</div>`}
-        <button class="btn-novo" style="width:100%;margin-top:14px;justify-content:center" onclick="abrirModalResgate(${id}, '${nome.replace(/'/g, "\\'")}', ${pts.toFixed(0)})">🎁 Resgatar Serviço</button>
+        <button type="button" class="btn-novo" style="width:100%;margin-top:14px;justify-content:center" onclick="abrirModalResgate(${id}, '${nome.replace(/'/g, "\\'")}', ${pts.toFixed(0)})">🎁 Resgatar Serviço</button>
     `;
         }
 
@@ -2458,7 +2528,7 @@
         ${modalHeader('🎁 Resgatar Serviço')}
         ${!preenchido ? `
         <div class="form-group fid-search-wrap" style="margin-bottom:14px">
-            <label>Cliente *</label>
+            <label for="resgClienteSearch">Cliente *</label>
             <input type="text" id="resgClienteSearch" placeholder="Buscar cliente..." autocomplete="off"
                 oninput="filtrarClientesResg()"
                 onfocus="document.getElementById('resgDropdown').style.display='block'; filtrarClientesResg()"
@@ -2494,8 +2564,8 @@
             <input type="hidden" id="resgServicoId">
         </div>
         <div class="modal-btns">
-            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
-            <button class="btn-save" style="margin:0" onclick="confirmarResgate()">🎁 Confirmar Resgate</button>
+            <button type="button" class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button type="button" class="btn-save" style="margin:0" onclick="confirmarResgate()">🎁 Confirmar Resgate</button>
         </div>
     `;
 
@@ -2551,26 +2621,26 @@
                         <div class="info-row"><span>Email</span><span>${usuarioLogado.email || '—'}</span></div>
                         <div class="info-row"><span>CEP</span><span>${usuarioLogado.cep || 'Não informado'}</span></div>
                     </div>
-                    <button class="btn-novo" style="width:auto;margin-top:6px" onclick="abrirModalEditarPerfil()">✏️ Editar Perfil</button>
+                    <button type="button" class="btn-novo" style="width:auto;margin-top:6px" onclick="abrirModalEditarPerfil()">✏️ Editar Perfil</button>
                 </div>
             </div>
             <div class="card">
                 <div class="card-header"><div class="card-title">🔒 Segurança</div></div>
                 <div class="card-body">
                     <p style="font-size:0.85rem;color:var(--cinza-medio);margin-bottom:14px">Altere sua senha de acesso ao sistema.</p>
-                    <div class="form-group"><label>Nova Senha</label>
+                    <div class="form-group"><label for="novaSenha">Nova Senha</label>
                         <div class="senha-wrapper">
-                            <input type="password" id="novaSenha" placeholder="Mínimo 6 caracteres">
-                            <span class="toggle-senha" onclick="toggleSenha('novaSenha', this)">👁️</span>
+                            <input type="password" id="novaSenha" autocomplete="new-password" placeholder="Mínimo 6 caracteres">
+                            <button type="button" class="toggle-senha" aria-label="Mostrar senha" onclick="toggleSenha(\'novaSenha\', this)">👁️</button>
                         </div>
                     </div>
-                    <div class="form-group"><label>Confirmar Senha</label>
+                    <div class="form-group"><label for="confirmarSenha">Confirmar Senha</label>
                         <div class="senha-wrapper">
-                            <input type="password" id="confirmarSenha" placeholder="Repita a senha">
-                            <span class="toggle-senha" onclick="toggleSenha('confirmarSenha', this)">👁️</span>
+                            <input type="password" id="confirmarSenha" autocomplete="new-password" placeholder="Repita a senha">
+                            <button type="button" class="toggle-senha" aria-label="Mostrar senha" onclick="toggleSenha(\'confirmarSenha\', this)">👁️</button>
                         </div>
                     </div>
-                    <button class="btn-novo" style="width:auto" onclick="alterarSenha()">🔑 Alterar Senha</button>
+                    <button type="button" class="btn-novo" style="width:auto" onclick="alterarSenha()">🔑 Alterar Senha</button>
                 </div>
             </div>
         </div>
@@ -2590,12 +2660,12 @@
             document.getElementById('modal').style.display = 'flex';
             document.getElementById('modalContent').innerHTML = `
         ${modalHeader('Editar Perfil')}
-        <div class="form-group"><label>Nome Completo *</label><input type="text" id="pNome" value="${usuarioLogado.nome || ''}"></div>
-        <div class="form-group"><label>Email *</label><input type="email" id="pEmail" value="${usuarioLogado.email || ''}"></div>
-        <div class="form-group"><label>CEP</label><input type="text" id="pCep" value="${usuarioLogado.cep || ''}"></div>
+        <div class="form-group"><label for="pNome">Nome Completo *</label><input type="text" id="pNome" value="${usuarioLogado.nome || ''}"></div>
+        <div class="form-group"><label for="pEmail">Email *</label><input type="email" id="pEmail" value="${usuarioLogado.email || ''}"></div>
+        <div class="form-group"><label for="pCep">CEP</label><input type="text" id="pCep" value="${usuarioLogado.cep || ''}"></div>
         <div class="modal-btns">
-            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
-            <button class="btn-save" style="margin:0" onclick="salvarPerfil()">Salvar</button>
+            <button type="button" class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button type="button" class="btn-save" style="margin:0" onclick="salvarPerfil()">Salvar</button>
         </div>
     `;
         }
@@ -2640,6 +2710,48 @@
             // replace() substitui o histórico — o botão "voltar" não retorna ao dashboard
             window.location.replace('index.html');
         }
+
+        // ===================== ACESSIBILIDADE DO MODAL =====================
+        (function () {
+            const modalEl = document.getElementById('modal');
+            const conteudo = document.getElementById('modalContent');
+            const FOCAVEIS = 'input:not([type=hidden]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+            let aberto = false, ultimoFoco = null;
+
+            function focarPrimeiro() {
+                const alvo = conteudo.querySelector('input:not([type=hidden]):not([disabled]), select:not([disabled]), textarea:not([disabled])')
+                    || conteudo.querySelector('button');
+                if (alvo) alvo.focus();
+            }
+
+            new MutationObserver(() => {
+                const visivel = modalEl.style.display && modalEl.style.display !== 'none';
+                if (visivel && !aberto) {
+                    aberto = true;
+                    ultimoFoco = document.activeElement;
+                    setTimeout(focarPrimeiro, 30);
+                } else if (!visivel && aberto) {
+                    aberto = false;
+                    if (ultimoFoco && document.contains(ultimoFoco)) ultimoFoco.focus();
+                }
+            }).observe(modalEl, { attributes: true, attributeFilter: ['style'] });
+
+            // Modais que carregam dados antes de montar o formulário
+            new MutationObserver(() => {
+                if (aberto && !modalEl.contains(document.activeElement)) focarPrimeiro();
+            }).observe(conteudo, { childList: true });
+
+            document.addEventListener('keydown', (e) => {
+                if (!aberto) return;
+                if (e.key === 'Escape') { fecharModal(); return; }
+                if (e.key !== 'Tab') return;
+                const itens = [...conteudo.querySelectorAll(FOCAVEIS)].filter(el => el.offsetParent !== null);
+                if (!itens.length) return;
+                const primeiro = itens[0], ultimo = itens[itens.length - 1];
+                if (e.shiftKey && document.activeElement === primeiro) { e.preventDefault(); ultimo.focus(); }
+                else if (!e.shiftKey && document.activeElement === ultimo) { e.preventDefault(); primeiro.focus(); }
+            });
+        })();
 
         inicializar();
     </script>
