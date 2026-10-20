@@ -16,9 +16,9 @@
         content="Sua experiência premium em cuidados masculinos. Agende online e acumule pontos de fidelidade.">
     <meta property="og:locale" content="pt_BR">
 
-    <!-- Favicon inline (evita requisição 404 para /favicon.ico) -->
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✂️</text></svg>">
+    <!-- Favicon (aba do navegador) -->
+    <link rel="icon" type="image/png" sizes="256x256" href="img/logo/favicon.png">
+    <link rel="apple-touch-icon" href="img/logo/favicon.png">
 
     <!-- Fontes: só os pesos usados + carregamento sem bloquear a renderização -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -105,7 +105,8 @@
         /* Header */
         .header {
             background: var(--branco);
-            padding: 14px 50px;
+            padding: 14px clamp(16px, 4vw, 50px);
+            gap: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -121,13 +122,22 @@
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
+            flex-shrink: 0;
             text-decoration: none;
+        }
+
+        .logo-img {
+            height: 44px;
+            width: auto;
+            display: block;
+            flex-shrink: 0;
         }
 
         .logo-text {
             font-family: var(--fonte-titulo);
-            font-size: 2rem;
+            font-size: clamp(1.1rem, 3.2vw, 2rem);
+            white-space: nowrap;
             font-weight: 800;
             color: var(--azul-escuro);
         }
@@ -141,6 +151,7 @@
             display: flex;
             gap: 20px;
             align-items: center;
+            white-space: nowrap;
         }
 
         .nav-links a {
@@ -198,6 +209,48 @@
             transform: translateY(-2px);
         }
 
+        /* Botão hambúrguer (só aparece em telas pequenas) */
+        .menu-toggle {
+            display: none;
+            width: 46px;
+            height: 46px;
+            padding: 0;
+            flex-shrink: 0;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            background: transparent;
+            border: 2px solid var(--azul-escuro);
+            border-radius: 12px;
+        }
+
+        .menu-toggle:hover {
+            background: var(--cinza-fundo);
+            transform: none;
+        }
+
+        .menu-toggle-bar {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: var(--azul-escuro);
+            border-radius: 2px;
+            transition: transform 0.3s, opacity 0.3s;
+        }
+
+        .menu-toggle[aria-expanded="true"] .menu-toggle-bar:nth-child(1) {
+            transform: translateY(7px) rotate(45deg);
+        }
+
+        .menu-toggle[aria-expanded="true"] .menu-toggle-bar:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle[aria-expanded="true"] .menu-toggle-bar:nth-child(3) {
+            transform: translateY(-7px) rotate(-45deg);
+        }
+
         /* Hero Section */
         .hero {
             min-height: 100vh;
@@ -224,7 +277,8 @@
 
         .hero h1 {
             font-family: var(--fonte-titulo);
-            font-size: 4rem;
+            font-size: clamp(2rem, 8vw, 4rem);
+            overflow-wrap: anywhere;
             margin-bottom: 20px;
             color: var(--branco);
         }
@@ -234,7 +288,7 @@
         }
 
         .hero p {
-            font-size: 1.2rem;
+            font-size: clamp(1rem, 2.6vw, 1.2rem);
             color: var(--cinza-claro);
             margin-bottom: 30px;
         }
@@ -277,7 +331,7 @@
 
         /* Sections */
         .section {
-            padding: 80px 50px;
+            padding: clamp(50px, 8vw, 80px) clamp(20px, 4vw, 50px);
         }
 
         .section-light {
@@ -301,7 +355,7 @@
         .section-title {
             text-align: center;
             font-family: var(--fonte-titulo);
-            font-size: 2.5rem;
+            font-size: clamp(1.7rem, 5vw, 2.5rem);
             margin-bottom: 20px;
             color: var(--azul-escuro);
         }
@@ -362,7 +416,7 @@
         /* Galeria */
         .gallery-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
             gap: 30px;
             margin-top: 40px;
         }
@@ -428,7 +482,7 @@
         /* Team Grid */
         .team-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
             gap: 40px;
             margin-top: 40px;
         }
@@ -476,7 +530,16 @@
             background: var(--cinza-escuro);
             color: var(--cinza-claro);
             text-align: center;
-            padding: 40px;
+            padding: 40px 20px;
+            overflow-wrap: anywhere;
+        }
+
+        .footer-logo {
+            height: 56px;
+            width: auto;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 12px;
         }
 
         .footer address {
@@ -509,8 +572,17 @@
         .system-header {
             background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--cinza-escuro) 100%);
             color: var(--branco);
-            padding: 40px;
+            padding: clamp(24px, 6vw, 40px);
             text-align: center;
+        }
+
+        .form-logo {
+            height: 90px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
+            display: block;
+            margin: 0 auto 14px;
         }
 
         .login-header h2,
@@ -524,7 +596,7 @@
         .login-form,
         .register-form,
         .system-content {
-            padding: 40px;
+            padding: clamp(20px, 5vw, 40px);
         }
 
         .form-group {
@@ -560,6 +632,20 @@
 
         .senha-wrapper input {
             padding-right: 50px;
+        }
+
+        .toggle-senha img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            opacity: 0.6;
+            transition: opacity 0.16s;
+            pointer-events: none;
+        }
+
+        .toggle-senha:hover img,
+        .toggle-senha:focus-visible img {
+            opacity: 1;
         }
 
         .toggle-senha,
@@ -640,53 +726,128 @@
             margin-top: 15px;
         }
 
-        @media (max-width: 768px) {
-            .header {
+        /* Tablet / notebook pequeno: menu mais compacto */
+        @media (max-width: 1024px) {
+            .nav-links {
+                gap: 8px;
+            }
+
+            .nav-links .btn-acessar-nav,
+            .nav-links .btn-cadastrar-nav {
                 padding: 10px 20px;
-                flex-direction: column;
-                gap: 5px;
+            }
+
+            .about-content {
+                gap: 30px;
+            }
+        }
+
+        /* Celular e tablet em pé: menu vira hambúrguer */
+        @media (max-width: 860px) {
+            .menu-toggle {
+                display: flex;
             }
 
             .nav-links {
-                gap: 6px;
-                flex-wrap: wrap;
-                justify-content: center;
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 4px;
+                padding: 12px 20px 20px;
+                background: var(--branco);
+                border-bottom: 3px solid var(--azul-escuro);
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+                max-height: calc(100vh - 80px);
+                overflow-y: auto;
             }
 
-            .section {
-                padding: 50px 20px;
+            .nav-links.aberto {
+                display: flex;
+            }
+
+            .nav-links a {
+                justify-content: center;
+                min-height: 48px;
+            }
+
+            .nav-links .btn-acessar-nav,
+            .nav-links .btn-cadastrar-nav {
+                width: 100%;
+                min-height: 48px;
             }
 
             .about-content {
                 grid-template-columns: 1fr;
             }
 
-            .hero h1 {
-                font-size: 2rem;
+            .hero-content {
+                padding-top: 110px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 10px 16px;
+            }
+
+            .logo-img {
+                height: 36px;
+            }
+
+            .logo-container {
+                gap: 8px;
+                min-width: 0;
             }
 
             .hero-content {
-                padding-top: 160px;
-            }
-
-            .logo-text {
-                font-size: 1.5rem;
-            }
-
-            .gallery-grid {
-                grid-template-columns: 1fr;
+                width: 100%;
+                max-width: 560px;
             }
 
             .btn-acessar,
             .btn-cadastrar {
-                padding: 12px 30px;
+                display: block;
+                width: 100%;
+                padding: 14px 24px;
                 font-size: 1rem;
-                margin: 5px;
+                margin: 0 0 12px;
+            }
+
+            .gallery-item {
+                height: 240px;
+            }
+
+            .team-grid {
+                gap: 24px;
             }
 
             .login-form,
             .register-form {
                 padding: 30px 20px;
+            }
+
+            .login-page,
+            .register-page,
+            .system-page {
+                padding: 24px 12px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .logo-text {
+                font-size: 0.95rem;
+            }
+
+            .logo-img {
+                height: 30px;
+            }
+
+            .section-subtitle {
+                margin-bottom: 30px;
             }
         }
 
@@ -710,9 +871,16 @@
     <div class="landing-page" id="landingPage">
         <header class="header">
             <a class="logo-container" href="#home" aria-label="Barbershop System - ir para o início">
+                <img class="logo-img" src="img/logo/logo.png" alt="" width="66" height="44">
                 <span class="logo-text">BARBERSHOP<span>SYSTEM</span></span>
             </a>
-            <nav class="nav-links" aria-label="Menu principal">
+            <button type="button" class="menu-toggle" id="menuToggle" aria-label="Abrir menu"
+                aria-expanded="false" aria-controls="navLinks">
+                <span class="menu-toggle-bar"></span>
+                <span class="menu-toggle-bar"></span>
+                <span class="menu-toggle-bar"></span>
+            </button>
+            <nav class="nav-links" id="navLinks" aria-label="Menu principal">
                 <a href="#home">Home</a>
                 <a href="#about">Quem Somos</a>
                 <a href="#gallery">Galeria</a>
@@ -750,7 +918,7 @@
                                 e no desenvolvimento da nossa equipe.</p>
                         </div>
                         <figure class="about-image">
-                            <img src="barbearia.png" width="600" height="450" loading="lazy" decoding="async"
+                            <img src="img/fotos/barbearia.png" width="600" height="450" loading="lazy" decoding="async"
                                 alt="Interior da barbearia com cadeiras de corte e ambiente sofisticado">
                             <figcaption>Ambiente premium e acolhedor</figcaption>
                         </figure>
@@ -765,7 +933,7 @@
                     <p class="section-subtitle">Conheça nosso espaço e serviços</p>
                     <div class="gallery-grid" id="galleryGrid">
                         <figure class="gallery-item">
-                            <img class="gallery-img" src="corte1.jpg" width="400" height="300" loading="lazy"
+                            <img class="gallery-img" src="img/fotos/corte1.jpg" width="400" height="300" loading="lazy"
                                 decoding="async" alt="Cliente com corte de cabelo moderno recém-finalizado">
                             <figcaption class="gallery-overlay">
                                 <h3>Corte Estiloso</h3>
@@ -773,7 +941,7 @@
                             </figcaption>
                         </figure>
                         <figure class="gallery-item">
-                            <img class="gallery-img" src="barba.jpg" width="400" height="300" loading="lazy"
+                            <img class="gallery-img" src="img/fotos/barba.jpg" width="400" height="300" loading="lazy"
                                 decoding="async" alt="Barba modelada e alinhada pelo barbeiro">
                             <figcaption class="gallery-overlay">
                                 <h3>Barba Perfeita</h3>
@@ -781,7 +949,7 @@
                             </figcaption>
                         </figure>
                         <figure class="gallery-item">
-                            <img class="gallery-img" src="espaco.jpg" width="400" height="300" loading="lazy"
+                            <img class="gallery-img" src="img/fotos/espaco.jpg" width="400" height="300" loading="lazy"
                                 decoding="async" alt="Espaço interno da barbearia, moderno e aconchegante">
                             <figcaption class="gallery-overlay">
                                 <h3>Espaço Premium</h3>
@@ -815,6 +983,7 @@
         </main>
 
         <footer class="footer">
+            <img class="footer-logo" src="img/logo/logo.png" alt="" width="84" height="56">
             <p>© 2026 Barbershop System - Todos os direitos reservados</p>
             <address>📍 Rua da Barbearia, 123 | 📞 (11) 99999-9999 | ✉️ contato@barbershop.com</address>
         </footer>
@@ -824,6 +993,7 @@
     <section class="login-page" id="loginPage" aria-labelledby="titulo-login">
         <div class="login-container">
             <div class="login-header">
+                <img class="form-logo" src="img/logo/logo.png" alt="Logo Barbershop System" width="136" height="90">
                 <h2 id="titulo-login">Bem-vindo de volta</h2>
                 <p>Faça login para continuar</p>
             </div>
@@ -838,7 +1008,7 @@
                         <input type="password" id="loginSenha" name="senha" placeholder="********"
                             autocomplete="current-password">
                         <button type="button" class="toggle-senha" aria-label="Mostrar senha"
-                            onclick="toggleSenha('loginSenha', this)">👁️</button>
+                            onclick="toggleSenha('loginSenha', this)"><img src="img/icones/olho.png" alt=""></button>
                     </div>
                 </div>
                 <button type="submit">Entrar</button>
@@ -856,6 +1026,7 @@
     <section class="register-page" id="registerPage" aria-labelledby="titulo-register">
         <div class="register-container">
             <div class="register-header">
+                <img class="form-logo" src="img/logo/logo.png" alt="Logo Barbershop System" width="136" height="90">
                 <h2 id="titulo-register">Criar Conta</h2>
                 <p>Cadastre-se gratuitamente</p>
             </div>
@@ -881,7 +1052,7 @@
                         <input type="password" id="regSenha" name="senha" placeholder="Mínimo 6 caracteres"
                             autocomplete="new-password" required>
                         <button type="button" class="toggle-senha" aria-label="Mostrar senha"
-                            onclick="toggleSenha('regSenha', this)">👁️</button>
+                            onclick="toggleSenha('regSenha', this)"><img src="img/icones/olho.png" alt=""></button>
                     </div>
                 </div>
                 <div class="form-group">
@@ -890,7 +1061,7 @@
                         <input type="password" id="regSenhaConfirm" name="senhaConfirm" placeholder="Repita sua senha"
                             autocomplete="new-password" required>
                         <button type="button" class="toggle-senha" aria-label="Mostrar senha"
-                            onclick="toggleSenha('regSenhaConfirm', this)">👁️</button>
+                            onclick="toggleSenha('regSenhaConfirm', this)"><img src="img/icones/olho.png" alt=""></button>
                     </div>
                 </div>
                 <button type="submit">Cadastrar</button>
@@ -905,17 +1076,35 @@
     </section>
 
     <script>
+        // Menu hambúrguer (mobile)
+        (function () {
+            const toggle = document.getElementById('menuToggle');
+            const nav = document.getElementById('navLinks');
+            if (!toggle || !nav) return;
+            function setMenu(aberto) {
+                nav.classList.toggle('aberto', aberto);
+                toggle.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+                toggle.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
+            }
+            toggle.addEventListener('click', function () { setMenu(!nav.classList.contains('aberto')); });
+            nav.addEventListener('click', function (e) { if (e.target.closest('a, button')) setMenu(false); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+            window.addEventListener('resize', function () { if (window.innerWidth > 860) setMenu(false); });
+        })();
+    </script>
+    <script>
         const API_URL = 'http://localhost:3000';
 
         function toggleSenha(inputId, botao) {
             const input = document.getElementById(inputId);
+            const img = botao.querySelector('img');
             if (input.type === 'password') {
                 input.type = 'text';
-                botao.textContent = '🙈';
+                if (img) img.src = 'img/icones/olho-fechado.png';
                 botao.setAttribute('aria-label', 'Ocultar senha');
             } else {
                 input.type = 'password';
-                botao.textContent = '👁️';
+                if (img) img.src = 'img/icones/olho.png';
                 botao.setAttribute('aria-label', 'Mostrar senha');
             }
         }

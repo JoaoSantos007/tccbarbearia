@@ -8,8 +8,8 @@
     <meta name="description"
         content="Painel administrativo da Barbershop System: gerencie usuários, serviços, funcionários, agendamentos e fidelidade.">
     <meta name="theme-color" content="#0a1a2f">
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✂️</text></svg>">
+    <link rel="icon" type="image/png" sizes="256x256" href="img/logo/favicon.png">
+    <link rel="apple-touch-icon" href="img/logo/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet"
@@ -75,14 +75,10 @@
         }
 
         .logo-icon {
-            width: 38px;
-            height: 38px;
-            background: linear-gradient(135deg, var(--azul-accent), #7c3aed);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
+            height: 42px;
+            width: auto;
+            max-width: 100%;
+            object-fit: contain;
             flex-shrink: 0;
         }
 
@@ -185,6 +181,69 @@
             font-size: 1rem;
             width: 20px;
             text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Ícones em PNG (escuros) ficam brancos na barra lateral */
+        .nav-icon img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            filter: brightness(0) invert(1);
+            opacity: 0.72;
+            transition: opacity 0.16s;
+        }
+
+        .nav-icon img.colorido {
+            width: 23px;
+            height: 23px;
+            flex-shrink: 0;
+            filter: none;
+            opacity: 0.85;
+        }
+
+        .nav-item:hover .nav-icon img.colorido {
+            opacity: 1;
+        }
+
+        .nav-item:hover .nav-icon img {
+            opacity: 0.9;
+        }
+
+        .nav-item.active .nav-icon img {
+            opacity: 1;
+        }
+
+        .ico.escuro {
+            filter: brightness(0);
+        }
+
+        .ico {
+            width: 1.15em;
+            height: 1.15em;
+            object-fit: contain;
+            vertical-align: -0.2em;
+            margin-right: 4px;
+        }
+
+        .kpi-card-icon img,
+        .fid-stat-icon img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .empty-state .empty-icon img {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+        }
+
+        /* ícones coloridos/claros viram silhueta escura em fundo branco */
+        .empty-state .empty-icon img.escuro {
+            filter: brightness(0);
         }
 
         .sidebar-footer {
@@ -740,6 +799,21 @@
             padding-right: 38px;
         }
 
+        .toggle-senha img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            display: block;
+            opacity: 0.6;
+            transition: opacity 0.16s;
+            pointer-events: none;
+        }
+
+        .toggle-senha:hover img,
+        .toggle-senha:focus-visible img {
+            opacity: 1;
+        }
+
         .toggle-senha {
             position: absolute;
             top: 50%;
@@ -1268,6 +1342,11 @@
                 width: 68px;
             }
 
+            .sidebar-logo {
+                padding: 24px 8px 18px;
+                justify-content: center;
+            }
+
             .logo-name,
             .user-meta,
             .nav-item>span:last-child,
@@ -1304,6 +1383,145 @@
             }
 
             .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Evita que tabelas/cards empurrem a página para os lados */
+        .main,
+        .content,
+        .card,
+        .fid-stat-card,
+        .kpi-card {
+            min-width: 0;
+        }
+
+        .card-body {
+            overflow-x: auto;
+        }
+
+        .data-table {
+            min-width: 560px;
+        }
+
+        .filter-bar input[type="text"],
+        .filter-bar input[type="date"] {
+            max-width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            .fid-stat-card {
+                padding: 16px;
+                gap: 12px;
+            }
+
+            .filter-bar input,
+            .filter-bar select {
+                flex: 1 1 100%;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+        }
+
+        /* Celular: sidebar vira barra de navegação inferior */
+        @media (max-width: 600px) {
+            body {
+                padding-bottom: 64px;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-height: 0;
+                height: 64px;
+                top: auto;
+                bottom: 0;
+                flex-direction: row;
+                align-items: stretch;
+                border-right: none;
+                border-top: 1px solid rgba(255, 255, 255, 0.12);
+                padding-bottom: env(safe-area-inset-bottom);
+                height: calc(64px + env(safe-area-inset-bottom));
+            }
+
+            .sidebar-logo,
+            .sidebar-user,
+            .nav-section-label {
+                display: none !important;
+            }
+
+            .sidebar-nav {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 2px;
+                padding: 6px;
+                overflow-x: auto;
+                overflow-y: hidden;
+                scrollbar-width: none;
+            }
+
+            .sidebar-nav::-webkit-scrollbar {
+                display: none;
+            }
+
+            .nav-item {
+                flex: 1 0 48px;
+                width: auto;
+                min-height: 48px;
+                justify-content: center;
+                padding: 8px;
+            }
+
+            .sidebar-footer {
+                padding: 6px;
+                border-top: none;
+                border-left: 1px solid rgba(255, 255, 255, 0.07);
+                display: flex;
+                align-items: center;
+            }
+
+            .btn-logout {
+                width: 48px;
+                min-height: 48px;
+                justify-content: center;
+                padding: 8px;
+            }
+
+            .main {
+                margin-left: 0;
+                min-width: 0;
+            }
+
+            .topbar {
+                height: auto;
+                min-height: var(--topbar-h);
+                padding: 10px 14px;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .topbar-right {
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .content {
+                padding: 16px 14px;
+            }
+
+            .modal-content {
+                width: 94%;
+                padding: 20px 16px;
+                max-height: 92vh;
+            }
+
+            .modal-btns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .kpi-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -1353,9 +1571,9 @@
 
     <aside class="sidebar" aria-label="Barra lateral">
         <div class="sidebar-logo">
-            <img src="logo2.png" alt="Logo Barbershop" class="logo-icon" id="logoImg" width="38" height="38"
+            <img src="img/logo/logo.png" alt="Logo Barbershop" class="logo-icon" id="logoImg" width="63" height="42"
                 decoding="async">
-            <div class="logo-name">Barbershop<span>System v2</span></div>
+            <div class="logo-name">Barbershop<span>System</span></div>
         </div>
         <div class="sidebar-user">
             <div class="user-avatar" id="sidebarAvatar" aria-hidden="true">--</div>
@@ -1368,27 +1586,27 @@
             <div class="nav-section-label">Principal</div>
             <button class="nav-item active" data-page="dashboard" type="button" aria-label="Dashboard" title="Dashboard"
                 onclick="showPage('dashboard', this)">
-                <span class="nav-icon" aria-hidden="true">🏠</span> <span>Dashboard</span>
+                <span class="nav-icon" aria-hidden="true"><img class="colorido" src="img/icones/dashboard.png" alt=""></span> <span>Dashboard</span>
             </button>
             <button class="nav-item" data-page="usuarios" type="button" aria-label="Usuários" title="Usuários"
                 onclick="showPage('usuarios', this)">
-                <span class="nav-icon" aria-hidden="true">👤</span> <span>Usuários</span>
+                <span class="nav-icon" aria-hidden="true"><img src="img/icones/usuario.png" alt=""></span> <span>Usuários</span>
             </button>
             <button class="nav-item" data-page="servicos" type="button" aria-label="Serviços" title="Serviços"
                 onclick="showPage('servicos', this)">
-                <span class="nav-icon" aria-hidden="true">✂️</span> <span>Serviços</span>
+                <span class="nav-icon" aria-hidden="true"><img src="img/icones/servico.png" alt=""></span> <span>Serviços</span>
             </button>
             <button class="nav-item" data-page="funcionarios" type="button" aria-label="Funcionários"
                 title="Funcionários" onclick="showPage('funcionarios', this)">
-                <span class="nav-icon" aria-hidden="true">💈</span> <span>Funcionários</span>
+                <span class="nav-icon" aria-hidden="true"><img class="colorido" src="img/icones/funcionarios.png" alt=""></span> <span>Funcionários</span>
             </button>
             <button class="nav-item" data-page="agendamentos" type="button" aria-label="Agendamentos"
                 title="Agendamentos" onclick="showPage('agendamentos', this)">
-                <span class="nav-icon" aria-hidden="true">📅</span> <span>Agendamentos</span>
+                <span class="nav-icon" aria-hidden="true"><img class="colorido" src="img/icones/agendamentos.png" alt=""></span> <span>Agendamentos</span>
             </button>
             <button class="nav-item" data-page="fidelidade" type="button" aria-label="Fidelidade" title="Fidelidade"
                 onclick="showPage('fidelidade', this)">
-                <span class="nav-icon" aria-hidden="true">⭐</span> <span>Fidelidade</span>
+                <span class="nav-icon" aria-hidden="true"><img src="img/icones/fidelidade.png" alt=""></span> <span>Fidelidade</span>
             </button>
             <div class="nav-section-label">Sistema</div>
             <button class="nav-item" data-page="configuracoes" type="button" aria-label="Configurações"
@@ -1495,11 +1713,11 @@
             const input = document.getElementById(inputId);
             if (input.type === 'password') {
                 input.type = 'text';
-                icone.textContent = '🙈';
+                const im = icone.querySelector('img'); if (im) im.src = 'img/icones/olho-fechado.png';
                 icone.setAttribute('aria-label', 'Ocultar senha');
             } else {
                 input.type = 'password';
-                icone.textContent = '👁️';
+                const im = icone.querySelector('img'); if (im) im.src = 'img/icones/olho.png';
                 icone.setAttribute('aria-label', 'Mostrar senha');
             }
         }
@@ -1518,7 +1736,7 @@
             const iniciais = (usuarioLogado.nome || 'U').split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase();
             document.getElementById('sidebarAvatar').textContent = iniciais;
             const agora = new Date();
-            document.getElementById('dataHoje').textContent = '📅 ' + agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
+            document.getElementById('dataHoje').innerHTML = '<img class="ico escuro" src="img/icones/agendamentos.png" alt=""> ' + agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' });
             showPage('dashboard', document.querySelector('.nav-item[data-page="dashboard"]'));
         }
 
@@ -1582,25 +1800,25 @@
             return `
         <div class="kpi-grid">
             <div class="kpi-card azul">
-                <div class="kpi-card-icon" aria-hidden="true">👤</div>
+                <div class="kpi-card-icon" aria-hidden="true"><img src="img/icones/usuario.png" alt=""></div>
                 <div class="kpi-value">${usuarios.length}</div>
                 <div class="kpi-label">Total de Usuários</div>
                 <div class="kpi-sub">Sistema ativo</div>
             </div>
             <div class="kpi-card verde">
-                <div class="kpi-card-icon" aria-hidden="true">✂️</div>
+                <div class="kpi-card-icon" aria-hidden="true"><img src="img/icones/servico.png" alt=""></div>
                 <div class="kpi-value">${servicosAtivos.length}</div>
                 <div class="kpi-label">Serviços Ativos</div>
                 <div class="kpi-sub">${servicos.length - servicosAtivos.length} inativos</div>
             </div>
             <div class="kpi-card amarelo">
-                <div class="kpi-card-icon" aria-hidden="true">💰</div>
+                <div class="kpi-card-icon" aria-hidden="true"><img src="img/icones/ticket.png" alt=""></div>
                 <div class="kpi-value">R$&nbsp;${ticketMedio.toFixed(0)}</div>
                 <div class="kpi-label">Ticket Médio</div>
                 <div class="kpi-sub">Média dos serviços</div>
             </div>
             <div class="kpi-card roxo">
-                <div class="kpi-card-icon" aria-hidden="true">⭐</div>
+                <div class="kpi-card-icon" aria-hidden="true"><img src="img/icones/fidelidade.png" alt=""></div>
                 <div class="kpi-value">${totalPontos}</div>
                 <div class="kpi-label">Total de Pontos</div>
                 <div class="kpi-sub">Programa fidelidade</div>
@@ -1608,7 +1826,7 @@
         </div>
         <div class="dash-grid">
             <div class="card">
-                <div class="card-header"><div class="card-title">👤 Últimos Usuários</div></div>
+                <div class="card-header"><div class="card-title"><img class="ico" src="img/icones/usuario.png" alt=""> Últimos Usuários</div></div>
                 <div class="card-body">
                     ${recentUsers.length ? recentUsers.map(u => {
                 const ini = u.nome_completo.split(' ').slice(0, 2).map(n => n[0]).join('').toUpperCase();
@@ -1620,11 +1838,11 @@
                             </div>
                             ${u.primeiro_acesso ? '<span class="status-badge status-pendente">1º Acesso</span>' : '<span class="status-badge status-ativo">Ativo</span>'}
                         </div>`;
-            }).join('') : '<div class="empty-state"><div class="empty-icon">👤</div><p>Nenhum usuário</p></div>'}
+            }).join('') : '<div class="empty-state"><div class="empty-icon"><img src="img/icones/usuario.png" alt=""></div><p>Nenhum usuário</p></div>'}
                 </div>
             </div>
             <div class="card">
-                <div class="card-header"><div class="card-title">✂️ Serviços por Preço</div></div>
+                <div class="card-header"><div class="card-title"><img class="ico" src="img/icones/servico.png" alt=""> Serviços por Preço</div></div>
                 <div class="card-body">
                     ${topServicos.length ? topServicos.map(s => `
                         <div class="servico-row">
@@ -1637,7 +1855,7 @@
                                 <span class="status-badge ${s.status == 1 ? 'status-ativo' : 'status-inativo'}">${s.status == 1 ? 'Ativo' : 'Inativo'}</span>
                             </div>
                         </div>
-                    `).join('') : '<div class="empty-state"><div class="empty-icon">✂️</div><p>Nenhum serviço</p></div>'}
+                    `).join('') : '<div class="empty-state"><div class="empty-icon"><img src="img/icones/servico.png" alt=""></div><p>Nenhum serviço</p></div>'}
                 </div>
             </div>
         </div>
@@ -1659,7 +1877,7 @@
             <span style="color:var(--cinza-medio);font-size:0.8rem;margin-left:auto">${usuarios.length} usuários · ${ativos} ativos</span>
         </div>
         <div class="card">
-            <div class="card-header"><div class="card-title">👤 Usuários do Sistema</div></div>
+            <div class="card-header"><div class="card-title"><img class="ico" src="img/icones/usuario.png" alt=""> Usuários do Sistema</div></div>
             <div class="card-body" style="padding:0">
                 <table class="data-table" id="tabelaUsuarios">
                     <thead><tr><th scope="col">ID</th><th scope="col">Nome</th><th scope="col">Email</th><th scope="col">CEP</th><th scope="col">Status</th><th scope="col">Ações</th></tr></thead>
@@ -1678,7 +1896,7 @@
                                     <button type="button" class="btn-deletar" onclick="deletarUsuario(${u.id_usuario})">Excluir</button>
                                 </td>
                             </tr>
-                        `).join('') : `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">👤</div><p>Nenhum usuário cadastrado</p></div></td></tr>`}
+                        `).join('') : `<tr><td colspan="6"><div class="empty-state"><div class="empty-icon"><img src="img/icones/usuario.png" alt=""></div><p>Nenhum usuário cadastrado</p></div></td></tr>`}
                     </tbody>
                 </table>
             </div>
@@ -1710,7 +1928,7 @@
         <div class="form-group"><label for="uSenha">Senha ${data ? '(deixe vazio para manter)' : '(opcional — se vazio, usuário define no 1º acesso)'}</label>
             <div class="senha-wrapper">
                 <input type="password" id="uSenha" autocomplete="new-password" placeholder="••••••">
-                <button type="button" class="toggle-senha" aria-label="Mostrar senha" onclick="toggleSenha(\'uSenha\', this)">👁️</button>
+                <button type="button" class="toggle-senha" aria-label="Mostrar senha" onclick="toggleSenha(\'uSenha\', this)"><img src="img/icones/olho.png" alt=""></button>
             </div>
         </div>
         <div class="modal-btns">
@@ -1762,7 +1980,7 @@
             <span style="color:var(--cinza-medio);font-size:0.8rem;margin-left:auto">${servicos.length} serviços</span>
         </div>
         <div class="card">
-            <div class="card-header"><div class="card-title">✂️ Serviços</div></div>
+            <div class="card-header"><div class="card-title"><img class="ico" src="img/icones/servico.png" alt=""> Serviços</div></div>
             <div class="card-body" style="padding:0">
                 <table class="data-table" id="tabelaServicos">
                     <thead><tr><th scope="col">ID</th><th scope="col">Serviço</th><th scope="col">Preço</th><th scope="col">Duração</th><th scope="col">Pontos</th><th scope="col">Status</th><th scope="col">Ações</th></tr></thead>
@@ -1780,7 +1998,7 @@
                                     <button type="button" class="btn-deletar" onclick="deletarServico(${s.id_servicos})">Excluir</button>
                                 </td>
                             </tr>
-                        `).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">✂️</div><p>Nenhum serviço cadastrado</p></div></td></tr>`}
+                        `).join('') : `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon"><img src="img/icones/servico.png" alt=""></div><p>Nenhum serviço cadastrado</p></div></td></tr>`}
                     </tbody>
                 </table>
             </div>
@@ -1866,7 +2084,7 @@
             <span style="color:var(--cinza-medio);font-size:0.8rem;margin-left:auto">${funcs.length} funcionários</span>
         </div>
         <div class="card">
-            <div class="card-header"><div class="card-title">💈 Funcionários</div></div>
+            <div class="card-header"><div class="card-title"><img class="ico escuro" src="img/icones/funcionarios.png" alt=""> Funcionários</div></div>
             <div class="card-body" style="padding:0">
                 <table class="data-table" id="tabelaFunc">
                     <thead><tr><th scope="col">ID</th><th scope="col">Nome</th><th scope="col">Função</th><th scope="col">Status</th><th scope="col">Ações</th></tr></thead>
@@ -1882,7 +2100,7 @@
                                     <button type="button" class="btn-deletar" onclick="deletarFuncionario(${f.id_funcionario})">Excluir</button>
                                 </td>
                             </tr>
-                        `).join('') : `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon">💈</div><p>Nenhum funcionário cadastrado</p></div></td></tr>`}
+                        `).join('') : `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><img class="escuro" src="img/icones/funcionarios.png" alt=""></div><p>Nenhum funcionário cadastrado</p></div></td></tr>`}
                     </tbody>
                 </table>
             </div>
@@ -1962,7 +2180,7 @@
             <span style="color:var(--cinza-medio);font-size:0.8rem;margin-left:auto">${agendamentos.length} agendamentos</span>
         </div>
         <div class="card">
-            <div class="card-header"><div class="card-title">📅 Agendamentos</div></div>
+            <div class="card-header"><div class="card-title"><img class="ico escuro" src="img/icones/agendamentos.png" alt=""> Agendamentos</div></div>
             <div class="card-body" style="padding:0">
                 <table class="data-table" id="tabelaAg">
                     <thead><tr><th scope="col">ID</th><th scope="col">Data/Hora</th><th scope="col">Cliente</th><th scope="col">Serviços</th><th scope="col">Total</th><th scope="col">Pagamento</th><th scope="col">Profissional</th><th scope="col">Status</th><th scope="col">Ações</th></tr></thead>
@@ -2007,7 +2225,7 @@
                                     <button type="button" class="btn-deletar" onclick="deletarAgendamento(${a.id})">Excluir</button>
                                 </td>
                             </tr>`;
-            }).join('') : `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📅</div><p>Nenhum agendamento encontrado</p></div></td></tr>`}
+            }).join('') : `<tr><td colspan="9"><div class="empty-state"><div class="empty-icon"><img class="escuro" src="img/icones/agendamentos.png" alt=""></div><p>Nenhum agendamento encontrado</p></div></td></tr>`}
                     </tbody>
                 </table>
             </div>
@@ -2299,7 +2517,7 @@
             return `
         <div class="fid-stats-grid">
             <div class="fid-stat-card">
-                <div class="fid-stat-icon roxo">⭐</div>
+                <div class="fid-stat-icon roxo"><img src="img/icones/fidelidade.png" alt=""></div>
                 <div>
                     <div class="fid-stat-value">${Math.round(totalPontos).toLocaleString('pt-BR')}</div>
                     <div class="fid-stat-label">Pontos em Circulação</div>
@@ -2352,7 +2570,7 @@
                             </div>
                             <div class="ranking-pts">${parseFloat(r.pontos).toFixed(0)} pts</div>
                         </div>`;
-            }).join('') : `<div class="empty-state"><div class="empty-icon">⭐</div><p>Nenhum cliente com pontos ainda</p></div>`}
+            }).join('') : `<div class="empty-state"><div class="empty-icon"><img src="img/icones/fidelidade.png" alt=""></div><p>Nenhum cliente com pontos ainda</p></div>`}
                 </div>
             </div>
 
@@ -2614,7 +2832,7 @@
             return `
         <div class="dash-grid">
             <div class="card">
-                <div class="card-header"><div class="card-title">👤 Meu Perfil</div></div>
+                <div class="card-header"><div class="card-title"><img class="ico" src="img/icones/usuario.png" alt=""> Meu Perfil</div></div>
                 <div class="card-body">
                     <div class="config-section">
                         <div class="info-row"><span>Nome</span><span>${usuarioLogado.nome || '—'}</span></div>
@@ -2631,13 +2849,13 @@
                     <div class="form-group"><label for="novaSenha">Nova Senha</label>
                         <div class="senha-wrapper">
                             <input type="password" id="novaSenha" autocomplete="new-password" placeholder="Mínimo 6 caracteres">
-                            <button type="button" class="toggle-senha" aria-label="Mostrar senha" onclick="toggleSenha(\'novaSenha\', this)">👁️</button>
+                            <button type="button" class="toggle-senha" aria-label="Mostrar senha" onclick="toggleSenha(\'novaSenha\', this)"><img src="img/icones/olho.png" alt=""></button>
                         </div>
                     </div>
                     <div class="form-group"><label for="confirmarSenha">Confirmar Senha</label>
                         <div class="senha-wrapper">
                             <input type="password" id="confirmarSenha" autocomplete="new-password" placeholder="Repita a senha">
-                            <button type="button" class="toggle-senha" aria-label="Mostrar senha" onclick="toggleSenha(\'confirmarSenha\', this)">👁️</button>
+                            <button type="button" class="toggle-senha" aria-label="Mostrar senha" onclick="toggleSenha(\'confirmarSenha\', this)"><img src="img/icones/olho.png" alt=""></button>
                         </div>
                     </div>
                     <button type="button" class="btn-novo" style="width:auto" onclick="alterarSenha()">🔑 Alterar Senha</button>
