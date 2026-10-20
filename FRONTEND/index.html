@@ -1,1356 +1,1618 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Barbershop System - Barbearia de Elite</title>
 
     <!-- SEO -->
-    <meta name="description"
-        content="Barbershop System: barbearia premium com corte, barba, hidratação e mais. Agende online, acumule pontos de fidelidade e conheça nossa equipe.">
-    <meta name="theme-color" content="#0a1a2f">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Barbershop System - Barbearia de Elite">
-    <meta property="og:description"
-        content="Sua experiência premium em cuidados masculinos. Agende online e acumule pontos de fidelidade.">
-    <meta property="og:locale" content="pt_BR">
+    <meta
+      name="description"
+      content="Barbershop System: barbearia premium com corte, barba, hidratação e mais. Agende online, acumule pontos de fidelidade e conheça nossa equipe."
+    />
+    <meta name="theme-color" content="#0a1a2f" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:title"
+      content="Barbershop System - Barbearia de Elite"
+    />
+    <meta
+      property="og:description"
+      content="Sua experiência premium em cuidados masculinos. Agende online e acumule pontos de fidelidade."
+    />
+    <meta property="og:locale" content="pt_BR" />
 
     <!-- Favicon (aba do navegador) -->
-    <link rel="icon" type="image/png" sizes="256x256" href="img/logo/favicon.png">
-    <link rel="apple-touch-icon" href="img/logo/favicon.png">
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="img/logo/favicon.png"
+    />
+    <link rel="apple-touch-icon" href="img/logo/favicon.png" />
 
     <!-- Fontes: só os pesos usados + carregamento sem bloquear a renderização -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet"
-        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap"
-        media="print" onload="this.media='all'">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap"
+      media="print"
+      onload="this.media = 'all'"
+    />
     <noscript>
-        <link rel="stylesheet"
-            href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap">
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap"
+      />
     </noscript>
 
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        /* Evita que o header fixo cubra o título da seção ao navegar */
+        scroll-padding-top: 90px;
+      }
+
+      body {
+        font-family:
+          "DM Sans",
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          Arial,
+          sans-serif;
+        background: #f5f5f5;
+        min-height: 100vh;
+      }
+
+      /* Cores do tema - padronizadas com o dashboard */
+      :root {
+        --azul-escuro: #0a1a2f;
+        --azul-medio: #1a2a4f;
+        --azul-accent: #2563eb;
+        --azul-light: #dbeafe;
+        --cinza-escuro: #2c2c2c;
+        /* Escurecido (antes #64748b) para passar no contraste WCAG AA */
+        --cinza-medio: #475569;
+        --cinza-claro: #e2e8f0;
+        --branco: #ffffff;
+        --cinza-fundo: #f1f5f9;
+        --verde: #10b981;
+        --vermelho: #ef4444;
+        --fonte-titulo:
+          "Syne", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+      }
+
+      /* Acessibilidade: foco visível para quem navega por teclado */
+      :focus-visible {
+        outline: 3px solid var(--azul-accent);
+        outline-offset: 3px;
+      }
+
+      .hero :focus-visible,
+      .section-dark :focus-visible {
+        outline-color: var(--branco);
+      }
+
+      .skip-link {
+        position: absolute;
+        left: 10px;
+        top: -60px;
+        background: var(--azul-escuro);
+        color: var(--branco);
+        padding: 12px 20px;
+        border-radius: 8px;
+        z-index: 2000;
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .skip-link:focus {
+        top: 10px;
+      }
+
+      /* Landing Page */
+      .landing-page {
+        min-height: 100vh;
+        background: linear-gradient(
+          135deg,
+          var(--cinza-fundo) 0%,
+          var(--branco) 100%
+        );
+        position: relative;
+      }
+
+      /* Header */
+      .header {
+        background: var(--branco);
+        padding: 14px clamp(16px, 4vw, 50px);
+        gap: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        border-bottom: 3px solid var(--azul-escuro);
+      }
+
+      .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+        text-decoration: none;
+      }
+
+      .logo-img {
+        height: 44px;
+        width: auto;
+        display: block;
+        flex-shrink: 0;
+      }
+
+      .logo-text {
+        font-family: var(--fonte-titulo);
+        font-size: clamp(1.1rem, 3.2vw, 2rem);
+        white-space: nowrap;
+        font-weight: 800;
+        color: var(--azul-escuro);
+      }
+
+      .logo-text span {
+        color: var(--cinza-medio);
+        font-weight: 500;
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 20px;
+        align-items: center;
+        white-space: nowrap;
+      }
+
+      .nav-links a {
+        color: var(--cinza-escuro);
+        text-decoration: none;
+        transition: color 0.3s;
+        font-weight: 500;
+        font-size: 0.95rem;
+        /* Área de toque mínima de 44px */
+        display: inline-flex;
+        align-items: center;
+        min-height: 44px;
+        padding: 0 8px;
+      }
+
+      .nav-links a:hover {
+        color: var(--azul-accent);
+      }
+
+      /* Botões do menu (eram <a> sem href, inacessíveis por teclado) */
+      .nav-links .btn-acessar-nav,
+      .nav-links .btn-cadastrar-nav {
+        width: auto;
+        min-height: 44px;
+        padding: 10px 30px;
+        border-radius: 30px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        transition:
+          background-color 0.3s,
+          color 0.3s,
+          transform 0.3s;
+      }
+
+      /* Antes: fundo #e2e8f0 com texto branco (contraste ~1.2:1, ilegível) */
+      .nav-links .btn-acessar-nav {
+        background-color: var(--azul-escuro);
+        color: var(--branco);
+        border: 2px solid var(--azul-escuro);
+      }
+
+      .nav-links .btn-acessar-nav:hover {
+        background-color: #00367c;
+        border-color: #00367c;
+        transform: translateY(-2px);
+        color: var(--branco);
+      }
+
+      .nav-links .btn-cadastrar-nav {
+        background: transparent;
+        color: var(--azul-escuro);
+        border: 2px solid var(--azul-escuro);
+      }
+
+      .nav-links .btn-cadastrar-nav:hover {
+        background: var(--azul-escuro);
+        color: var(--branco);
+        transform: translateY(-2px);
+      }
+
+      /* Botão hambúrguer (só aparece em telas pequenas) */
+      .menu-toggle {
+        display: none;
+        width: 46px;
+        height: 46px;
+        padding: 0;
+        flex-shrink: 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        background: transparent;
+        border: 2px solid var(--azul-escuro);
+        border-radius: 12px;
+      }
+
+      .menu-toggle:hover {
+        background: var(--cinza-fundo);
+        transform: none;
+      }
+
+      .menu-toggle-bar {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: var(--azul-escuro);
+        border-radius: 2px;
+        transition:
+          transform 0.3s,
+          opacity 0.3s;
+      }
+
+      .menu-toggle[aria-expanded="true"] .menu-toggle-bar:nth-child(1) {
+        transform: translateY(7px) rotate(45deg);
+      }
+
+      .menu-toggle[aria-expanded="true"] .menu-toggle-bar:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-toggle[aria-expanded="true"] .menu-toggle-bar:nth-child(3) {
+        transform: translateY(-7px) rotate(-45deg);
+      }
+
+      /* Hero Section */
+      .hero {
+        min-height: 100vh;
+        min-height: 100svh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        background: linear-gradient(
+          135deg,
+          var(--azul-escuro) 0%,
+          var(--cinza-escuro) 100%
+        );
+        overflow: hidden;
+      }
+
+      .hero-content {
+        z-index: 1;
+        padding: 100px 20px 20px;
+      }
+
+      .hero-icon {
+        font-size: 6rem;
+        margin-bottom: 20px;
+        line-height: 1;
+      }
+
+      .hero h1 {
+        font-family: var(--fonte-titulo);
+        font-size: clamp(2rem, 8vw, 4rem);
+        overflow-wrap: anywhere;
+        margin-bottom: 20px;
+        color: var(--branco);
+      }
+
+      .hero h1 span {
+        color: var(--azul-light);
+      }
+
+      .hero p {
+        font-size: clamp(1rem, 2.6vw, 1.2rem);
+        color: var(--cinza-claro);
+        margin-bottom: 30px;
+      }
+
+      .btn-acessar,
+      .btn-cadastrar {
+        border: none;
+        padding: 15px 50px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        cursor: pointer;
+        transition:
+          background-color 0.3s,
+          color 0.3s,
+          transform 0.3s;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        margin: 0 10px;
+        font-family: inherit;
+      }
+
+      .btn-acessar {
+        background: var(--branco);
+        color: var(--azul-escuro);
+      }
+
+      .btn-acessar:hover {
+        background: var(--azul-light);
+        transform: translateY(-3px);
+      }
+
+      .btn-cadastrar {
+        background: transparent;
+        color: var(--branco);
+        border: 2px solid var(--branco);
+      }
+
+      .btn-cadastrar:hover {
+        background: var(--branco);
+        color: var(--azul-escuro);
+        transform: translateY(-3px);
+      }
+
+      /* Sections */
+      .section {
+        padding: clamp(50px, 8vw, 80px) clamp(20px, 4vw, 50px);
+      }
+
+      .section-light {
+        background: var(--branco);
+      }
+
+      .section-gray {
+        background: var(--cinza-fundo);
+      }
+
+      .section-dark {
+        background: linear-gradient(
+          135deg,
+          var(--azul-escuro) 0%,
+          var(--cinza-escuro) 100%
+        );
+        color: var(--branco);
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .section-title {
+        text-align: center;
+        font-family: var(--fonte-titulo);
+        font-size: clamp(1.7rem, 5vw, 2.5rem);
+        margin-bottom: 20px;
+        color: var(--azul-escuro);
+      }
+
+      .section-dark .section-title {
+        color: var(--branco);
+      }
+
+      .section-subtitle {
+        text-align: center;
+        color: var(--cinza-medio);
+        margin-bottom: 50px;
+        font-size: 1.1rem;
+      }
+
+      .section-dark .section-subtitle {
+        color: var(--cinza-claro);
+      }
+
+      .about-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+        align-items: center;
+      }
+
+      .about-text p {
+        margin-bottom: 20px;
+        line-height: 1.6;
+        color: var(--cinza-medio);
+      }
+
+      .about-text h3 {
+        color: var(--azul-escuro);
+        margin-bottom: 15px;
+        font-size: 1.3rem;
+        font-family: var(--fonte-titulo);
+      }
+
+      .about-image {
+        text-align: center;
+      }
+
+      .about-image img {
+        width: 100%;
+        height: auto;
+        /* Reserva o espaço da imagem e evita salto de layout (CLS) */
+        aspect-ratio: 4 / 3;
+        object-fit: cover;
+        border-radius: 15px;
+      }
+
+      .about-image figcaption {
+        margin-top: 20px;
+        color: var(--cinza-medio);
+      }
+
+      /* Galeria */
+      .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+        gap: 30px;
+        margin-top: 40px;
+      }
+
+      .gallery-item {
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+        height: 300px;
+        background: var(--cinza-claro);
+      }
+
+      .gallery-item:hover {
+        transform: translateY(-10px);
+      }
+
+      .gallery-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+      }
+
+      .gallery-item:hover .gallery-img {
+        transform: scale(1.1);
+      }
+
+      .gallery-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        color: white;
+        padding: 20px;
+        transform: translateY(100%);
+        transition: transform 0.3s;
+      }
+
+      .gallery-item:hover .gallery-overlay {
+        transform: translateY(0);
+      }
+
+      /* Em telas de toque não existe hover: mostra a legenda sempre */
+      @media (hover: none) {
+        .gallery-overlay {
+          transform: none;
+        }
+      }
+
+      .gallery-overlay h3 {
+        margin-bottom: 5px;
+        font-family: var(--fonte-titulo);
+        font-size: 1.1rem;
+      }
+
+      .gallery-overlay p {
+        font-size: 0.9rem;
+      }
+
+      /* Team Grid */
+      .team-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+        gap: 40px;
+        margin-top: 40px;
+      }
+
+      .team-card {
+        background: var(--branco);
+        border-radius: 20px;
+        overflow: hidden;
+        text-align: center;
+        transition:
+          transform 0.3s,
+          box-shadow 0.3s;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      }
+
+      .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+      }
+
+      .team-icon {
+        background: linear-gradient(
+          135deg,
+          var(--azul-escuro) 0%,
+          var(--cinza-escuro) 100%
+        );
+        padding: 40px;
+        font-size: 4rem;
+      }
+
+      .team-card h3 {
+        margin: 20px 0 10px;
+        color: var(--azul-escuro);
+        font-size: 1.5rem;
+        font-family: var(--fonte-titulo);
+      }
+
+      .team-card p {
+        color: var(--cinza-medio);
+        padding: 0 20px 20px;
+      }
+
+      .team-card .team-funcao {
+        color: var(--azul-accent);
+        font-weight: bold;
+        margin-bottom: 10px;
+        padding-bottom: 0;
+      }
+
+      .footer {
+        background: var(--cinza-escuro);
+        color: var(--cinza-claro);
+        text-align: center;
+        padding: 40px 20px;
+        overflow-wrap: anywhere;
+      }
+
+      .footer-logo {
+        height: 56px;
+        width: auto;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto 12px;
+      }
+
+      .footer address {
+        font-style: normal;
+        margin-top: 10px;
+      }
+
+      .login-page,
+      .register-page,
+      .system-page {
+        display: none;
+        min-height: 100vh;
+        background: linear-gradient(
+          135deg,
+          var(--cinza-fundo) 0%,
+          var(--branco) 100%
+        );
+        padding: 50px 20px;
+      }
+
+      .login-container,
+      .register-container,
+      .system-container {
+        max-width: 500px;
+        margin: 0 auto;
+        background: var(--branco);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      }
+
+      .login-header,
+      .register-header,
+      .system-header {
+        background: linear-gradient(
+          135deg,
+          var(--azul-escuro) 0%,
+          var(--cinza-escuro) 100%
+        );
+        color: var(--branco);
+        padding: clamp(24px, 6vw, 40px);
+        text-align: center;
+      }
+
+      .form-logo {
+        height: 90px;
+        width: auto;
+        max-width: 100%;
+        object-fit: contain;
+        display: block;
+        margin: 0 auto 14px;
+      }
+
+      .login-header h2,
+      .register-header h2,
+      .system-header h2 {
+        color: var(--branco);
+        margin-bottom: 10px;
+        font-family: var(--fonte-titulo);
+      }
+
+      .login-form,
+      .register-form,
+      .system-content {
+        padding: clamp(20px, 5vw, 40px);
+      }
+
+      .form-group {
+        margin-bottom: 25px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: var(--cinza-escuro);
+        font-weight: 600;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid var(--cinza-claro);
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+        font-family: inherit;
+      }
+
+      input::placeholder {
+        color: #64748b;
+      }
+
+      .senha-wrapper {
+        position: relative;
+      }
+
+      .senha-wrapper input {
+        padding-right: 50px;
+      }
+
+      .toggle-senha img {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
+        opacity: 0.6;
+        transition: opacity 0.16s;
+        pointer-events: none;
+      }
+
+      .toggle-senha:hover img,
+      .toggle-senha:focus-visible img {
+        opacity: 1;
+      }
+
+      .toggle-senha,
+      .toggle-senha:hover {
+        position: absolute;
+        top: 50%;
+        right: 6px;
+        transform: translateY(-50%);
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        color: var(--cinza-escuro);
+        background: none;
+        border: none;
+        padding: 0;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: var(--azul-accent);
+      }
+
+      button {
+        width: 100%;
+        padding: 12px;
+        background: var(--azul-escuro);
+        color: var(--branco);
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          background-color 0.3s,
+          transform 0.3s;
+        font-family: inherit;
+      }
+
+      button:hover {
+        background: var(--azul-accent);
+        transform: translateY(-2px);
+      }
+
+      .link-button {
+        background: none;
+        color: var(--azul-accent);
+        margin-top: 15px;
+      }
+
+      .link-button:hover {
+        background: none;
+        transform: none;
+        text-decoration: underline;
+      }
+
+      .message {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+      }
+
+      .success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+
+      .forgot-password {
+        text-align: center;
+        margin-top: 15px;
+      }
+
+      /* Tablet / notebook pequeno: menu mais compacto */
+      @media (max-width: 1024px) {
+        .nav-links {
+          gap: 8px;
         }
 
-        html {
-            scroll-behavior: smooth;
-            /* Evita que o header fixo cubra o título da seção ao navegar */
-            scroll-padding-top: 90px;
+        .nav-links .btn-acessar-nav,
+        .nav-links .btn-cadastrar-nav {
+          padding: 10px 20px;
         }
 
-        body {
-            font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
-            background: #f5f5f5;
-            min-height: 100vh;
+        .about-content {
+          gap: 30px;
         }
+      }
 
-        /* Cores do tema - padronizadas com o dashboard */
-        :root {
-            --azul-escuro: #0a1a2f;
-            --azul-medio: #1a2a4f;
-            --azul-accent: #2563eb;
-            --azul-light: #dbeafe;
-            --cinza-escuro: #2c2c2c;
-            /* Escurecido (antes #64748b) para passar no contraste WCAG AA */
-            --cinza-medio: #475569;
-            --cinza-claro: #e2e8f0;
-            --branco: #ffffff;
-            --cinza-fundo: #f1f5f9;
-            --verde: #10b981;
-            --vermelho: #ef4444;
-            --fonte-titulo: 'Syne', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
-        }
-
-        /* Acessibilidade: foco visível para quem navega por teclado */
-        :focus-visible {
-            outline: 3px solid var(--azul-accent);
-            outline-offset: 3px;
-        }
-
-        .hero :focus-visible,
-        .section-dark :focus-visible {
-            outline-color: var(--branco);
-        }
-
-        .skip-link {
-            position: absolute;
-            left: 10px;
-            top: -60px;
-            background: var(--azul-escuro);
-            color: var(--branco);
-            padding: 12px 20px;
-            border-radius: 8px;
-            z-index: 2000;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .skip-link:focus {
-            top: 10px;
-        }
-
-        /* Landing Page */
-        .landing-page {
-            min-height: 100vh;
-            background: linear-gradient(135deg, var(--cinza-fundo) 0%, var(--branco) 100%);
-            position: relative;
-        }
-
-        /* Header */
-        .header {
-            background: var(--branco);
-            padding: 14px clamp(16px, 4vw, 50px);
-            gap: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
-            border-bottom: 3px solid var(--azul-escuro);
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-shrink: 0;
-            text-decoration: none;
-        }
-
-        .logo-img {
-            height: 44px;
-            width: auto;
-            display: block;
-            flex-shrink: 0;
-        }
-
-        .logo-text {
-            font-family: var(--fonte-titulo);
-            font-size: clamp(1.1rem, 3.2vw, 2rem);
-            white-space: nowrap;
-            font-weight: 800;
-            color: var(--azul-escuro);
-        }
-
-        .logo-text span {
-            color: var(--cinza-medio);
-            font-weight: 500;
+      /* Celular e tablet em pé: menu vira hambúrguer */
+      @media (max-width: 860px) {
+        .menu-toggle {
+          display: flex;
         }
 
         .nav-links {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            white-space: nowrap;
+          display: none;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          flex-direction: column;
+          align-items: stretch;
+          gap: 4px;
+          padding: 12px 20px 20px;
+          background: var(--branco);
+          border-bottom: 3px solid var(--azul-escuro);
+          box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+          max-height: calc(100vh - 80px);
+          overflow-y: auto;
+        }
+
+        .nav-links.aberto {
+          display: flex;
         }
 
         .nav-links a {
-            color: var(--cinza-escuro);
-            text-decoration: none;
-            transition: color 0.3s;
-            font-weight: 500;
-            font-size: 0.95rem;
-            /* Área de toque mínima de 44px */
-            display: inline-flex;
-            align-items: center;
-            min-height: 44px;
-            padding: 0 8px;
+          justify-content: center;
+          min-height: 48px;
         }
 
-        .nav-links a:hover {
-            color: var(--azul-accent);
-        }
-
-        /* Botões do menu (eram <a> sem href, inacessíveis por teclado) */
         .nav-links .btn-acessar-nav,
         .nav-links .btn-cadastrar-nav {
-            width: auto;
-            min-height: 44px;
-            padding: 10px 30px;
-            border-radius: 30px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            transition: background-color 0.3s, color 0.3s, transform 0.3s;
+          width: 100%;
+          min-height: 48px;
         }
 
-        /* Antes: fundo #e2e8f0 com texto branco (contraste ~1.2:1, ilegível) */
-        .nav-links .btn-acessar-nav {
-            background-color: var(--azul-escuro);
-            color: var(--branco);
-            border: 2px solid var(--azul-escuro);
-        }
-
-        .nav-links .btn-acessar-nav:hover {
-            background-color: #00367c;
-            border-color: #00367c;
-            transform: translateY(-2px);
-            color: var(--branco);
-        }
-
-        .nav-links .btn-cadastrar-nav {
-            background: transparent;
-            color: var(--azul-escuro);
-            border: 2px solid var(--azul-escuro);
-        }
-
-        .nav-links .btn-cadastrar-nav:hover {
-            background: var(--azul-escuro);
-            color: var(--branco);
-            transform: translateY(-2px);
-        }
-
-        /* Botão hambúrguer (só aparece em telas pequenas) */
-        .menu-toggle {
-            display: none;
-            width: 46px;
-            height: 46px;
-            padding: 0;
-            flex-shrink: 0;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            background: transparent;
-            border: 2px solid var(--azul-escuro);
-            border-radius: 12px;
-        }
-
-        .menu-toggle:hover {
-            background: var(--cinza-fundo);
-            transform: none;
-        }
-
-        .menu-toggle-bar {
-            display: block;
-            width: 22px;
-            height: 2px;
-            background: var(--azul-escuro);
-            border-radius: 2px;
-            transition: transform 0.3s, opacity 0.3s;
-        }
-
-        .menu-toggle[aria-expanded="true"] .menu-toggle-bar:nth-child(1) {
-            transform: translateY(7px) rotate(45deg);
-        }
-
-        .menu-toggle[aria-expanded="true"] .menu-toggle-bar:nth-child(2) {
-            opacity: 0;
-        }
-
-        .menu-toggle[aria-expanded="true"] .menu-toggle-bar:nth-child(3) {
-            transform: translateY(-7px) rotate(-45deg);
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            min-height: 100svh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            position: relative;
-            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--cinza-escuro) 100%);
-            overflow: hidden;
+        .about-content {
+          grid-template-columns: 1fr;
         }
 
         .hero-content {
-            z-index: 1;
-            padding: 100px 20px 20px;
+          padding-top: 110px;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .header {
+          padding: 10px 16px;
         }
 
-        .hero-icon {
-            font-size: 6rem;
-            margin-bottom: 20px;
-            line-height: 1;
+        .logo-img {
+          height: 36px;
         }
 
-        .hero h1 {
-            font-family: var(--fonte-titulo);
-            font-size: clamp(2rem, 8vw, 4rem);
-            overflow-wrap: anywhere;
-            margin-bottom: 20px;
-            color: var(--branco);
+        .logo-container {
+          gap: 8px;
+          min-width: 0;
         }
 
-        .hero h1 span {
-            color: var(--azul-light);
-        }
-
-        .hero p {
-            font-size: clamp(1rem, 2.6vw, 1.2rem);
-            color: var(--cinza-claro);
-            margin-bottom: 30px;
+        .hero-content {
+          width: 100%;
+          max-width: 560px;
         }
 
         .btn-acessar,
         .btn-cadastrar {
-            border: none;
-            padding: 15px 50px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: background-color 0.3s, color 0.3s, transform 0.3s;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-            margin: 0 10px;
-            font-family: inherit;
-        }
-
-        .btn-acessar {
-            background: var(--branco);
-            color: var(--azul-escuro);
-        }
-
-        .btn-acessar:hover {
-            background: var(--azul-light);
-            transform: translateY(-3px);
-        }
-
-        .btn-cadastrar {
-            background: transparent;
-            color: var(--branco);
-            border: 2px solid var(--branco);
-        }
-
-        .btn-cadastrar:hover {
-            background: var(--branco);
-            color: var(--azul-escuro);
-            transform: translateY(-3px);
-        }
-
-        /* Sections */
-        .section {
-            padding: clamp(50px, 8vw, 80px) clamp(20px, 4vw, 50px);
-        }
-
-        .section-light {
-            background: var(--branco);
-        }
-
-        .section-gray {
-            background: var(--cinza-fundo);
-        }
-
-        .section-dark {
-            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--cinza-escuro) 100%);
-            color: var(--branco);
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            text-align: center;
-            font-family: var(--fonte-titulo);
-            font-size: clamp(1.7rem, 5vw, 2.5rem);
-            margin-bottom: 20px;
-            color: var(--azul-escuro);
-        }
-
-        .section-dark .section-title {
-            color: var(--branco);
-        }
-
-        .section-subtitle {
-            text-align: center;
-            color: var(--cinza-medio);
-            margin-bottom: 50px;
-            font-size: 1.1rem;
-        }
-
-        .section-dark .section-subtitle {
-            color: var(--cinza-claro);
-        }
-
-        .about-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 50px;
-            align-items: center;
-        }
-
-        .about-text p {
-            margin-bottom: 20px;
-            line-height: 1.6;
-            color: var(--cinza-medio);
-        }
-
-        .about-text h3 {
-            color: var(--azul-escuro);
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-            font-family: var(--fonte-titulo);
-        }
-
-        .about-image {
-            text-align: center;
-        }
-
-        .about-image img {
-            width: 100%;
-            height: auto;
-            /* Reserva o espaço da imagem e evita salto de layout (CLS) */
-            aspect-ratio: 4 / 3;
-            object-fit: cover;
-            border-radius: 15px;
-        }
-
-        .about-image figcaption {
-            margin-top: 20px;
-            color: var(--cinza-medio);
-        }
-
-        /* Galeria */
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-            gap: 30px;
-            margin-top: 40px;
+          display: block;
+          width: 100%;
+          padding: 14px 24px;
+          font-size: 1rem;
+          margin: 0 0 12px;
         }
 
         .gallery-item {
-            position: relative;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s;
-            height: 300px;
-            background: var(--cinza-claro);
+          height: 240px;
         }
 
-        .gallery-item:hover {
-            transform: translateY(-10px);
-        }
-
-        .gallery-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s;
-        }
-
-        .gallery-item:hover .gallery-img {
-            transform: scale(1.1);
-        }
-
-        .gallery-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
-            color: white;
-            padding: 20px;
-            transform: translateY(100%);
-            transition: transform 0.3s;
-        }
-
-        .gallery-item:hover .gallery-overlay {
-            transform: translateY(0);
-        }
-
-        /* Em telas de toque não existe hover: mostra a legenda sempre */
-        @media (hover: none) {
-            .gallery-overlay {
-                transform: none;
-            }
-        }
-
-        .gallery-overlay h3 {
-            margin-bottom: 5px;
-            font-family: var(--fonte-titulo);
-            font-size: 1.1rem;
-        }
-
-        .gallery-overlay p {
-            font-size: 0.9rem;
-        }
-
-        /* Team Grid */
         .team-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-            gap: 40px;
-            margin-top: 40px;
+          gap: 24px;
         }
 
-        .team-card {
-            background: var(--branco);
-            border-radius: 20px;
-            overflow: hidden;
-            text-align: center;
-            transition: transform 0.3s, box-shadow 0.3s;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .team-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .team-icon {
-            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--cinza-escuro) 100%);
-            padding: 40px;
-            font-size: 4rem;
-        }
-
-        .team-card h3 {
-            margin: 20px 0 10px;
-            color: var(--azul-escuro);
-            font-size: 1.5rem;
-            font-family: var(--fonte-titulo);
-        }
-
-        .team-card p {
-            color: var(--cinza-medio);
-            padding: 0 20px 20px;
-        }
-
-        .team-card .team-funcao {
-            color: var(--azul-accent);
-            font-weight: bold;
-            margin-bottom: 10px;
-            padding-bottom: 0;
-        }
-
-        .footer {
-            background: var(--cinza-escuro);
-            color: var(--cinza-claro);
-            text-align: center;
-            padding: 40px 20px;
-            overflow-wrap: anywhere;
-        }
-
-        .footer-logo {
-            height: 56px;
-            width: auto;
-            object-fit: contain;
-            display: block;
-            margin: 0 auto 12px;
-        }
-
-        .footer address {
-            font-style: normal;
-            margin-top: 10px;
+        .login-form,
+        .register-form {
+          padding: 30px 20px;
         }
 
         .login-page,
         .register-page,
         .system-page {
-            display: none;
-            min-height: 100vh;
-            background: linear-gradient(135deg, var(--cinza-fundo) 0%, var(--branco) 100%);
-            padding: 50px 20px;
+          padding: 24px 12px;
+        }
+      }
+
+      @media (max-width: 380px) {
+        .logo-text {
+          font-size: 0.95rem;
         }
 
-        .login-container,
-        .register-container,
-        .system-container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: var(--branco);
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        .logo-img {
+          height: 30px;
         }
 
-        .login-header,
-        .register-header,
-        .system-header {
-            background: linear-gradient(135deg, var(--azul-escuro) 0%, var(--cinza-escuro) 100%);
-            color: var(--branco);
-            padding: clamp(24px, 6vw, 40px);
-            text-align: center;
+        .section-subtitle {
+          margin-bottom: 30px;
         }
+      }
 
-        .form-logo {
-            height: 90px;
-            width: auto;
-            max-width: 100%;
-            object-fit: contain;
-            display: block;
-            margin: 0 auto 14px;
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          transition: none !important;
+          animation: none !important;
+          scroll-behavior: auto !important;
         }
-
-        .login-header h2,
-        .register-header h2,
-        .system-header h2 {
-            color: var(--branco);
-            margin-bottom: 10px;
-            font-family: var(--fonte-titulo);
-        }
-
-        .login-form,
-        .register-form,
-        .system-content {
-            padding: clamp(20px, 5vw, 40px);
-        }
-
-        .form-group {
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--cinza-escuro);
-            font-weight: 600;
-        }
-
-        input,
-        select,
-        textarea {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid var(--cinza-claro);
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-            font-family: inherit;
-        }
-
-        input::placeholder {
-            color: #64748b;
-        }
-
-        .senha-wrapper {
-            position: relative;
-        }
-
-        .senha-wrapper input {
-            padding-right: 50px;
-        }
-
-        .toggle-senha img {
-            width: 22px;
-            height: 22px;
-            object-fit: contain;
-            opacity: 0.6;
-            transition: opacity 0.16s;
-            pointer-events: none;
-        }
-
-        .toggle-senha:hover img,
-        .toggle-senha:focus-visible img {
-            opacity: 1;
-        }
-
-        .toggle-senha,
-        .toggle-senha:hover {
-            position: absolute;
-            top: 50%;
-            right: 6px;
-            transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.1rem;
-            color: var(--cinza-escuro);
-            background: none;
-            border: none;
-            padding: 0;
-        }
-
-        input:focus,
-        select:focus {
-            border-color: var(--azul-accent);
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background: var(--azul-escuro);
-            color: var(--branco);
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-            font-family: inherit;
-        }
-
-        button:hover {
-            background: var(--azul-accent);
-            transform: translateY(-2px);
-        }
-
-        .link-button {
-            background: none;
-            color: var(--azul-accent);
-            margin-top: 15px;
-        }
-
-        .link-button:hover {
-            background: none;
-            transform: none;
-            text-decoration: underline;
-        }
-
-        .message {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .forgot-password {
-            text-align: center;
-            margin-top: 15px;
-        }
-
-        /* Tablet / notebook pequeno: menu mais compacto */
-        @media (max-width: 1024px) {
-            .nav-links {
-                gap: 8px;
-            }
-
-            .nav-links .btn-acessar-nav,
-            .nav-links .btn-cadastrar-nav {
-                padding: 10px 20px;
-            }
-
-            .about-content {
-                gap: 30px;
-            }
-        }
-
-        /* Celular e tablet em pé: menu vira hambúrguer */
-        @media (max-width: 860px) {
-            .menu-toggle {
-                display: flex;
-            }
-
-            .nav-links {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                flex-direction: column;
-                align-items: stretch;
-                gap: 4px;
-                padding: 12px 20px 20px;
-                background: var(--branco);
-                border-bottom: 3px solid var(--azul-escuro);
-                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-                max-height: calc(100vh - 80px);
-                overflow-y: auto;
-            }
-
-            .nav-links.aberto {
-                display: flex;
-            }
-
-            .nav-links a {
-                justify-content: center;
-                min-height: 48px;
-            }
-
-            .nav-links .btn-acessar-nav,
-            .nav-links .btn-cadastrar-nav {
-                width: 100%;
-                min-height: 48px;
-            }
-
-            .about-content {
-                grid-template-columns: 1fr;
-            }
-
-            .hero-content {
-                padding-top: 110px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header {
-                padding: 10px 16px;
-            }
-
-            .logo-img {
-                height: 36px;
-            }
-
-            .logo-container {
-                gap: 8px;
-                min-width: 0;
-            }
-
-            .hero-content {
-                width: 100%;
-                max-width: 560px;
-            }
-
-            .btn-acessar,
-            .btn-cadastrar {
-                display: block;
-                width: 100%;
-                padding: 14px 24px;
-                font-size: 1rem;
-                margin: 0 0 12px;
-            }
-
-            .gallery-item {
-                height: 240px;
-            }
-
-            .team-grid {
-                gap: 24px;
-            }
-
-            .login-form,
-            .register-form {
-                padding: 30px 20px;
-            }
-
-            .login-page,
-            .register-page,
-            .system-page {
-                padding: 24px 12px;
-            }
-        }
-
-        @media (max-width: 380px) {
-            .logo-text {
-                font-size: 0.95rem;
-            }
-
-            .logo-img {
-                height: 30px;
-            }
-
-            .section-subtitle {
-                margin-bottom: 30px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-
-            *,
-            *::before,
-            *::after {
-                transition: none !important;
-                animation: none !important;
-                scroll-behavior: auto !important;
-            }
-        }
+      }
     </style>
-</head>
+  </head>
 
-<body>
+  <body>
     <a class="skip-link" href="#conteudo">Ir para o conteúdo</a>
 
     <!-- Landing Page -->
     <div class="landing-page" id="landingPage">
-        <header class="header">
-            <a class="logo-container" href="#home" aria-label="Barbershop System - ir para o início">
-                <img class="logo-img" src="img/logo/logo.png" alt="" width="66" height="44">
-                <span class="logo-text">BARBERSHOP<span>SYSTEM</span></span>
-            </a>
-            <button type="button" class="menu-toggle" id="menuToggle" aria-label="Abrir menu"
-                aria-expanded="false" aria-controls="navLinks">
-                <span class="menu-toggle-bar"></span>
-                <span class="menu-toggle-bar"></span>
-                <span class="menu-toggle-bar"></span>
+      <header class="header">
+        <a
+          class="logo-container"
+          href="#home"
+          aria-label="Barbershop System - ir para o início"
+        >
+          <img
+            class="logo-img"
+            src="img/logo/logo.png"
+            alt=""
+            width="66"
+            height="44"
+          />
+          <span class="logo-text">BARBERSHOP<span>SYSTEM</span></span>
+        </a>
+        <button
+          type="button"
+          class="menu-toggle"
+          id="menuToggle"
+          aria-label="Abrir menu"
+          aria-expanded="false"
+          aria-controls="navLinks"
+        >
+          <span class="menu-toggle-bar"></span>
+          <span class="menu-toggle-bar"></span>
+          <span class="menu-toggle-bar"></span>
+        </button>
+        <nav class="nav-links" id="navLinks" aria-label="Menu principal">
+          <a href="#home">Home</a>
+          <a href="#about">Quem Somos</a>
+          <a href="#gallery">Galeria</a>
+          <a href="#team">Nossa Equipe</a>
+          <button type="button" class="btn-acessar-nav" onclick="showLogin()">
+            Acessar
+          </button>
+          <button
+            type="button"
+            class="btn-cadastrar-nav"
+            onclick="showRegister()"
+          >
+            Cadastrar
+          </button>
+        </nav>
+      </header>
+
+      <main id="conteudo">
+        <section id="home" class="hero" aria-labelledby="titulo-hero">
+          <div class="hero-content">
+            <div class="hero-icon" aria-hidden="true"></div>
+            <h1 id="titulo-hero">BARBERSHOP <span>SYSTEM</span></h1>
+            <p>Sua experiência premium em cuidados masculinos</p>
+            <button type="button" class="btn-acessar" onclick="showLogin()">
+              Acessar Sistema
             </button>
-            <nav class="nav-links" id="navLinks" aria-label="Menu principal">
-                <a href="#home">Home</a>
-                <a href="#about">Quem Somos</a>
-                <a href="#gallery">Galeria</a>
-                <a href="#team">Nossa Equipe</a>
-                <button type="button" class="btn-acessar-nav" onclick="showLogin()">Acessar</button>
-                <button type="button" class="btn-cadastrar-nav" onclick="showRegister()">Cadastrar</button>
-            </nav>
-        </header>
+            <button
+              type="button"
+              class="btn-cadastrar"
+              onclick="showRegister()"
+            >
+              Cadastrar-se
+            </button>
+          </div>
+        </section>
 
-        <main id="conteudo">
-            <section id="home" class="hero" aria-labelledby="titulo-hero">
-                <div class="hero-content">
-                    <div class="hero-icon" aria-hidden="true"></div>
-                    <h1 id="titulo-hero">BARBERSHOP <span>SYSTEM</span></h1>
-                    <p>Sua experiência premium em cuidados masculinos</p>
-                    <button type="button" class="btn-acessar" onclick="showLogin()">Acessar Sistema</button>
-                    <button type="button" class="btn-cadastrar" onclick="showRegister()">Cadastrar-se</button>
-                </div>
-            </section>
+        <section
+          id="about"
+          class="section section-light"
+          aria-labelledby="titulo-about"
+        >
+          <div class="container">
+            <h2 class="section-title" id="titulo-about">Quem Somos</h2>
+            <div class="about-content">
+              <div class="about-text">
+                <p>
+                  A <strong>Barbershop System</strong> nasceu da paixão por
+                  oferecer o melhor em cuidados masculinos, combinando tradição
+                  e modernidade em um só lugar.
+                </p>
+                <p>
+                  Desde nossa fundação, buscamos proporcionar uma experiência
+                  única, onde cada cliente é tratado com exclusividade e atenção
+                  aos detalhes. Nossa missão é realçar a autoestima dos homens
+                  através de serviços de alta qualidade em um ambiente
+                  sofisticado e acolhedor.
+                </p>
+                <h3>Nossa Filosofia</h3>
+                <p>
+                  Acreditamos que cuidar da aparência vai além da estética - é
+                  sobre bem-estar, confiança e estilo. Por isso, investimos
+                  constantemente em produtos premium, técnicas atualizadas e no
+                  desenvolvimento da nossa equipe.
+                </p>
+              </div>
+              <figure class="about-image">
+                <img
+                  src="img/fotos/barbearia.png"
+                  width="600"
+                  height="450"
+                  loading="lazy"
+                  decoding="async"
+                  alt="Interior da barbearia com cadeiras de corte e ambiente sofisticado"
+                />
+                <figcaption>Ambiente premium e acolhedor</figcaption>
+              </figure>
+            </div>
+          </div>
+        </section>
 
-            <section id="about" class="section section-light" aria-labelledby="titulo-about">
-                <div class="container">
-                    <h2 class="section-title" id="titulo-about">Quem Somos</h2>
-                    <div class="about-content">
-                        <div class="about-text">
-                            <p>A <strong>Barbershop System</strong> nasceu da paixão por oferecer o melhor em cuidados
-                                masculinos, combinando tradição e modernidade em um só lugar.</p>
-                            <p>Desde nossa fundação, buscamos proporcionar uma experiência única, onde cada cliente é
-                                tratado com exclusividade e atenção aos detalhes. Nossa missão é realçar a autoestima
-                                dos homens através de serviços de alta qualidade em um ambiente sofisticado e
-                                acolhedor.</p>
-                            <h3>Nossa Filosofia</h3>
-                            <p>Acreditamos que cuidar da aparência vai além da estética - é sobre bem-estar, confiança
-                                e estilo. Por isso, investimos constantemente em produtos premium, técnicas atualizadas
-                                e no desenvolvimento da nossa equipe.</p>
-                        </div>
-                        <figure class="about-image">
-                            <img src="img/fotos/barbearia.png" width="600" height="450" loading="lazy" decoding="async"
-                                alt="Interior da barbearia com cadeiras de corte e ambiente sofisticado">
-                            <figcaption>Ambiente premium e acolhedor</figcaption>
-                        </figure>
-                    </div>
-                </div>
-            </section>
+        <!-- Galeria -->
+        <section
+          id="gallery"
+          class="section section-gray"
+          aria-labelledby="titulo-gallery"
+        >
+          <div class="container">
+            <h2 class="section-title" id="titulo-gallery">Nossa Galeria</h2>
+            <p class="section-subtitle">Conheça nosso espaço e serviços</p>
+            <div class="gallery-grid" id="galleryGrid">
+              <figure class="gallery-item">
+                <img
+                  class="gallery-img"
+                  src="img/fotos/corte1.jpg"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                  alt="Cliente com corte de cabelo moderno recém-finalizado"
+                />
+                <figcaption class="gallery-overlay">
+                  <h3>Corte Estiloso</h3>
+                  <p>Tendências modernas para todos os estilos</p>
+                </figcaption>
+              </figure>
+              <figure class="gallery-item">
+                <img
+                  class="gallery-img"
+                  src="img/fotos/barba.jpg"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                  alt="Barba modelada e alinhada pelo barbeiro"
+                />
+                <figcaption class="gallery-overlay">
+                  <h3>Barba Perfeita</h3>
+                  <p>Modelagem e cuidados especiais</p>
+                </figcaption>
+              </figure>
+              <figure class="gallery-item">
+                <img
+                  class="gallery-img"
+                  src="img/fotos/espaco.jpg"
+                  width="400"
+                  height="300"
+                  loading="lazy"
+                  decoding="async"
+                  alt="Espaço interno da barbearia, moderno e aconchegante"
+                />
+                <figcaption class="gallery-overlay">
+                  <h3>Espaço Premium</h3>
+                  <p>Ambiente aconchegante e moderno</p>
+                </figcaption>
+              </figure>
+            </div>
+          </div>
+        </section>
 
-            <!-- Galeria -->
-            <section id="gallery" class="section section-gray" aria-labelledby="titulo-gallery">
-                <div class="container">
-                    <h2 class="section-title" id="titulo-gallery">Nossa Galeria</h2>
-                    <p class="section-subtitle">Conheça nosso espaço e serviços</p>
-                    <div class="gallery-grid" id="galleryGrid">
-                        <figure class="gallery-item">
-                            <img class="gallery-img" src="img/fotos/corte1.jpg" width="400" height="300" loading="lazy"
-                                decoding="async" alt="Cliente com corte de cabelo moderno recém-finalizado">
-                            <figcaption class="gallery-overlay">
-                                <h3>Corte Estiloso</h3>
-                                <p>Tendências modernas para todos os estilos</p>
-                            </figcaption>
-                        </figure>
-                        <figure class="gallery-item">
-                            <img class="gallery-img" src="img/fotos/barba.jpg" width="400" height="300" loading="lazy"
-                                decoding="async" alt="Barba modelada e alinhada pelo barbeiro">
-                            <figcaption class="gallery-overlay">
-                                <h3>Barba Perfeita</h3>
-                                <p>Modelagem e cuidados especiais</p>
-                            </figcaption>
-                        </figure>
-                        <figure class="gallery-item">
-                            <img class="gallery-img" src="img/fotos/espaco.jpg" width="400" height="300" loading="lazy"
-                                decoding="async" alt="Espaço interno da barbearia, moderno e aconchegante">
-                            <figcaption class="gallery-overlay">
-                                <h3>Espaço Premium</h3>
-                                <p>Ambiente aconchegante e moderno</p>
-                            </figcaption>
-                        </figure>
-                    </div>
-                </div>
-            </section>
+        <section
+          id="team"
+          class="section section-dark"
+          aria-labelledby="titulo-team"
+        >
+          <div class="container">
+            <h2 class="section-title" id="titulo-team">Nossa Equipe</h2>
+            <p class="section-subtitle">
+              Profissionais dedicados ao seu bem-estar
+            </p>
+            <div class="team-grid">
+              <article class="team-card">
+                <div class="team-icon" aria-hidden="true">👨‍🦰</div>
+                <h3>Joao Marafon</h3>
+                <p class="team-funcao">Desenvolvedor</p>
+                <p>Especialista em criar soluções inovadoras</p>
+              </article>
+              <article class="team-card">
+                <div class="team-icon" aria-hidden="true">👨‍🦱</div>
+                <h3>Gustavo Alves</h3>
+                <p class="team-funcao">Desenvolvedor</p>
+                <p>Focado em experiência do usuário</p>
+              </article>
+            </div>
+          </div>
+        </section>
+      </main>
 
-            <section id="team" class="section section-dark" aria-labelledby="titulo-team">
-                <div class="container">
-                    <h2 class="section-title" id="titulo-team">Nossa Equipe</h2>
-                    <p class="section-subtitle">Profissionais dedicados ao seu bem-estar</p>
-                    <div class="team-grid">
-                        <article class="team-card">
-                            <div class="team-icon" aria-hidden="true">👨‍🦰</div>
-                            <h3>Joao Marafon</h3>
-                            <p class="team-funcao">Desenvolvedor</p>
-                            <p>Especialista em criar soluções inovadoras</p>
-                        </article>
-                        <article class="team-card">
-                            <div class="team-icon" aria-hidden="true">👨‍🦱</div>
-                            <h3>Gustavo Alves</h3>
-                            <p class="team-funcao">Desenvolvedor</p>
-                            <p>Focado em experiência do usuário</p>
-                        </article>
-                    </div>
-                </div>
-            </section>
-        </main>
-
-        <footer class="footer">
-            <img class="footer-logo" src="img/logo/logo.png" alt="" width="84" height="56">
-            <p>© 2026 Barbershop System - Todos os direitos reservados</p>
-            <address>📍 Rua da Barbearia, 123 | 📞 (11) 99999-9999 | ✉️ contato@barbershop.com</address>
-        </footer>
+      <footer class="footer">
+        <img
+          class="footer-logo"
+          src="img/logo/logo.png"
+          alt=""
+          width="84"
+          height="56"
+        />
+        <p>© 2026 Barbershop System - Todos os direitos reservados</p>
+        <address>
+          📍 Rua da Barbearia, 123 | 📞 (11) 99999-9999 | ✉️
+          contato@barbershop.com
+        </address>
+      </footer>
     </div>
 
     <!-- Login Page -->
     <section class="login-page" id="loginPage" aria-labelledby="titulo-login">
-        <div class="login-container">
-            <div class="login-header">
-                <img class="form-logo" src="img/logo/logo.png" alt="Logo Barbershop System" width="136" height="90">
-                <h2 id="titulo-login">Bem-vindo de volta</h2>
-                <p>Faça login para continuar</p>
-            </div>
-            <form class="login-form" id="loginForm" novalidate>
-                <div class="form-group">
-                    <label for="loginEmail">Email</label>
-                    <input type="email" id="loginEmail" name="email" placeholder="seu@email.com" autocomplete="email">
-                </div>
-                <div class="form-group">
-                    <label for="loginSenha">Senha</label>
-                    <div class="senha-wrapper">
-                        <input type="password" id="loginSenha" name="senha" placeholder="********"
-                            autocomplete="current-password">
-                        <button type="button" class="toggle-senha" aria-label="Mostrar senha"
-                            onclick="toggleSenha('loginSenha', this)"><img src="img/icones/olho.png" alt=""></button>
-                    </div>
-                </div>
-                <button type="submit">Entrar</button>
-                <div class="forgot-password">
-                    <button type="button" class="link-button" onclick="showEsqueciSenha()">Esqueci minha
-                        senha?</button>
-                    <button type="button" class="link-button" onclick="voltarHome()">Voltar para início</button>
-                </div>
-                <div id="loginMessage" role="alert"></div>
-            </form>
+      <div class="login-container">
+        <div class="login-header">
+          <img
+            class="form-logo"
+            src="img/logo/logo.png"
+            alt="Logo Barbershop System"
+            width="136"
+            height="90"
+          />
+          <h2 id="titulo-login">Bem-vindo de volta</h2>
+          <p>Faça login para continuar</p>
         </div>
+        <form class="login-form" id="loginForm" novalidate>
+          <div class="form-group">
+            <label for="loginEmail">Email</label>
+            <input
+              type="email"
+              id="loginEmail"
+              name="email"
+              placeholder="seu@email.com"
+              autocomplete="email"
+            />
+          </div>
+          <div class="form-group">
+            <label for="loginSenha">Senha</label>
+            <div class="senha-wrapper">
+              <input
+                type="password"
+                id="loginSenha"
+                name="senha"
+                placeholder="********"
+                autocomplete="current-password"
+              />
+              <button
+                type="button"
+                class="toggle-senha"
+                aria-label="Mostrar senha"
+                onclick="toggleSenha('loginSenha', this)"
+              >
+                <img src="img/icones/olho.png" alt="" />
+              </button>
+            </div>
+          </div>
+          <button type="submit">Entrar</button>
+          <div class="forgot-password">
+            <button
+              type="button"
+              class="link-button"
+              onclick="showEsqueciSenha()"
+            >
+              Esqueci minha senha?
+            </button>
+            <button type="button" class="link-button" onclick="voltarHome()">
+              Voltar para início
+            </button>
+          </div>
+          <div id="loginMessage" role="alert"></div>
+        </form>
+      </div>
     </section>
 
     <!-- Register Page -->
-    <section class="register-page" id="registerPage" aria-labelledby="titulo-register">
-        <div class="register-container">
-            <div class="register-header">
-                <img class="form-logo" src="img/logo/logo.png" alt="Logo Barbershop System" width="136" height="90">
-                <h2 id="titulo-register">Criar Conta</h2>
-                <p>Cadastre-se gratuitamente</p>
-            </div>
-            <form class="register-form" id="registerForm" novalidate>
-                <div class="form-group">
-                    <label for="regNome">Nome Completo *</label>
-                    <input type="text" id="regNome" name="nome" placeholder="Digite seu nome completo"
-                        autocomplete="name" required>
-                </div>
-                <div class="form-group">
-                    <label for="regCep">CEP *</label>
-                    <input type="text" id="regCep" name="cep" placeholder="Digite seu CEP" inputmode="numeric"
-                        autocomplete="postal-code" required>
-                </div>
-                <div class="form-group">
-                    <label for="regEmail">Email *</label>
-                    <input type="email" id="regEmail" name="email" placeholder="seu@email.com" autocomplete="email"
-                        required>
-                </div>
-                <div class="form-group">
-                    <label for="regSenha">Senha *</label>
-                    <div class="senha-wrapper">
-                        <input type="password" id="regSenha" name="senha" placeholder="Mínimo 6 caracteres"
-                            autocomplete="new-password" required>
-                        <button type="button" class="toggle-senha" aria-label="Mostrar senha"
-                            onclick="toggleSenha('regSenha', this)"><img src="img/icones/olho.png" alt=""></button>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="regSenhaConfirm">Confirmar Senha *</label>
-                    <div class="senha-wrapper">
-                        <input type="password" id="regSenhaConfirm" name="senhaConfirm" placeholder="Repita sua senha"
-                            autocomplete="new-password" required>
-                        <button type="button" class="toggle-senha" aria-label="Mostrar senha"
-                            onclick="toggleSenha('regSenhaConfirm', this)"><img src="img/icones/olho.png" alt=""></button>
-                    </div>
-                </div>
-                <button type="submit">Cadastrar</button>
-                <div class="forgot-password">
-                    <button type="button" class="link-button" onclick="showLogin()">Já tem conta? Faça
-                        login</button>
-                    <button type="button" class="link-button" onclick="voltarHome()">Voltar para início</button>
-                </div>
-                <div id="regMessage" role="alert"></div>
-            </form>
+    <section
+      class="register-page"
+      id="registerPage"
+      aria-labelledby="titulo-register"
+    >
+      <div class="register-container">
+        <div class="register-header">
+          <img
+            class="form-logo"
+            src="img/logo/logo.png"
+            alt="Logo Barbershop System"
+            width="136"
+            height="90"
+          />
+          <h2 id="titulo-register">Criar Conta</h2>
+          <p>Cadastre-se gratuitamente</p>
         </div>
+        <form class="register-form" id="registerForm" novalidate>
+          <div class="form-group">
+            <label for="regNome">Nome Completo *</label>
+            <input
+              type="text"
+              id="regNome"
+              name="nome"
+              placeholder="Digite seu nome completo"
+              autocomplete="name"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="regCep">CEP *</label>
+            <input
+              type="text"
+              id="regCep"
+              name="cep"
+              placeholder="Digite seu CEP"
+              inputmode="numeric"
+              autocomplete="postal-code"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="regEmail">Email *</label>
+            <input
+              type="email"
+              id="regEmail"
+              name="email"
+              placeholder="seu@email.com"
+              autocomplete="email"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="regSenha">Senha *</label>
+            <div class="senha-wrapper">
+              <input
+                type="password"
+                id="regSenha"
+                name="senha"
+                placeholder="Mínimo 6 caracteres"
+                autocomplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                class="toggle-senha"
+                aria-label="Mostrar senha"
+                onclick="toggleSenha('regSenha', this)"
+              >
+                <img src="img/icones/olho.png" alt="" />
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="regSenhaConfirm">Confirmar Senha *</label>
+            <div class="senha-wrapper">
+              <input
+                type="password"
+                id="regSenhaConfirm"
+                name="senhaConfirm"
+                placeholder="Repita sua senha"
+                autocomplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                class="toggle-senha"
+                aria-label="Mostrar senha"
+                onclick="toggleSenha('regSenhaConfirm', this)"
+              >
+                <img src="img/icones/olho.png" alt="" />
+              </button>
+            </div>
+          </div>
+          <button type="submit">Cadastrar</button>
+          <div class="forgot-password">
+            <button type="button" class="link-button" onclick="showLogin()">
+              Já tem conta? Faça login
+            </button>
+            <button type="button" class="link-button" onclick="voltarHome()">
+              Voltar para início
+            </button>
+          </div>
+          <div id="regMessage" role="alert"></div>
+        </form>
+      </div>
     </section>
 
     <script>
-        // Menu hambúrguer (mobile)
-        (function () {
-            const toggle = document.getElementById('menuToggle');
-            const nav = document.getElementById('navLinks');
-            if (!toggle || !nav) return;
-            function setMenu(aberto) {
-                nav.classList.toggle('aberto', aberto);
-                toggle.setAttribute('aria-expanded', aberto ? 'true' : 'false');
-                toggle.setAttribute('aria-label', aberto ? 'Fechar menu' : 'Abrir menu');
-            }
-            toggle.addEventListener('click', function () { setMenu(!nav.classList.contains('aberto')); });
-            nav.addEventListener('click', function (e) { if (e.target.closest('a, button')) setMenu(false); });
-            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
-            window.addEventListener('resize', function () { if (window.innerWidth > 860) setMenu(false); });
-        })();
+      // Menu hambúrguer (mobile)
+      (function () {
+        const toggle = document.getElementById("menuToggle");
+        const nav = document.getElementById("navLinks");
+        if (!toggle || !nav) return;
+        function setMenu(aberto) {
+          nav.classList.toggle("aberto", aberto);
+          toggle.setAttribute("aria-expanded", aberto ? "true" : "false");
+          toggle.setAttribute(
+            "aria-label",
+            aberto ? "Fechar menu" : "Abrir menu",
+          );
+        }
+        toggle.addEventListener("click", function () {
+          setMenu(!nav.classList.contains("aberto"));
+        });
+        nav.addEventListener("click", function (e) {
+          if (e.target.closest("a, button")) setMenu(false);
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") setMenu(false);
+        });
+        window.addEventListener("resize", function () {
+          if (window.innerWidth > 860) setMenu(false);
+        });
+      })();
     </script>
     <script>
-        const API_URL = 'http://localhost:3000';
+      const API_URL = "http://localhost:3000";
 
-        function toggleSenha(inputId, botao) {
-            const input = document.getElementById(inputId);
-            const img = botao.querySelector('img');
-            if (input.type === 'password') {
-                input.type = 'text';
-                if (img) img.src = 'img/icones/olho-fechado.png';
-                botao.setAttribute('aria-label', 'Ocultar senha');
-            } else {
-                input.type = 'password';
-                if (img) img.src = 'img/icones/olho.png';
-                botao.setAttribute('aria-label', 'Mostrar senha');
-            }
+      function toggleSenha(inputId, botao) {
+        const input = document.getElementById(inputId);
+        const img = botao.querySelector("img");
+        if (input.type === "password") {
+          input.type = "text";
+          if (img) img.src = "img/icones/olho-fechado.png";
+          botao.setAttribute("aria-label", "Ocultar senha");
+        } else {
+          input.type = "password";
+          if (img) img.src = "img/icones/olho.png";
+          botao.setAttribute("aria-label", "Mostrar senha");
+        }
+      }
+
+      function showLogin() {
+        document.getElementById("landingPage").style.display = "none";
+        document.getElementById("registerPage").style.display = "none";
+        document.getElementById("loginPage").style.display = "block";
+        document.getElementById("loginEmail").value = "";
+        document.getElementById("loginSenha").value = "";
+        document.getElementById("loginMessage").innerHTML = "";
+        document.getElementById("loginMessage").className = "";
+        window.scrollTo(0, 0);
+      }
+
+      function showRegister() {
+        document.getElementById("landingPage").style.display = "none";
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("registerPage").style.display = "block";
+        document.getElementById("regNome").value = "";
+        document.getElementById("regCep").value = "";
+        document.getElementById("regEmail").value = "";
+        document.getElementById("regSenha").value = "";
+        document.getElementById("regSenhaConfirm").value = "";
+        document.getElementById("regMessage").innerHTML = "";
+        document.getElementById("regMessage").className = "";
+        window.scrollTo(0, 0);
+      }
+
+      // Cadastrar novo usuário
+      async function cadastrarNovoUsuario() {
+        const nome_completo = document.getElementById("regNome").value;
+        const cep = document.getElementById("regCep").value;
+        const email = document.getElementById("regEmail").value;
+        const senha = document.getElementById("regSenha").value;
+        const senhaConfirm = document.getElementById("regSenhaConfirm").value;
+
+        const messageDiv = document.getElementById("regMessage");
+
+        if (!nome_completo || !cep || !email || !senha) {
+          messageDiv.className = "message error";
+          messageDiv.innerText = "Preencha todos os campos obrigatórios! (*)";
+          return;
         }
 
-        function showLogin() {
-            document.getElementById('landingPage').style.display = 'none';
-            document.getElementById('registerPage').style.display = 'none';
-            document.getElementById('loginPage').style.display = 'block';
-            document.getElementById('loginEmail').value = '';
-            document.getElementById('loginSenha').value = '';
-            document.getElementById('loginMessage').innerHTML = '';
-            document.getElementById('loginMessage').className = '';
-            window.scrollTo(0, 0);
+        // Valida formato de email (precisa de algo@algo.algo)
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          messageDiv.className = "message error";
+          messageDiv.innerText = "Digite um email válido!";
+          return;
         }
 
-        function showRegister() {
-            document.getElementById('landingPage').style.display = 'none';
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('registerPage').style.display = 'block';
-            document.getElementById('regNome').value = '';
-            document.getElementById('regCep').value = '';
-            document.getElementById('regEmail').value = '';
-            document.getElementById('regSenha').value = '';
-            document.getElementById('regSenhaConfirm').value = '';
-            document.getElementById('regMessage').innerHTML = '';
-            document.getElementById('regMessage').className = '';
-            window.scrollTo(0, 0);
+        // Valida CEP (8 dígitos numéricos, com ou sem hífen)
+        const cepDigits = cep.replace(/\D/g, "");
+        if (cepDigits.length !== 8) {
+          messageDiv.className = "message error";
+          messageDiv.innerText = "Digite um CEP válido com 8 dígitos!";
+          return;
         }
 
-        // Cadastrar novo usuário
-        async function cadastrarNovoUsuario() {
-            const nome_completo = document.getElementById('regNome').value;
-            const cep = document.getElementById('regCep').value;
-            const email = document.getElementById('regEmail').value;
-            const senha = document.getElementById('regSenha').value;
-            const senhaConfirm = document.getElementById('regSenhaConfirm').value;
-
-            const messageDiv = document.getElementById('regMessage');
-
-            if (!nome_completo || !cep || !email || !senha) {
-                messageDiv.className = 'message error';
-                messageDiv.innerText = 'Preencha todos os campos obrigatórios! (*)';
-                return;
-            }
-
-            // Valida formato de email (precisa de algo@algo.algo)
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                messageDiv.className = 'message error';
-                messageDiv.innerText = 'Digite um email válido!';
-                return;
-            }
-
-            // Valida CEP (8 dígitos numéricos, com ou sem hífen)
-            const cepDigits = cep.replace(/\D/g, '');
-            if (cepDigits.length !== 8) {
-                messageDiv.className = 'message error';
-                messageDiv.innerText = 'Digite um CEP válido com 8 dígitos!';
-                return;
-            }
-
-            if (senha.length < 6) {
-                messageDiv.className = 'message error';
-                messageDiv.innerText = 'A senha deve ter no mínimo 6 caracteres!';
-                return;
-            }
-
-            if (senha !== senhaConfirm) {
-                messageDiv.className = 'message error';
-                messageDiv.innerText = 'As senhas não coincidem!';
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/cadastrar`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        nome_completo,
-                        cep,
-                        email,
-                        senha
-                    })
-                });
-                const data = await response.json();
-
-                if (response.ok) {
-                    messageDiv.className = 'message success';
-                    messageDiv.innerText = data.mensagem + ' Faça login para continuar.';
-                    setTimeout(() => {
-                        showLogin();
-                    }, 3000);
-                } else {
-                    messageDiv.className = 'message error';
-                    messageDiv.innerText = data.error || 'Erro ao cadastrar';
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                messageDiv.className = 'message error';
-                messageDiv.innerText = '❌ Erro de conexão com o servidor';
-            }
+        if (senha.length < 6) {
+          messageDiv.className = "message error";
+          messageDiv.innerText = "A senha deve ter no mínimo 6 caracteres!";
+          return;
         }
 
-        // Primeiro acesso
-        async function primeiroAcesso(id_usuario, nova_senha) {
-            try {
-                const response = await fetch(`${API_URL}/primeiro-acesso`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id_usuario, nova_senha })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    alert(data.mensagem);
-                    return true;
-                } else {
-                    alert(data.error || 'Erro ao cadastrar senha');
-                    return false;
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('❌ Erro de conexão com o servidor');
-                return false;
-            }
+        if (senha !== senhaConfirm) {
+          messageDiv.className = "message error";
+          messageDiv.innerText = "As senhas não coincidem!";
+          return;
         }
 
-        // Fazer login
-        async function fazerLogin() {
-            const email = document.getElementById('loginEmail').value;
-            const senha = document.getElementById('loginSenha').value;
+        try {
+          const response = await fetch(`${API_URL}/cadastrar`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              nome_completo,
+              cep,
+              email,
+              senha,
+            }),
+          });
+          const data = await response.json();
 
-            if (!email || !senha) {
-                alert('Preencha email e senha');
-                return;
-            }
+          if (response.ok) {
+            messageDiv.className = "message success";
+            messageDiv.innerText =
+              data.mensagem + " Faça login para continuar.";
+            setTimeout(() => {
+              showLogin();
+            }, 3000);
+          } else {
+            messageDiv.className = "message error";
+            messageDiv.innerText = data.error || "Erro ao cadastrar";
+          }
+        } catch (error) {
+          console.error("Erro:", error);
+          messageDiv.className = "message error";
+          messageDiv.innerText = "❌ Erro de conexão com o servidor";
+        }
+      }
 
-            try {
-                const response = await fetch(`${API_URL}/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, senha })
-                });
+      // Primeiro acesso
+      async function primeiroAcesso(id_usuario, nova_senha) {
+        try {
+          const response = await fetch(`${API_URL}/primeiro-acesso`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id_usuario, nova_senha }),
+          });
 
-                const data = await response.json();
+          const data = await response.json();
 
-                if (response.ok) {
-                    localStorage.setItem('token', data.token);
-                    localStorage.setItem('usuario', JSON.stringify(data.usuario));
-                    window.location.href = 'dashboard.html';
-                } else if (response.status === 403 && data.primeiro_acesso) {
-                    const novaSenha = prompt('Primeiro acesso! Cadastre sua nova senha (mínimo 6 caracteres):');
-                    if (novaSenha && novaSenha.length >= 6) {
-                        const cadastrou = await primeiroAcesso(data.usuario_id, novaSenha);
-                        if (cadastrou) {
-                            fazerLogin();
-                        }
-                    } else if (novaSenha && novaSenha.length < 6) {
-                        alert('A senha deve ter no mínimo 6 caracteres!');
-                    }
-                } else {
-                    const messageDiv = document.getElementById('loginMessage');
-                    messageDiv.className = 'message error';
-                    messageDiv.innerText = data.mensagem || 'Erro ao fazer login';
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                const messageDiv = document.getElementById('loginMessage');
-                messageDiv.className = 'message error';
-                messageDiv.innerText = 'Erro de conexão com o servidor';
-            }
+          if (response.ok) {
+            alert(data.mensagem);
+            return true;
+          } else {
+            alert(data.error || "Erro ao cadastrar senha");
+            return false;
+          }
+        } catch (error) {
+          console.error("Erro:", error);
+          alert("❌ Erro de conexão com o servidor");
+          return false;
+        }
+      }
+
+      // Fazer login
+      async function fazerLogin() {
+        const email = document.getElementById("loginEmail").value;
+        const senha = document.getElementById("loginSenha").value;
+
+        if (!email || !senha) {
+          alert("Preencha email e senha");
+          return;
         }
 
-        // Esqueci minha senha
-        function showEsqueciSenha() {
-            const email = prompt('Digite seu email cadastrado para recuperar a senha:');
-            if (email) {
-                solicitarResetSenha(email);
+        try {
+          const response = await fetch(`${API_URL}/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, senha }),
+          });
+
+          const data = await response.json();
+
+          if (response.ok) {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("usuario", JSON.stringify(data.usuario));
+            window.location.href = "dashboard.html";
+          } else if (response.status === 403 && data.primeiro_acesso) {
+            const novaSenha = prompt(
+              "Primeiro acesso! Cadastre sua nova senha (mínimo 6 caracteres):",
+            );
+            if (novaSenha && novaSenha.length >= 6) {
+              const cadastrou = await primeiroAcesso(
+                data.usuario_id,
+                novaSenha,
+              );
+              if (cadastrou) {
+                fazerLogin();
+              }
+            } else if (novaSenha && novaSenha.length < 6) {
+              alert("A senha deve ter no mínimo 6 caracteres!");
             }
+          } else {
+            const messageDiv = document.getElementById("loginMessage");
+            messageDiv.className = "message error";
+            messageDiv.innerText = data.mensagem || "Erro ao fazer login";
+          }
+        } catch (error) {
+          console.error("Erro:", error);
+          const messageDiv = document.getElementById("loginMessage");
+          messageDiv.className = "message error";
+          messageDiv.innerText = "Erro de conexão com o servidor";
         }
+      }
 
-        async function solicitarResetSenha(email) {
-            try {
-                const response = await fetch(`${API_URL}/esqueci-senha`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
-                });
+      // Esqueci minha senha
+      function showEsqueciSenha() {
+        const email = prompt(
+          "Digite seu email cadastrado para recuperar a senha:",
+        );
+        if (email) {
+          solicitarResetSenha(email);
+        }
+      }
 
-                const data = await response.json();
+      async function solicitarResetSenha(email) {
+        try {
+          const response = await fetch(`${API_URL}/esqueci-senha`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
 
-                if (response.ok) {
-                    alert(`${data.mensagem}\n\nToken: ${data.token}\n\nUse este token para redefinir sua senha.`);
-                    const novaSenha = prompt('Digite sua nova senha (mínimo 6 caracteres):');
-                    if (novaSenha && novaSenha.length >= 6) {
-                        await resetarSenha(data.token, novaSenha);
-                    }
-                } else {
-                    alert(data.mensagem || 'Erro ao solicitar recuperação');
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro de conexão com o servidor');
+          const data = await response.json();
+
+          if (response.ok) {
+            alert(
+              `${data.mensagem}\n\nToken: ${data.token}\n\nUse este token para redefinir sua senha.`,
+            );
+            const novaSenha = prompt(
+              "Digite sua nova senha (mínimo 6 caracteres):",
+            );
+            if (novaSenha && novaSenha.length >= 6) {
+              await resetarSenha(data.token, novaSenha);
             }
+          } else {
+            alert(data.mensagem || "Erro ao solicitar recuperação");
+          }
+        } catch (error) {
+          console.error("Erro:", error);
+          alert("Erro de conexão com o servidor");
         }
+      }
 
-        async function resetarSenha(token, nova_senha) {
-            try {
-                const response = await fetch(`${API_URL}/resetar-senha`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, nova_senha })
-                });
+      async function resetarSenha(token, nova_senha) {
+        try {
+          const response = await fetch(`${API_URL}/resetar-senha`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ token, nova_senha }),
+          });
 
-                const data = await response.json();
+          const data = await response.json();
 
-                if (response.ok) {
-                    alert('✅ ' + data.mensagem);
-                } else {
-                    alert('❌ ' + (data.error || 'Erro ao resetar senha'));
-                }
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('❌ Erro de conexão com o servidor');
-            }
+          if (response.ok) {
+            alert("✅ " + data.mensagem);
+          } else {
+            alert("❌ " + (data.error || "Erro ao resetar senha"));
+          }
+        } catch (error) {
+          console.error("Erro:", error);
+          alert("❌ Erro de conexão com o servidor");
         }
+      }
 
-        function voltarHome() {
-            document.getElementById('loginPage').style.display = 'none';
-            document.getElementById('registerPage').style.display = 'none';
-            document.getElementById('landingPage').style.display = 'block';
-            window.scrollTo(0, 0);
-        }
+      function voltarHome() {
+        document.getElementById("loginPage").style.display = "none";
+        document.getElementById("registerPage").style.display = "none";
+        document.getElementById("landingPage").style.display = "block";
+        window.scrollTo(0, 0);
+      }
 
-        // Enter agora envia os formulários (antes só funcionava clicando no botão)
-        document.getElementById('loginForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            fazerLogin();
+      // Enter agora envia os formulários (antes só funcionava clicando no botão)
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          fazerLogin();
         });
 
-        document.getElementById('registerForm').addEventListener('submit', function (e) {
-            e.preventDefault();
-            cadastrarNovoUsuario();
+      document
+        .getElementById("registerForm")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          cadastrarNovoUsuario();
         });
     </script>
-</body>
-
+  </body>
 </html>
