@@ -16,7 +16,8 @@
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.22.3",
     "swagger-ui": "^5.32.5",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "dotenv": "^16.4.7"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

@@ -1020,7 +1020,7 @@
         }
 
         // Primeiro acesso
-        async function primeiroAcesso(id_usuario, nova_senha) {
+        async function primeiroAcesso(id_usuario, nova_senha, token) {
             try {
                 const response = await fetch(`${API_URL}/primeiro-acesso`, {
                     method: 'POST',
@@ -1070,7 +1070,7 @@
                 } else if (response.status === 403 && data.primeiro_acesso) {
                     const novaSenha = prompt('Primeiro acesso! Cadastre sua nova senha (mínimo 6 caracteres):');
                     if (novaSenha && novaSenha.length >= 6) {
-                        const cadastrou = await primeiroAcesso(data.usuario_id, novaSenha);
+                        const cadastrou = await primeiroAcesso(data.usuario_id, novaSenha, data.primeiro_acesso_token);
                         if (cadastrou) {
                             fazerLogin();
                         }
@@ -1109,10 +1109,10 @@
                 const data = await response.json();
 
                 if (response.ok) {
-                    alert(`${data.mensagem}\n\nToken: ${data.token}\n\nUse este token para redefinir sua senha.`);
-                    const novaSenha = prompt('Digite sua nova senha (mínimo 6 caracteres):');
-                    if (novaSenha && novaSenha.length >= 6) {
-                        await resetarSenha(data.token, novaSenha);
+                    if (data.link_demo) {
+                        alert(`${data.mensagem}\n\nMODO DEMO: abra este link para redefinir a senha:\n${data.link_demo}`);
+                    } else {
+                        alert(data.mensagem);
                     }
                 } else {
                     alert(data.mensagem || 'Erro ao solicitar recuperação');

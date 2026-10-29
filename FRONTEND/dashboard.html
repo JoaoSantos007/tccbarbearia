@@ -1442,7 +1442,12 @@
             const icons = { success: '✅', error: '❌', info: 'ℹ️' };
             const el = document.createElement('div');
             el.className = `toast ${tipo}`;
-            el.innerHTML = `<span class="toast-icon">${icons[tipo]}</span><span>${msg}</span>`;
+            const icon = document.createElement('span');
+            icon.className = 'toast-icon';
+            icon.textContent = icons[tipo] || icons.info;
+            const message = document.createElement('span');
+            message.textContent = String(msg ?? '');
+            el.append(icon, message);
             document.getElementById('toastContainer').appendChild(el);
             setTimeout(() => {
                 el.style.animation = 'toastOut 0.3s ease forwards';
@@ -1451,44 +1456,72 @@
         }
 
         // ===================== API =====================
+        function headersComToken(extra = {}) {
+            const token = localStorage.getItem('token');
+            return { ...extra, ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+        }
+
         async function apiGet(endpoint) {
             try {
-                const r = await fetch(`${API_URL}${endpoint}`);
-                if (!r.ok) throw new Error('Erro');
-                return await r.json();
-            } catch { return []; }
+                const r = await fetch(`${API_URL}${endpoint}`, { headers: headersComToken() });
+                const data = await r.json().catch(() => ({}));
+                if (!r.ok) {
+                    const msg = data.error || data.mensagem || `Falha na API (${r.status})`;
+                    toast(msg, 'error');
+                    throw new Error(msg);
+                }
+                return data;
+            } catch (error) {
+                if (error instanceof TypeError) toast('Erro de conexão com o servidor.', 'error');
+                throw error;
+            }
         }
         async function apiPost(endpoint, data) {
             try {
                 const r = await fetch(`${API_URL}${endpoint}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                    method: 'POST', headers: headersComToken({ 'Content-Type': 'application/json' }), body: JSON.stringify(data)
                 });
-                return await r.json();
+                const body = await r.json().catch(() => ({}));
+                if (!r.ok) { toast(body.error || body.mensagem || `Falha na API (${r.status})`, 'error'); }
+                return body;
             } catch { return { error: 'Erro de conexão' }; }
         }
         async function apiPut(endpoint, data) {
             try {
                 const r = await fetch(`${API_URL}${endpoint}`, {
-                    method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                    method: 'PUT', headers: headersComToken({ 'Content-Type': 'application/json' }), body: JSON.stringify(data)
                 });
-                return await r.json();
+                const body = await r.json().catch(() => ({}));
+                if (!r.ok) toast(body.error || body.mensagem || `Falha na API (${r.status})`, 'error');
+                return body;
             } catch { return { error: 'Erro de conexão' }; }
         }
         async function apiDelete(endpoint, data = null) {
             try {
-                const opts = { method: 'DELETE' };
-                if (data) { opts.headers = { 'Content-Type': 'application/json' }; opts.body = JSON.stringify(data); }
+                const opts = { method: 'DELETE', headers: headersComToken(data ? { 'Content-Type': 'application/json' } : {}) };
+                if (data) opts.body = JSON.stringify(data);
                 const r = await fetch(`${API_URL}${endpoint}`, opts);
-                return await r.json();
+                const body = await r.json().catch(() => ({}));
+                if (!r.ok) toast(body.error || body.mensagem || `Falha na API (${r.status})`, 'error');
+                return body;
             } catch { return { error: 'Erro de conexão' }; }
         }
         async function apiPatch(endpoint, data) {
             try {
                 const r = await fetch(`${API_URL}${endpoint}`, {
-                    method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data)
+                    method: 'PATCH', headers: headersComToken({ 'Content-Type': 'application/json' }), body: JSON.stringify(data)
                 });
-                return await r.json();
+                const body = await r.json().catch(() => ({}));
+                if (!r.ok) toast(body.error || body.mensagem || `Falha na API (${r.status})`, 'error');
+                return body;
             } catch { return { error: 'Erro de conexão' }; }
+        }
+
+        // Use em todos os valores originados do usuário/banco antes de interpolá-los em HTML.
+        function escapeHTML(value) {
+            return String(value ?? '').replace(/[&<>"']/g, ch => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[ch]));
         }
 
         function toggleSenha(inputId, icone) {
@@ -1615,8 +1648,8 @@
                 return `<div class="user-row">
                             <div class="user-row-avatar">${ini}</div>
                             <div class="user-row-info">
-                                <strong>${u.nome_completo}</strong>
-                                <small>${u.email}</small>
+                                <strong>${escapeHTML(u.nome_completo)}</strong>
+                                <small>${escapeHTML(u.email)}</small>
                             </div>
                             ${u.primeiro_acesso ? '<span class="status-badge status-pendente">1º Acesso</span>' : '<span class="status-badge status-ativo">Ativo</span>'}
                         </div>`;
@@ -1629,7 +1662,7 @@
                     ${topServicos.length ? topServicos.map(s => `
                         <div class="servico-row">
                             <div>
-                                <div class="servico-row-nome">${s.nome}</div>
+                                <div class="servico-row-nome">${escapeHTML(s.nome)}</div>
                                 <small style="color:var(--cinza-medio)">${s.duracao}min · ${s.pontos}pts</small>
                             </div>
                             <div style="text-align:right">
@@ -1667,9 +1700,9 @@
                         ${usuarios.length ? usuarios.map(u => `
                             <tr data-status="${u.primeiro_acesso ? 'pendente' : 'ativo'}">
                                 <td style="color:var(--cinza-medio)">#${u.id_usuario}</td>
-                                <td><strong>${u.nome_completo}</strong></td>
-                                <td>${u.email}</td>
-                                <td>${u.cep}</td>
+                                <td><strong>${escapeHTML(u.nome_completo)}</strong></td>
+                                <td>${escapeHTML(u.email)}</td>
+                                <td>${escapeHTML(u.cep)}</td>
                                 <td>${u.primeiro_acesso
                     ? '<span class="status-badge status-pendente">1º Acesso</span>'
                     : '<span class="status-badge status-ativo">Ativo</span>'}</td>
@@ -1704,9 +1737,9 @@
             document.getElementById('modal').style.display = 'flex';
             document.getElementById('modalContent').innerHTML = `
         ${modalHeader(data ? 'Editar Usuário' : 'Novo Usuário')}
-        <div class="form-group"><label for="uNome">Nome Completo *</label><input type="text" id="uNome" value="${data?.nome_completo || ''}"></div>
-        <div class="form-group"><label for="uEmail">Email *</label><input type="email" id="uEmail" value="${data?.email || ''}"></div>
-        <div class="form-group"><label for="uCep">CEP *</label><input type="text" id="uCep" value="${data?.cep || ''}" maxlength="10"></div>
+        <div class="form-group"><label for="uNome">Nome Completo *</label><input type="text" id="uNome" value="${escapeHTML(data?.nome_completo || '' )}"></div>
+        <div class="form-group"><label for="uEmail">Email *</label><input type="email" id="uEmail" value="${escapeHTML(data?.email || '' )}"></div>
+        <div class="form-group"><label for="uCep">CEP *</label><input type="text" id="uCep" value="${escapeHTML(data?.cep || '' )}" maxlength="10"></div>
         <div class="form-group"><label for="uSenha">Senha ${data ? '(deixe vazio para manter)' : '(opcional — se vazio, usuário define no 1º acesso)'}</label>
             <div class="senha-wrapper">
                 <input type="password" id="uSenha" autocomplete="new-password" placeholder="••••••">
@@ -1770,7 +1803,7 @@
                         ${servicos.length ? servicos.map(s => `
                             <tr data-status="${s.status}">
                                 <td style="color:var(--cinza-medio)">#${s.id_servicos}</td>
-                                <td><strong>${s.nome}</strong></td>
+                                <td><strong>${escapeHTML(s.nome)}</strong></td>
                                 <td>R$ ${parseFloat(s.preco).toFixed(2)}</td>
                                 <td>${s.duracao} min</td>
                                 <td><span style="background:#f5f3ff;color:#7c3aed;padding:2px 8px;border-radius:12px;font-size:0.75rem;font-weight:600">${s.pontos} pts</span></td>
@@ -1804,7 +1837,7 @@
             document.getElementById('modal').style.display = 'flex';
             document.getElementById('modalContent').innerHTML = `
         ${modalHeader(data ? 'Editar Serviço' : 'Novo Serviço')}
-        <div class="form-group"><label for="sNome">Nome *</label><input type="text" id="sNome" value="${data?.nome || ''}"></div>
+        <div class="form-group"><label for="sNome">Nome *</label><input type="text" id="sNome" value="${escapeHTML(data?.nome || '' )}"></div>
         <div class="form-row">
             <div class="form-group"><label for="sPreco">Preço (R$) *</label><input type="number" id="sPreco" step="0.01" min="0" value="${data?.preco || ''}"></div>
             <div class="form-group"><label for="sDuracao">Duração (min) *</label><input type="number" id="sDuracao" min="1" value="${data?.duracao || ''}"></div>
@@ -1874,8 +1907,8 @@
                         ${funcs.length ? funcs.map(f => `
                             <tr data-status="${f.status}">
                                 <td style="color:var(--cinza-medio)">#${f.id_funcionario}</td>
-                                <td><strong>${f.nome}</strong></td>
-                                <td><span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:12px;font-size:0.75rem;font-weight:600">${f.funcao}</span></td>
+                                <td><strong>${escapeHTML(f.nome)}</strong></td>
+                                <td><span style="background:#eff6ff;color:#2563eb;padding:3px 10px;border-radius:12px;font-size:0.75rem;font-weight:600">${escapeHTML(f.funcao)}</span></td>
                                 <td><span class="status-badge ${f.status == 1 ? 'status-ativo' : 'status-inativo'}">${f.status == 1 ? 'Ativo' : 'Inativo'}</span></td>
                                 <td>
                                     <button type="button" class="btn-editar" onclick="editarFuncionario(${f.id_funcionario})">Editar</button>
@@ -1907,8 +1940,8 @@
             document.getElementById('modal').style.display = 'flex';
             document.getElementById('modalContent').innerHTML = `
         ${modalHeader(data ? 'Editar Funcionário' : 'Novo Funcionário')}
-        <div class="form-group"><label for="fNome">Nome *</label><input type="text" id="fNome" value="${data?.nome || ''}"></div>
-        <div class="form-group"><label for="fFuncao">Função *</label><input type="text" id="fFuncao" value="${data?.funcao || ''}" placeholder="Ex: Barbeiro, Estilista..."></div>
+        <div class="form-group"><label for="fNome">Nome *</label><input type="text" id="fNome" value="${escapeHTML(data?.nome || '' )}"></div>
+        <div class="form-group"><label for="fFuncao">Função *</label><input type="text" id="fFuncao" value="${escapeHTML(data?.funcao || '' )}" placeholder="Ex: Barbeiro, Estilista..."></div>
         ${data ? `<div class="form-group"><label for="fStatus">Status</label><select id="fStatus"><option value="1" ${data.status == 1 ? 'selected' : ''}>Ativo</option><option value="0" ${data.status == 0 ? 'selected' : ''}>Inativo</option></select></div>` : ''}
         <div class="modal-btns">
             <button type="button" class="btn-cancel" onclick="fecharModal()">Cancelar</button>
@@ -1973,20 +2006,20 @@
                 const horaFmt = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
                 // Serviços: pode ser array (agendavalor) ou campo legado
                 const servicosHtml = a.servicos && a.servicos.length
-                    ? a.servicos.map(s => `<span style="display:inline-block;background:#eff6ff;color:#2563eb;padding:1px 7px;border-radius:10px;font-size:0.72rem;margin:1px">${s.nome}</span>`).join('')
-                    : `<span style="display:inline-block;background:#eff6ff;color:#2563eb;padding:1px 7px;border-radius:10px;font-size:0.72rem">${a.servico_nome || '—'}</span>`;
+                    ? a.servicos.map(s => `<span style="display:inline-block;background:#eff6ff;color:#2563eb;padding:1px 7px;border-radius:10px;font-size:0.72rem;margin:1px">${escapeHTML(s.nome)}</span>`).join('')
+                    : `<span style="display:inline-block;background:#eff6ff;color:#2563eb;padding:1px 7px;border-radius:10px;font-size:0.72rem">${escapeHTML(a.servico_nome) || '—'}</span>`;
                 const valorTotal = a.valor_total != null ? parseFloat(a.valor_total) : (a.agenda_valor ? parseFloat(a.agenda_valor) : null);
                 return `
                             <tr data-status="${a.status}">
                                 <td style="color:var(--cinza-medio)">#${a.id}</td>
                                 <td><strong>${dataFmt}</strong><br><small style="color:var(--cinza-medio)">${horaFmt}</small></td>
-                                <td>${a.cliente_nome || a.id_usuario}</td>
+                                <td>${escapeHTML(a.cliente_nome || a.id_usuario)}</td>
                                 <td style="max-width:200px">${servicosHtml}</td>
                                 <td><strong style="color: #047857">${valorTotal != null ? 'R$ ' + valorTotal.toFixed(2) : '—'}</strong></td>
                                 <td>${a.forma_pagamento
-                        ? `<span style="background:#f0fdf4;color: #047857;padding:2px 9px;border-radius:12px;font-size:0.75rem;font-weight:600">${a.forma_pagamento}</span>`
+                        ? `<span style="background:#f0fdf4;color: #047857;padding:2px 9px;border-radius:12px;font-size:0.75rem;font-weight:600">${escapeHTML(a.forma_pagamento)}</span>`
                         : `<span style="color:var(--cinza-medio);font-size:0.8rem">—</span>`}</td>
-                                <td>${a.funcionario_nome || a.id_funcionario}</td>
+                                <td>${escapeHTML(a.funcionario_nome || a.id_funcionario)}</td>
                                 <td>
                                     <span class="status-badge status-${a.status}">${a.status}</span>
                                     ${(() => {
@@ -2062,7 +2095,7 @@
             <label for="agClienteSearch">Cliente *</label>
             <input type="text" id="agClienteSearch" placeholder="Digite para buscar cliente..."
                 autocomplete="off"
-                value="${clienteNomeInicial}"
+                value="${escapeHTML(clienteNomeInicial)}"
                 oninput="filtrarClientesDropdown()"
                 onfocus="document.getElementById('agClienteDropdown').style.display='block'; filtrarClientesDropdown()"
                 onblur="setTimeout(()=>{ document.getElementById('agClienteDropdown').style.display='none' }, 200)"
@@ -2073,12 +2106,12 @@
                 border:1px solid #e2e8f0;border-radius:9px;max-height:180px;overflow-y:auto;
                 z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.12)">
                 ${usuarios.map(u => `
-                <div class="ag-cliente-opt" data-id="${u.id_usuario}" data-nome="${u.nome_completo.replace(/"/g, '&quot;')}"
+                <div class="ag-cliente-opt" data-id="${u.id_usuario}" data-nome="${escapeHTML(u.nome_completo)}"
                     onmousedown="selecionarClienteAg(${u.id_usuario}, this.dataset.nome)"
                     style="padding:9px 13px;cursor:pointer;font-size:0.86rem;border-bottom:1px solid #f1f5f9;transition:background 0.1s"
                     onmouseover="this.style.background='#eff6ff'"
                     onmouseout="this.style.background=''">
-                    ${u.nome_completo}
+                    ${escapeHTML(u.nome_completo)}
                 </div>`).join('')}
             </div>
         </div>
@@ -2091,11 +2124,11 @@
                     border-bottom:1px solid #f1f5f9;transition:background 0.12s;font-weight:400;"
                     onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
                     <input type="checkbox" class="ag-servico-check"
-                        data-id="${s.id_servicos}" data-preco="${parseFloat(s.preco).toFixed(2)}" data-nome="${s.nome}"
+                        data-id="${s.id_servicos}" data-preco="${parseFloat(s.preco).toFixed(2)}" data-nome="${escapeHTML(s.nome)}"
                         onchange="recalcularTotalAgendamento()"
                         ${servicosSelecionados.includes(s.id_servicos) ? 'checked' : ''}
                         style="width:16px;height:16px;accent-color:var(--azul-accent);cursor:pointer;flex-shrink:0">
-                    <span style="flex:1;font-size:0.86rem;">${s.nome}</span>
+                    <span style="flex:1;font-size:0.86rem;">${escapeHTML(s.nome)}</span>
                     <span style="font-size:0.8rem;color:var(--cinza-medio)">${s.duracao}min · ${s.pontos}pts</span>
                     <span style="font-weight:700;color:var(--azul-accent);font-size:0.88rem;min-width:72px;text-align:right">R$ ${parseFloat(s.preco).toFixed(2)}</span>
                 </label>`).join('')}
@@ -2114,7 +2147,7 @@
         <div class="form-group"><label for="agFuncionario">Profissional *</label>
             <select id="agFuncionario">
                 <option value="">Selecione o profissional</option>
-                ${funcsAtivos.map(f => `<option value="${f.id_funcionario}" ${data?.id_funcionario == f.id_funcionario ? 'selected' : ''}>${f.nome} — ${f.funcao}${f.status == 0 ? ' (inativo)' : ''}</option>`).join('')}
+                ${funcsAtivos.map(f => `<option value="${f.id_funcionario}" ${data?.id_funcionario == f.id_funcionario ? 'selected' : ''}>${escapeHTML(f.nome)} — ${escapeHTML(f.funcao)}${f.status == 0 ? ' (inativo)' : ''}</option>`).join('')}
             </select>
         </div>
         <div class="form-row">
@@ -2227,14 +2260,6 @@
                 : await apiPost('/agendamentos', dados);
             if (result.error) { toast(result.error, 'error'); return; }
 
-            // Se status for 'concluido', credita pontos automaticamente na fidelidade
-            if (dados.status === 'concluido') {
-                const idAg = id || result.insertId;
-                if (idAg) {
-                    await apiPost('/fidelidade/creditar-agendamento', { id_agendamento: idAg });
-                }
-            }
-
             toast(result.mensagem || 'Agendamento salvo!');
             fecharModal(); renderPage();
         }
@@ -2268,11 +2293,6 @@
             if (!novoStatus) return;
             const result = await apiPatch(`/agendamentos/${id}/status`, { status: novoStatus });
             if (result.error) { toast(result.error, 'error'); renderPage(); return; }
-
-            // Se o novo status for 'concluido', credita pontos automaticamente na fidelidade
-            if (novoStatus === 'concluido') {
-                await apiPost('/fidelidade/creditar-agendamento', { id_agendamento: id });
-            }
 
             toast(result.mensagem || 'Status atualizado!');
             renderPage();
@@ -2344,7 +2364,7 @@
                             <div class="ranking-pos ${posClass(i)}">${posMedal(i)}</div>
                             <div class="ranking-avatar">${ini}</div>
                             <div class="ranking-info">
-                                <strong>${r.nome_completo}</strong>
+                                <strong>${escapeHTML(r.nome_completo)}</strong>
                                 <small>${parseFloat(r.total_ganho || 0).toFixed(0)} pts acumulados</small>
                             </div>
                             <div class="pts-bar-wrap">
@@ -2373,9 +2393,9 @@
                         <input type="hidden" id="fidClienteId">
                         <div class="fid-client-dropdown" id="fidDropdown">
                             ${usuarios.map(u => `
-                            <div class="fid-client-opt" data-id="${u.id_usuario}" data-nome="${u.nome_completo.replace(/"/g, '&quot;')}"
-                                onmousedown="selecionarClienteFid(${u.id_usuario}, '${u.nome_completo.replace(/'/g, "\\'")}')">
-                                ${u.nome_completo} <small style="color:var(--cinza-medio);margin-left:6px">${u.email}</small>
+                            <div class="fid-client-opt" data-id="${u.id_usuario}" data-nome="${escapeHTML(u.nome_completo)}"
+                                data-nome="${escapeHTML(u.nome_completo)}" onmousedown="selecionarClienteFid(${u.id_usuario}, this.dataset.nome)">
+                                ${escapeHTML(u.nome_completo)} <small style="color:var(--cinza-medio);margin-left:6px">${escapeHTML(u.email)}</small>
                             </div>`).join('')}
                         </div>
                     </div>
@@ -2396,7 +2416,7 @@
                     <tbody>
                         ${servicosResgate.length ? servicosResgate.map(s => `
                             <tr>
-                                <td><strong>${s.nome}</strong></td>
+                                <td><strong>${escapeHTML(s.nome)}</strong></td>
                                 <td>R$ ${parseFloat(s.preco).toFixed(2)}</td>
                                 <td>${s.duracao} min</td>
                                 <td><span style="background:#ecfdf5;color: #047857;padding:2px 9px;border-radius:12px;font-size:0.75rem;font-weight:700">+${s.pontos} pts</span></td>
@@ -2536,9 +2556,9 @@
             <input type="hidden" id="resgClienteId">
             <div class="fid-client-dropdown" id="resgDropdown">
                 ${usuarios.map(u => `
-                <div class="fid-client-opt" data-id="${u.id_usuario}" data-nome="${u.nome_completo.replace(/"/g, '&quot;')}"
-                    onmousedown="preencherResgCliente(${u.id_usuario}, '${u.nome_completo.replace(/'/g, "\\'")}')">
-                    ${u.nome_completo} <small style="color:var(--cinza-medio);margin-left:6px">${u.email}</small>
+                <div class="fid-client-opt" data-id="${u.id_usuario}" data-nome="${escapeHTML(u.nome_completo)}"
+                    data-nome="${escapeHTML(u.nome_completo)}" onmousedown="preencherResgCliente(${u.id_usuario}, this.dataset.nome)">
+                    ${escapeHTML(u.nome_completo)} <small style="color:var(--cinza-medio);margin-left:6px">${escapeHTML(u.email)}</small>
                 </div>`).join('')}
             </div>
         </div>
@@ -2555,7 +2575,7 @@
             ${servicosResgate.length ? servicosResgate.map(s => `
             <div class="servico-resgate-card" id="resgCard_${s.id_servicos}" onclick="selecionarServicoResgate(${s.id_servicos})">
                 <div style="flex:1">
-                    <div style="font-weight:600;font-size:0.88rem">${s.nome}</div>
+                    <div style="font-weight:600;font-size:0.88rem">${escapeHTML(s.nome)}</div>
                     <div style="font-size:0.75rem;color:var(--cinza-medio);margin-top:2px">${s.duracao}min · R$ ${parseFloat(s.preco).toFixed(2)} normalmente</div>
                 </div>
                 <span class="servico-resgate-pts">⭐ ${s.pontos_resgate} pts</span>
